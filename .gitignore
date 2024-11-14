@@ -1,3 +1,10 @@
+# Chatbot data
+chatbot-data/
+output-text/
+images/
+json-data/
+
+
 # Logs
 logs
 *.log
