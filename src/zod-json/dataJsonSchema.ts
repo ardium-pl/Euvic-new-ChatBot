@@ -1,12 +1,10 @@
 import { z } from "zod";
 
 const ProjectData = z.object({
-  technologies: z
-    .array(
+  technologies: 
       z.object({
-        name: z.string().optional(),
+        name: z.array(z.string()),
       })
-    )
     .optional(),
   description: z.string(),
   businessCases: z.array(z.string()),
@@ -20,7 +18,7 @@ export const CustomersData = z.object({
   customers: z.array(
     z.object({
       name: z.string(),
-      projects: z.array(ProjectData),
+      projects: ProjectData,
     })
   ),
 });
@@ -30,7 +28,7 @@ export type FileData = {
   ocrText: string;
   customers: {
     name: string;
-    projects: Array<ProjectDataType>;
+    projects: ProjectDataType;
   }[];
 };
 
