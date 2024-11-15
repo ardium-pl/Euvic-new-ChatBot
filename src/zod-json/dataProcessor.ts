@@ -1,6 +1,6 @@
 import "dotenv/config";
 import OpenAI from "openai";
-import { CustomerData, CustomerDataType } from "./dataJsonSchema";
+import { CustomersData, CustomersDataType } from "./dataJsonSchema";
 import { zodResponseFormat } from "openai/helpers/zod";
 
 const client = new OpenAI({
@@ -10,7 +10,7 @@ const client = new OpenAI({
 export async function parseOcrText(
   ocrText: string,
   prompt: string
-): Promise<CustomerDataType> {
+): Promise<CustomersDataType> {
   const completion = await client.beta.chat.completions.parse({
     model: "gpt-4o-2024-08-06",
     messages: [
@@ -20,7 +20,7 @@ export async function parseOcrText(
       },
       { role: "user", content: ocrText },
     ],
-    response_format: zodResponseFormat(CustomerData, "bailifData"),
+    response_format: zodResponseFormat(CustomersData, "customersData"),
   });
 
   const message = completion.choices[0]?.message;

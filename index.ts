@@ -1,11 +1,12 @@
 import fs from "fs-extra";
-import path from "path";
+import path, { parse } from "path";
 import { pdfOcr } from "./src/ocr/ocr.ts";
 import { logger } from "./src/utils/logger.ts";
 import { parseOcrText } from "./src/zod-json/dataProcessor";
 import { PDF_DATA_FOLDER, JSON_DATA_FOLDER } from "./src/utils/credentials.ts";
 import { convertPptxToPdf } from "./src/utils/convertPptxToPdf.ts";
 import { getDataPrompt } from "./src/utils/credentials.ts";
+import { CustomersData, FileData } from "./src/zod-json/dataJsonSchema.ts";
 
 async function processFile(fileName: string) {
   try {
@@ -28,12 +29,18 @@ async function processFile(fileName: string) {
     const parsedData = await parseOcrText(ocrDataText, getDataPrompt);
     logger.info("JSON Schema: ", parsedData);
 
+    const fileJsonData: FileData = {
+      fileName: fileName,
+      ocrText: ocrDataText,
+      customers: parsedData.customers,
+    };
+
     const jsonFileName = `${path.basename(
       fileName,
       path.extname(fileName)
     )}.json`;
     const jsonFilePath = path.join(JSON_DATA_FOLDER, jsonFileName);
-    await fs.writeJson(jsonFilePath, parsedData, { spaces: 2 });
+    await fs.writeJson(jsonFilePath, fileJsonData, { spaces: 2 });
     logger.info(`💾 JSON data saved to: ${jsonFilePath}`);
   } catch (err) {
     logger.error(`Error processing file ${fileName}: ${err.message}`);
