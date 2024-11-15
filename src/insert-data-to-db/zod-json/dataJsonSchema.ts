@@ -7,7 +7,7 @@ const ProjectData = z.object({
       })
     .optional(),
   description: z.string(),
-  businessCases: z.array(z.string()),
+  businessCase: z.string().optional(),
   referenceDate: z.string().optional(),
   scaleOfImplementationValue: z.number().optional(),
   scaleOfImplementationDescription: z.string().optional(),
