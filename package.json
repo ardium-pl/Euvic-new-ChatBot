@@ -37,7 +37,6 @@
     "zod-to-json-schema": "^3.23.3"
   },
   "devDependencies": {
-    "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/fs-extra": "^11.0.4"
   }

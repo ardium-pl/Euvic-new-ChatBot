@@ -24,7 +24,7 @@ async function processFile(fileName: string) {
 
     const ocrDataText = await pdfOcr(pdfFilePath);
     logger.info(`📄 OCR Data Text: ${ocrDataText}`);
-
+    if(!getDataPrompt) return null;
     const parsedData = await parseOcrText(ocrDataText, getDataPrompt);
     logger.info("JSON Schema: ", parsedData);
 
