@@ -2,6 +2,7 @@ import ansis from 'ansis';
 import cors from 'cors';
 import 'dotenv/config';
 import express from 'express';
+import {router} from './src/metaHandling/router'
 
 const PORT = process.env.PORT ?? 8080;
 
@@ -10,6 +11,8 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(cors());
+
+app.use(router);
 
 
 // Startup
