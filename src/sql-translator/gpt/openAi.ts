@@ -3,8 +3,7 @@ import { z, ZodTypeAny } from "zod";
 import { zodResponseFormat } from "openai/helpers/zod";
 import { logger } from "../../insert-data-to-db/utils/logger";
 import { ChatCompletionMessageParam } from "openai/resources";
-
-const openai = new OpenAI();
+import { openAiClient } from "../../config";
 
 export const sqlResponse = z.object({
   isSelect: z.boolean(),
@@ -17,7 +16,7 @@ export const finalResponse = z.object({
 
 export async function generateGPTAnswer(prompt: ChatCompletionMessageParam[], responseFormat: ZodTypeAny, responseName: string) {
   try {
-    const completion = await openai.beta.chat.completions.parse({
+    const completion = await openAiClient.beta.chat.completions.parse({
       model: 'gpt-4o',
       messages: prompt,
       response_format: zodResponseFormat(responseFormat, responseName),
