@@ -33,17 +33,32 @@ webhookRouter.post("/webhook", async (req: Request, res: Response) => {
         logger.info(
           `✅ Received message: ${userQuery} from ${senderPhoneNumber}`
         );
+        try{
+            const aiResponse: LanguageToSQLResponse = await axios.post(
+              `${ENDPOINT_URL}${PORT}/language-to-sql`,
+              {
+                query: userQuery,
+              }
+            );
+            await WhatsAppClient.sendMessage(aiResponse, senderPhoneNumber);
+    
+            logger.info("✅ AI answer sent or error reported.");
 
-        // Attempt to get AI response
-        const aiResponse: LanguageToSQLResponse = await axios.post(
-          `${ENDPOINT_URL}${PORT}/language-to-sql`,
-          {
-            query: userQuery,
-          }
-        );
-        await WhatsAppClient.sendMessage(aiResponse, senderPhoneNumber);
+        }catch(error: any){
+          // Handle AI response errors
+          const errorMessage =
+            error.response?.data?.errorCode;
 
-        logger.info("✅ AI answer sent or error reported.");
+          logger.error(`❌ Error from AI response: ${errorMessage}`);
+
+          await WhatsAppClient.sendMessage(
+            errorMessage,
+            senderPhoneNumber
+          );
+
+          logger.info("⚠️ Error message sent to the user.");
+
+        }
       } else {
         logger.warn(
           `⚠️ Received non-text message type: ${incomingMessage?.type}`
