@@ -53,18 +53,6 @@ export async function executeSQL<T extends RowDataPacket[] | ResultSetHeader>(
     return null;
   }
 
-// export async function fetchPassword(): Promise<string | null> {
-//   const query = `SELECT password_hash FROM secrets WHERE id = 1`;
-//   const result = await executeSQL<RowDataPacket[]>(query);
-
-//   if (result && result.length > 0 && result[0].password_hash) {
-//     logger.info("Password hash fetched from the db.");
-//     return result[0].password_hash;
-//   } else {
-//     logger.error("❌ Failed to fetch the password.");
-//     return null;
-//   }
-// }
 
 // Test the connection
 createTestConnection().catch((error) => {

@@ -10,64 +10,73 @@ import { LanguageToSQLResponse } from "../../types";
 const webhookRouter = express.Router();
 
 webhookRouter.post("/webhook", async (req: Request, res: Response) => {
-  try {
-    const data = req.body;
-    const mainRequestBody = data.entry[0]?.changes[0]?.value;
-
-    const errors = mainRequestBody?.errors;
-    const statuses = mainRequestBody?.statuses;
-    const messages = mainRequestBody?.messages;
-
-    if (errors) {
-      logger.warn(`⚙️ Request contained errors: ${JSON.stringify(errors)}`);
-    }
-    if (statuses) {
-      logger.info(`⚙️ Message status: ${statuses[0]?.status}`);
-    }
-    if (messages) {
-      const incomingMessage = messages[0];
-      const senderPhoneNumber = incomingMessage?.from;
-
-      if (incomingMessage?.type === "text") {
-        const userQuery = incomingMessage.text?.body;
-        logger.info(
-          `✅ Received message: ${userQuery} from ${senderPhoneNumber}`
-        );
-        // Send user query to the /language-to-sql endpoint
-        const aiAnswer: LanguageToSQLResponse = await axios
-          .post(`${ENDPOINT_URL}${PORT}/language-to-sql`, {
-            query: userQuery,
-          })
-          .then((response) => response.data)
-          .catch((error) => {
+    try {
+      const data = req.body;
+      const mainRequestBody = data.entry[0]?.changes[0]?.value;
+  
+      const errors = mainRequestBody?.errors;
+      const statuses = mainRequestBody?.statuses;
+      const messages = mainRequestBody?.messages;
+  
+      if (errors) {
+        logger.warn(`⚙️ Request contained errors: ${JSON.stringify(errors)}`);
+      }
+      if (statuses) {
+        logger.info(`⚙️ Message status: ${statuses[0]?.status}`);
+      }
+      if (messages) {
+        const incomingMessage = messages[0];
+        const senderPhoneNumber = incomingMessage?.from;
+  
+        if (incomingMessage?.type === "text") {
+          const userQuery = incomingMessage.text?.body;
+          logger.info(
+            `✅ Received message: ${userQuery} from ${senderPhoneNumber}`
+          );
+  
+          let aiAnswer: LanguageToSQLResponse;
+          try {
+            // Attempt to get AI response
+            aiAnswer = await axios
+              .post(`${ENDPOINT_URL}${PORT}/language-to-sql`, {
+                query: userQuery,
+              })
+              .then((response) => response.data);
+  
+            logger.info("🤖 RAGEngine processed query with chat history");
+          } catch (error: any) {
+            // Handle AI answer generation failure
             logger.error(
               `❌ Error querying /language-to-sql: ${error.message}`
             );
-            throw new Error("Failed to retrieve AI answer");
-          });
-
-        logger.info("🤖 RAGEngine processed query with chat history");
-
-        // Concurrently send a response and save data
-        await Promise.all([
-          WhatsAppClient.sendMessage(aiAnswer, senderPhoneNumber),
-        //   insertDataMySQL(senderPhoneNumber, userQuery, aiAnswer),
-        ]);
-
-        logger.info("✅ AI answer sent and data inserted into MySQL");
-      } else {
-        logger.warn(
-          `⚠️ Received non-text message type: ${incomingMessage?.type}`
-        );
+            aiAnswer = {
+              status: "error",
+              errorCode: "AI_PROCESSING_ERROR",
+            };
+          }
+  
+          // Concurrently send a response and (optionally) save data
+          await Promise.all([
+            WhatsAppClient.sendMessage(aiAnswer, senderPhoneNumber),
+            // Uncomment to enable MySQL data insertion
+            // insertDataMySQL(senderPhoneNumber, userQuery, aiAnswer),
+          ]);
+  
+          logger.info("✅ AI answer sent and data inserted into MySQL (if enabled)");
+        } else {
+          logger.warn(
+            `⚠️ Received non-text message type: ${incomingMessage?.type}`
+          );
+        }
       }
+  
+      res.status(200).send("✅");
+    } catch (error: any) {
+      logger.error(`❌ Error processing HTTP request: ${error.message}`);
+      res.status(400).send("❌");
     }
-
-    res.status(200).send("✅");
-  } catch (error: any) {
-    logger.error(`❌ Error processing HTTP request: ${error.message}`);
-    res.status(400).send("❌");
-  }
-});
+  });
+  
 
 webhookRouter.get("/webhook", (req: Request, res: Response) => {
   try {
