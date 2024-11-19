@@ -11,6 +11,7 @@ export const sqlResponse = z.object({
 });
 
 export const finalResponse = z.object({
+  status: z.string(),
   formattedAnswer: z.string(),
 });
 
