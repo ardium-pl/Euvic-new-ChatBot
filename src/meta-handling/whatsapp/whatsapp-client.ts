@@ -33,7 +33,6 @@ export class WhatsAppClient {
     };
 
     try {
-      logger.info("odpowiedź ai" + JSON.stringify(aiResponse));
       const payload = createPayload(
         aiResponse.status === "success"
           ? aiResponse.formattedAnswer
