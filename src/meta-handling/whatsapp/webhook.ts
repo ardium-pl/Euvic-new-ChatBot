@@ -33,32 +33,31 @@ webhookRouter.post("/webhook", async (req: Request, res: Response) => {
         logger.info(
           `✅ Received message: ${userQuery} from ${senderPhoneNumber}`
         );
-        try{
-            const aiResponse: LanguageToSQLResponse = await axios.post(
-              `${ENDPOINT_URL}${PORT}/language-to-sql`,
-              {
-                query: userQuery,
-              }
-            );
-            logger.info("ai response" + JSON.stringify(aiResponse))
-            await WhatsAppClient.sendMessage(aiResponse, senderPhoneNumber);
-    
-            logger.info("✅ AI answer sent or error reported.");
-
-        }catch(error: any){
-          // Handle AI response errors
-          const errorMessage =
-            error.response?.data;
-
-          logger.error(`❌ Error from AI response: ${JSON.stringify(errorMessage)}`);
-
-          await WhatsAppClient.sendMessage(
-            errorMessage,
-            senderPhoneNumber
+        try {
+          const response = await axios.post(
+            `${ENDPOINT_URL}${PORT}/language-to-sql`,
+            { query: userQuery }
           );
 
-          logger.info("⚠️ Error message sent to the user.");
+          // Extract the JSON data from the response
+          const aiResponse: LanguageToSQLResponse = response.data;
 
+          logger.info("AI Response: " + JSON.stringify(aiResponse));
+
+          await WhatsAppClient.sendMessage(aiResponse, senderPhoneNumber);
+
+          logger.info("✅ AI answer sent or error reported.");
+        } catch (error: any) {
+          // Handle AI response errors
+          const errorMessage = error.response?.data;
+
+          logger.error(
+            `❌ Error from AI response: ${JSON.stringify(errorMessage)}`
+          );
+
+          await WhatsAppClient.sendMessage(errorMessage, senderPhoneNumber);
+
+          logger.info("⚠️ Error message sent to the user.");
         }
       } else {
         logger.warn(
