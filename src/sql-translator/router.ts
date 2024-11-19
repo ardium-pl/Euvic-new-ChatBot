@@ -7,6 +7,7 @@ import {
 import { promptForSQL, promptForAnswer } from "./gpt/prompts.js";
 import { executeSQL } from "./database/mySql.js";
 import { logger } from '../insert-data-to-db/utils/logger';
+import { getUserFriendlyMessage } from '../types.js';
 
 export const router = express.Router();
 
@@ -16,7 +17,7 @@ router.post("/language-to-sql", async (req, res) => {
     const userQuery = req.body?.query;
   
     if (!userQuery) {
-      res.status(400).json({ status: "error", errorCode: "NO_QUERY_ERR" });
+      res.status(400).json({ status: "error", errorCode: getUserFriendlyMessage("NO_QUERY_ERR") });
       return
     }
     try {
@@ -32,7 +33,7 @@ router.post("/language-to-sql", async (req, res) => {
         logger.error("Failed to create the SQL query.");
         res.status(500).json({
           status: "error",
-          errorCode: "PROCESSING_ERR",
+          errorCode: getUserFriendlyMessage("PROCESSING_ERR"),
         });
   
         return;
@@ -41,7 +42,7 @@ router.post("/language-to-sql", async (req, res) => {
       if (!sqlAnswer.isSelect) {
         res.status(400).json({
           status: "error",
-          errorCode: "UNSUPPORTED_QUERY_ERR",
+          errorCode: getUserFriendlyMessage("UNSUPPORTED_QUERY_ERR"),
         });
   
         return;
@@ -52,7 +53,7 @@ router.post("/language-to-sql", async (req, res) => {
       if (!rows) {
         res.status(500).json({
           status: "error",
-          errorCode: "DATABASE_ERR",
+          errorCode: getUserFriendlyMessage("DATABASE_ERR"),
         });
   
         return;
@@ -68,7 +69,7 @@ router.post("/language-to-sql", async (req, res) => {
         logger.error("Failed to generate the formatted answer.");
         res.status(500).json({
           status: "error",
-          errorCode: "PROCESSING_ERR",
+          errorCode: getUserFriendlyMessage("PROCESSING_ERR"),
         });
   
         return;
@@ -87,7 +88,7 @@ router.post("/language-to-sql", async (req, res) => {
       logger.error(error);
       res.status(500).json({
         status: "error",
-        errorCode: "PROCESSING_ERR",
+        errorCode: getUserFriendlyMessage("PROCESSING_ERR"),
       });
     }
 
