@@ -2,6 +2,7 @@ import axios from "axios";
 import { logger } from "../../insert-data-to-db/utils/logger";
 import { META_ENDPOINT, PHONE_NUMBER_ID, ACCESS_TOKEN } from "../../config";
 import { LanguageToSQLResponse } from "../../types";
+import { getUserFriendlyMessage } from "../../types.ts";
 
 export class WhatsAppClient {
   /**
@@ -35,7 +36,7 @@ export class WhatsAppClient {
       const payload = createPayload(
         aiResponse.status === "success"
           ? aiResponse.formattedAnswer
-          : aiResponse.errorCode
+          : getUserFriendlyMessage(aiResponse.errorCode)
       );
 
       const response = await axios.post(url, payload, { headers });
