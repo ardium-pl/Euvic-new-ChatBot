@@ -2,7 +2,7 @@ import express, { Request, Response } from "express";
 import { WEBHOOK_VERIFY_TOKEN } from "../../config";
 // import { insertDataMySQL } from "../database";
 import { logger } from "../../insert-data-to-db/utils/logger";
-import { WhatsAppClient} from "./whatsapp-client";
+import { WhatsAppClient } from "./whatsapp-client";
 import axios from "axios";
 import { PORT, ENDPOINT_URL } from "../../config";
 import { LanguageToSQLResponse } from "../../types";
@@ -10,70 +10,53 @@ import { LanguageToSQLResponse } from "../../types";
 const webhookRouter = express.Router();
 
 webhookRouter.post("/webhook", async (req: Request, res: Response) => {
-    try {
-      const data = req.body;
-      const mainRequestBody = data.entry[0]?.changes[0]?.value;
-  
-      const errors = mainRequestBody?.errors;
-      const statuses = mainRequestBody?.statuses;
-      const messages = mainRequestBody?.messages;
-  
-      if (errors) {
-        logger.warn(`⚙️ Request contained errors: ${JSON.stringify(errors)}`);
-      }
-      if (statuses) {
-        logger.info(`⚙️ Message status: ${statuses[0]?.status}`);
-      }
-      if (messages) {
-        const incomingMessage = messages[0];
-        const senderPhoneNumber = incomingMessage?.from;
-  
-        if (incomingMessage?.type === "text") {
-          const userQuery = incomingMessage.text?.body;
-          logger.info(
-            `✅ Received message: ${userQuery} from ${senderPhoneNumber}`
-          );
-  
-          try {
-            // Attempt to get AI response
-            const aiResponse: LanguageToSQLResponse = await axios.post(`${ENDPOINT_URL}${PORT}/language-to-sql`, {
-              query: userQuery,
-            });
-            await WhatsAppClient.sendMessage(
-              aiResponse,
-              senderPhoneNumber
-            );
-          } catch (error: any) {
-            logger.error(
-              `❌ Error querying /language-to-sql: ${error.message}`
-            );
-            await WhatsAppClient.sendMessage(
-                {
-                    status: 'error',
-                    errorCode: 'AI_PROCESSING_ERROR'
-                },
-                senderPhoneNumber
-            )
-  
-            // Send fallback error message
-          }
-  
-          logger.info("✅ AI answer sent or error reported.");
-        } else {
-          logger.warn(
-            `⚠️ Received non-text message type: ${incomingMessage?.type}`
-          );
-        }
-      }
-  
-      res.status(200).send("✅");
-    } catch (error: any) {
-      logger.error(`❌ Error processing HTTP request: ${error.message}`);
-      res.status(400).send("❌");
+  try {
+    const data = req.body;
+    const mainRequestBody = data.entry[0]?.changes[0]?.value;
+
+    const errors = mainRequestBody?.errors;
+    const statuses = mainRequestBody?.statuses;
+    const messages = mainRequestBody?.messages;
+
+    if (errors) {
+      logger.warn(`⚙️ Request contained errors: ${JSON.stringify(errors)}`);
     }
-  });
-  
-  
+    if (statuses) {
+      logger.info(`⚙️ Message status: ${statuses[0]?.status}`);
+    }
+    if (messages) {
+      const incomingMessage = messages[0];
+      const senderPhoneNumber = incomingMessage?.from;
+
+      if (incomingMessage?.type === "text") {
+        const userQuery = incomingMessage.text?.body;
+        logger.info(
+          `✅ Received message: ${userQuery} from ${senderPhoneNumber}`
+        );
+
+        // Attempt to get AI response
+        const aiResponse: LanguageToSQLResponse = await axios.post(
+          `${ENDPOINT_URL}${PORT}/language-to-sql`,
+          {
+            query: userQuery,
+          }
+        );
+        await WhatsAppClient.sendMessage(aiResponse, senderPhoneNumber);
+
+        logger.info("✅ AI answer sent or error reported.");
+      } else {
+        logger.warn(
+          `⚠️ Received non-text message type: ${incomingMessage?.type}`
+        );
+      }
+    }
+
+    res.status(200).send("✅");
+  } catch (error: any) {
+    logger.error(`❌ Error processing HTTP request: ${error.message}`);
+    res.status(400).send("❌");
+  }
+});
 
 webhookRouter.get("/webhook", (req: Request, res: Response) => {
   try {
