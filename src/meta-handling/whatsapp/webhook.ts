@@ -49,7 +49,7 @@ webhookRouter.post("/webhook", async (req: Request, res: Response) => {
           const errorMessage =
             error.response?.data;
 
-          logger.error(`❌ Error from AI response: ${errorMessage}`);
+          logger.error(`❌ Error from AI response: ${JSON.stringify(errorMessage)}`);
 
           await WhatsAppClient.sendMessage(
             errorMessage,
