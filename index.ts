@@ -2,7 +2,7 @@ import ansis from 'ansis';
 import cors from 'cors';
 import 'dotenv/config';
 import express from 'express';
-import {router} from './src/metaHandling/router'
+import {router} from './src/sql-translator/router'
 
 const PORT = process.env.PORT ?? 8080;
 

@@ -27,6 +27,7 @@
     "googleapis": "^144.0.0",
     "libreoffice-convert": "^1.6.0",
     "mongodb": "^6.10.0",
+    "mysql2": "^3.11.4",
     "node-cron": "^3.0.3",
     "node-poppler": "^7.2.2",
     "openai": "^4.67.1",
