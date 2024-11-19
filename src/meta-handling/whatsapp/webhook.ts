@@ -47,7 +47,7 @@ webhookRouter.post("/webhook", async (req: Request, res: Response) => {
         }catch(error: any){
           // Handle AI response errors
           const errorMessage =
-            error.response?.data?.errorCode;
+            error.response?.data;
 
           logger.error(`❌ Error from AI response: ${errorMessage}`);
 
