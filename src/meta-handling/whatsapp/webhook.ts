@@ -40,6 +40,7 @@ webhookRouter.post("/webhook", async (req: Request, res: Response) => {
                 query: userQuery,
               }
             );
+            logger.info("ai response" + JSON.stringify(aiResponse))
             await WhatsAppClient.sendMessage(aiResponse, senderPhoneNumber);
     
             logger.info("✅ AI answer sent or error reported.");
