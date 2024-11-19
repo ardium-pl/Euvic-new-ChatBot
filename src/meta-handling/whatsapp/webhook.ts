@@ -34,35 +34,31 @@ webhookRouter.post("/webhook", async (req: Request, res: Response) => {
             `✅ Received message: ${userQuery} from ${senderPhoneNumber}`
           );
   
-          let aiAnswer: LanguageToSQLResponse;
           try {
             // Attempt to get AI response
-            aiAnswer = await axios
-              .post(`${ENDPOINT_URL}${PORT}/language-to-sql`, {
-                query: userQuery,
-              })
-              .then((response) => response.data);
-  
-            logger.info("🤖 RAGEngine processed query with chat history");
+            const aiResponse: LanguageToSQLResponse = await axios.post(`${ENDPOINT_URL}${PORT}/language-to-sql`, {
+              query: userQuery,
+            });
+            await WhatsAppClient.sendMessage(
+              aiResponse,
+              senderPhoneNumber
+            );
           } catch (error: any) {
-            // Handle AI answer generation failure
             logger.error(
               `❌ Error querying /language-to-sql: ${error.message}`
             );
-            aiAnswer = {
-              status: "error",
-              errorCode: "AI_PROCESSING_ERROR",
-            };
+            await WhatsAppClient.sendMessage(
+                {
+                    status: 'error',
+                    errorCode: 'AI_PROCESSING_ERROR'
+                },
+                senderPhoneNumber
+            )
+  
+            // Send fallback error message
           }
   
-          // Concurrently send a response and (optionally) save data
-          await Promise.all([
-            WhatsAppClient.sendMessage(aiAnswer, senderPhoneNumber),
-            // Uncomment to enable MySQL data insertion
-            // insertDataMySQL(senderPhoneNumber, userQuery, aiAnswer),
-          ]);
-  
-          logger.info("✅ AI answer sent and data inserted into MySQL (if enabled)");
+          logger.info("✅ AI answer sent or error reported.");
         } else {
           logger.warn(
             `⚠️ Received non-text message type: ${incomingMessage?.type}`
@@ -76,6 +72,7 @@ webhookRouter.post("/webhook", async (req: Request, res: Response) => {
       res.status(400).send("❌");
     }
   });
+  
   
 
 webhookRouter.get("/webhook", (req: Request, res: Response) => {
