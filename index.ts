@@ -4,8 +4,7 @@ import 'dotenv/config';
 import express from 'express';
 import {router} from './src/sql-translator/router'
 import  webhookRouter  from "./src/meta-handling/whatsapp/webhook";
-
-const PORT = process.env.PORT ?? 8080;
+import { PORT } from './src/config';
 
 const app = express();
 

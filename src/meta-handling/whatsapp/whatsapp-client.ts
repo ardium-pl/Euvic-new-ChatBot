@@ -1,5 +1,5 @@
 import axios from "axios";
-import { logger } from "../../insert-data-to-db/utils/logger"; // Adjust the path based on your project structure
+import { logger } from "../../insert-data-to-db/utils/logger";
 import { META_ENDPOINT, PHONE_NUMBER_ID, ACCESS_TOKEN } from "../../config";
 import { LanguageToSQLResponse } from "../../types";
 
