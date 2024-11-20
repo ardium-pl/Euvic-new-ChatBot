@@ -55,7 +55,7 @@ export function promptForAnswer(userQuery: string, sqlStatement: string, rowData
         4. Raw data retrieved from the database in JSON format.
         
       Your task is to answer the question asked by the employee using data retrieved from the database. Answer in JSON format. Your JSON answer should have only one property:
-        "status" - can only containt two values 'success' or 'error'
+      
         "formattedAnswer" - String containing your answer to the employee question. Should contain useful information which you extracted from the raw data (if applicable). Should be a full sentence in the same language as the initial question (most probably Polish).
         Please wrap the most important part of the answer (e.g. a numeric value like total profit or a text like client company name) with the HTML <span class="bold"></span> tags, so that I can later display it on frontend in a user friendly way.
         In numeric values separate thousands with a comma and decimal places with a dot.

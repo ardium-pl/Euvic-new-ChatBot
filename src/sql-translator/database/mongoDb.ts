@@ -1,18 +1,7 @@
 import { Collection, Db, MongoClient } from "mongodb";
 import { logger } from "../../insert-data-to-db/utils/logger";
-
-const MONGO_CONNECTION_STRING = process.env.MONGO_CONNECTION_STRING as string;
-const MONGO_DATABASE = process.env.MONGO_DATABASE as string;
-const MONGO_COLLECTION_EXAMPLES = process.env.MONGO_COLLECTION_EXAMPLES as string;
-const MONGO_COLLECTION_SCHEMAS = process.env.MONGO_COLLECTION_SCHEMAS as string;
-
-interface DbSchema {
-  [key: string]: any; // Define a more specific type if the schema has a fixed structure
-}
-
-interface Example {
-  [key: string]: any; // Define the structure of the examples if known
-}
+import { MONGO_CONNECTION_STRING, MONGO_DATABASE, MONGO_COLLECTION_SCHEMAS, MONGO_COLLECTION_EXAMPLES } from "../../config";
+import { DbSchema, Example } from "../../types";
 
 async function mongoRetrieveOne(
   database: string,
@@ -21,7 +10,7 @@ async function mongoRetrieveOne(
 ): Promise<DbSchema | null> {
   try {
     const db: Db = client.db(database);
-    const coll: Collection = db.collection(collection);
+    const coll: Collection<DbSchema> = db.collection(collection);
 
     const filter = {
       schemaVersion: "withExampleDistinctValues",
@@ -30,9 +19,14 @@ async function mongoRetrieveOne(
       projection: { _id: 0, schemaVersion: 0 }, // Exclude _id and schemaVersion
     };
 
-    const document: DbSchema | null = await coll.findOne(filter, options);
-    logger.info(`📄 Retrieved a db schema.`);
+    const document = await coll.findOne(filter, options);
 
+    if (!document) {
+      logger.info(`📄 No schema found matching the filter.`);
+      return null;
+    }
+
+    logger.info(`📄 Retrieved a db schema.`);
     return document;
   } catch (error) {
     logger.error("❌ An error occurred during mongoRetrieveOne call.");
@@ -47,7 +41,7 @@ async function mongoRetrieveMany(
 ): Promise<Example[]> {
   try {
     const db: Db = client.db(database);
-    const coll: Collection = db.collection(collection);
+    const coll: Collection<Example> = db.collection(collection);
 
     const options = {
       projection: { _id: 0 }, // Exclude _id field

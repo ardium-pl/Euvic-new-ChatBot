@@ -1,13 +1,7 @@
 import mysql, { Connection, ResultSetHeader, RowDataPacket } from "mysql2/promise";
 import { logger } from "../../insert-data-to-db/utils/logger";
+import { dbConfig } from "../../config";
 
-const dbConfig: mysql.ConnectionOptions = {
-  host: process.env.MYSQL_HOST as string,
-  user: process.env.MYSQL_USER as string,
-  password: process.env.MYSQL_PASSWORD as string,
-  database: process.env.MYSQL_DATABASE as string,
-  port: parseInt(process.env.MYSQL_PORT as string, 10),
-};
 
 export async function createConnection(): Promise<Connection | null> {
   let connection: Connection | null = null;
