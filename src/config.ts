@@ -29,3 +29,7 @@ export const MONGO_CONNECTION_STRING = process.env.MONGO_CONNECTION_STRING as st
 export const MONGO_DATABASE = process.env.MONGO_DATABASE as string;
 export const MONGO_COLLECTION_EXAMPLES = process.env.MONGO_COLLECTION_EXAMPLES as string;
 export const MONGO_COLLECTION_SCHEMAS = process.env.MONGO_COLLECTION_SCHEMAS as string;
+
+// Prompts
+export const PROMPT_FOR_ANSWER = process.env.PROMPT_FOR_ANSWER;
+export const PROMPT_FOR_SQL = process.env.PROMPT_FOR_SQL;
