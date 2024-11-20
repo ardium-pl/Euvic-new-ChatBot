@@ -24,7 +24,7 @@ async function mongoRetrieveOne(
     const coll: Collection = db.collection(collection);
 
     const filter = {
-      schemaVersion: "withExampleDistinctValuesProperColumnDescriptions",
+      schemaVersion: "withExampleDistinctValues",
     };
     const options = {
       projection: { _id: 0, schemaVersion: 0 }, // Exclude _id and schemaVersion
