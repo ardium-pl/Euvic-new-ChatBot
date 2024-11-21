@@ -1,4 +1,5 @@
 import { db } from "../config/database";
+import chalk from "chalk";
 
 export async function addBusinessCasesToDB(businessCases: Set<string>) {
   for (const businessCase of businessCases) {
@@ -12,14 +13,29 @@ export async function addBusinessCasesToDB(businessCases: Set<string>) {
         await db.execute("INSERT INTO biznes_casy (opis) VALUES (?)", [
           businessCase,
         ]);
-        console.log(`Business case "${businessCase}" added to database.`);
+        console.log(
+          chalk.green(
+            `✅ Business case "${chalk.bold(
+              businessCase
+            )}" added to the database.`
+          )
+        );
       } else {
         console.log(
-          `Business case "${businessCase}" already exists in the database.`
+          chalk.yellow(
+            `⚠️ Business case "${chalk.bold(
+              businessCase
+            )}" already exists in the database.`
+          )
         );
       }
     } catch (error) {
-      console.error("Error adding business case:", error);
+      console.error(
+        chalk.red(
+          `❌ Error adding business case "${chalk.bold(businessCase)}":`
+        ),
+        error
+      );
     }
   }
 }

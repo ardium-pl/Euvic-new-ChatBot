@@ -1,5 +1,6 @@
 import { db } from "../config/database";
-import { Project } from "../models";
+import { Project } from "../models/dataMoldes";
+import chalk from "chalk";
 
 export async function addProjectsToDB(projectsData: Project[]) {
   for (const project of projectsData) {
@@ -7,6 +8,7 @@ export async function addProjectsToDB(projectsData: Project[]) {
     try {
       await connection.beginTransaction();
 
+      // Pobranie kluczy obcych
       const [clientRows] = await connection.execute(
         "SELECT id FROM klienci WHERE nazwa = ?",
         [project.clientName]
@@ -20,12 +22,17 @@ export async function addProjectsToDB(projectsData: Project[]) {
         [project.businessCase]
       );
 
+      // Sprawdzenie istnienia kluczy obcych
       if (
         (industryRows as any[]).length === 0 ||
         (clientRows as any[]).length === 0 ||
         (businessCaseRows as any[]).length === 0
       ) {
-        console.error(`One foreign key of the project was not found.`);
+        console.error(
+          chalk.red(
+            `❌ One or more foreign keys for project "${project.description}" not found in the database.`
+          )
+        );
         await connection.rollback();
         continue;
       }
@@ -34,16 +41,19 @@ export async function addProjectsToDB(projectsData: Project[]) {
       const industryId = (industryRows as any[])[0].id;
       const businessCaseId = (businessCaseRows as any[])[0].id;
 
+      // Formatowanie daty
       const referenceDate = /^\d{4}$/.test(project.referenceDate)
         ? `${project.referenceDate}-01-01`
         : project.referenceDate;
 
+      // Sprawdzenie istnienia projektu
       const [existingProjectRows] = await connection.execute(
         "SELECT id FROM projekty WHERE id_klienta = ? AND id_branzy = ? AND id_bizn_case = ? AND opis = ?",
         [clientId, industryId, businessCaseId, project.description]
       );
 
       if ((existingProjectRows as any[]).length === 0) {
+        // Dodanie projektu
         await connection.execute(
           `INSERT INTO projekty 
           (id_klienta, id_branzy, id_bizn_case, opis, data_referencji, skala_wdrozenia_wartosc, skala_wdrozenia_opis)
@@ -58,16 +68,24 @@ export async function addProjectsToDB(projectsData: Project[]) {
             project.implementationScaleDescription,
           ]
         );
-        console.log(`Project "${project.description}" added to the database.`);
+        console.log(
+          chalk.green(
+            `✅ Project "${project.description}" added to the database.`
+          )
+        );
       } else {
         console.log(
-          `Project "${project.description}" already exists in the database.`
+          chalk.yellow(
+            `⚠️ Project "${project.description}" already exists in the database.`
+          )
         );
       }
 
       await connection.commit();
     } catch (error) {
-      console.error(`Error adding project "${project.description}":`, error);
+      console.error(
+        chalk.red(`❌ Error adding project "${project.description}":`, error)
+      );
       await connection.rollback();
     } finally {
       connection.release();
