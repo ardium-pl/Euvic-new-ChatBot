@@ -10,7 +10,7 @@ export const sqlTranslatorRouter = express.Router();
 sqlTranslatorRouter.post("/language-to-sql", async (req, res) => {
   logger.info("📩 Received a new POST request.");
 
-  const {query: userQuery, senderPhoneNumber: whatsappNumberId} = req.body;
+  const { query: userQuery, senderPhoneNumber: whatsappNumberId } = req.body;
   logger.debug(`📜 User Query: ${userQuery || "No query provided"}`);
 
   if (!userQuery) {
@@ -21,8 +21,10 @@ sqlTranslatorRouter.post("/language-to-sql", async (req, res) => {
     });
     return;
   }
-
-  const chatHistory = await ChatHistoryHandler.getRecentQueries(whatsappNumberId); 
+  logger.info("User query" + userQuery + "Sender phone:" + whatsappNumberId);
+  const chatHistory = await ChatHistoryHandler.getRecentQueries(
+    whatsappNumberId
+  );
 
   try {
     // Log before calling OpenAI
@@ -37,7 +39,9 @@ sqlTranslatorRouter.post("/language-to-sql", async (req, res) => {
     logger.info(`🤖 OpenAI Response: ${JSON.stringify(sqlAnswer)}`);
 
     if (!sqlAnswer) {
-      logger.error("🚨 Failed to create the SQL query. Empty response from OpenAI.");
+      logger.error(
+        "🚨 Failed to create the SQL query. Empty response from OpenAI."
+      );
       res.status(500).json({
         status: "error",
         errorCode: "PROCESSING_ERR",
