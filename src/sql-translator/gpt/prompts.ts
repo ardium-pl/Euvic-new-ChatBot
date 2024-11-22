@@ -3,6 +3,7 @@ import { loadDbInformation } from "../database/mongoDb.ts";
 import { ChatCompletionMessageParam } from "openai/resources";
 import { PROMPT_FOR_ANSWER, PROMPT_FOR_SQL } from "../../config.ts";
 import { ChatHistory } from "../../types.ts";
+import { logger } from "../../insert-data-to-db/utils/logger.ts";
 
 // OpenAI prompt for natural language to SQL translation
 const { dbSchema, examplesForSQL } = await loadDbInformation();
@@ -75,6 +76,9 @@ export function promptForAnswer(
 
     // Reverse chat history to show the oldest entries first
     const reversedChatHistory = [...chatHistory].reverse();
+    logger.info(
+      "reversed chat history: " + JSON.stringify(reversedChatHistory)
+    );
 
     // Add reversed chat history messages
     for (const entry of reversedChatHistory) {
