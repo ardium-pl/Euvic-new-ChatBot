@@ -76,7 +76,7 @@ export function promptForAnswer(
 
     // Reverse chat history to show the oldest entries first
     const reversedChatHistory = [...chatHistory].reverse();
-    logger.info("REverseChat" + reversedChatHistory);
+    logger.info("REverseChat" + JSON.stringify(reversedChatHistory));
     // Add reversed chat history messages
     for (const entry of reversedChatHistory) {
       messages.push({ role: "user", content: entry.query });
@@ -88,5 +88,6 @@ export function promptForAnswer(
       content: "End of chat history. Now answer the following question:",
     });
   }
+  logger.info(JSON.stringify(messages));
   return messages;
 }
