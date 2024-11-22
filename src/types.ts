@@ -71,3 +71,9 @@ export type Example = {
     sqlStatement: string;
   };
 };
+
+export type ChatHistory = {
+  query: string,
+  answer: string,
+  created_at: string,
+}

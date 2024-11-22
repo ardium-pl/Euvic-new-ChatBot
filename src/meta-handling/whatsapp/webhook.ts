@@ -6,6 +6,7 @@ import { WhatsAppClient } from "./whatsapp-client";
 import axios from "axios";
 import { PORT, ENDPOINT_URL } from "../../config";
 import { LanguageToSQLResponse } from "../../types";
+import { ChatHistoryHandler, insertDataMySQL } from "./chat_history/getChatHistory";
 
 const webhookRouter = express.Router();
 
@@ -36,7 +37,7 @@ webhookRouter.post("/webhook", async (req: Request, res: Response) => {
         try {
           const response = await axios.post(
             `${ENDPOINT_URL}${PORT}/language-to-sql`,
-            { query: userQuery }
+            { query: userQuery, whatsappNumberId: senderPhoneNumber }
           );
 
           // Extract the JSON data from the response
@@ -45,6 +46,10 @@ webhookRouter.post("/webhook", async (req: Request, res: Response) => {
           logger.info("AI Response: " + JSON.stringify(aiResponse));
 
           await WhatsAppClient.sendMessage(aiResponse, senderPhoneNumber);
+
+          if(aiResponse.status === 'success'){
+            await insertDataMySQL(senderPhoneNumber, userQuery, aiResponse.formattedAnswer)
+          }
 
           logger.info("✅ AI answer sent or error reported.");
         } catch (error: any) {

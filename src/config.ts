@@ -1,4 +1,4 @@
-import mysql from "mysql2/promise";
+import mysql, { createPool, Pool } from "mysql2/promise";
 import OpenAI from "openai";
 
 export const openAiClient = new OpenAI({
@@ -23,6 +23,19 @@ export const dbConfig: mysql.ConnectionOptions = {
   database: process.env.MYSQL_DATABASE as string,
   port: parseInt(process.env.MYSQL_PORT as string, 10),
 };
+
+// Chat history connection
+export const pool: Pool = createPool({
+    host: process.env.CHAT_MYSQL_HOST,
+    port: parseInt(process.env.CHAT_MYSQL_PORT as string),
+    user: process.env.CHAT_MYSQL_USER,
+    password: process.env.CHAT_MYSQL_PASSWORD,
+    database: process.env.CHAT_MYSQL_DATABASE,
+    waitForConnections: true,
+    connectionLimit: parseInt(process.env.POOL_MAX_SIZE as string),
+    queueLimit: 0,
+});
+
 
 // MongoDb config
 export const MONGO_CONNECTION_STRING = process.env.MONGO_CONNECTION_STRING as string;
