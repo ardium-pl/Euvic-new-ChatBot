@@ -21,16 +21,17 @@ sqlTranslatorRouter.post("/language-to-sql", async (req, res) => {
     });
     return;
   }
-  logger.info("User query" + userQuery + "Sender phone:" + senderPhoneNumber);
+
   const chatHistory = await ChatHistoryHandler.getRecentQueries(
     senderPhoneNumber
   );
+  logger.info("Chat history: " + chatHistory);
 
   try {
     // Log before calling OpenAI
     logger.info("🤖 Sending user query to OpenAI for SQL generation...");
     const sqlAnswer = await generateGPTAnswer(
-      promptForSQL(userQuery, chatHistory),
+      promptForSQL(userQuery),
       sqlResponse,
       "sql_response"
     );
@@ -78,7 +79,7 @@ sqlTranslatorRouter.post("/language-to-sql", async (req, res) => {
     // Log before formatting the result
     logger.info("🤖 Sending data to OpenAI for formatting...");
     const formattedAnswer = await generateGPTAnswer(
-      promptForAnswer(userQuery, sqlAnswer.sqlStatement, rows),
+      promptForAnswer(userQuery, sqlAnswer.sqlStatement, rows, chatHistory),
       finalResponse,
       "final_response"
     );
