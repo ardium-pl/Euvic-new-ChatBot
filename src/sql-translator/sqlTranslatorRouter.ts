@@ -25,7 +25,7 @@ sqlTranslatorRouter.post("/language-to-sql", async (req, res) => {
   const chatHistory = await ChatHistoryHandler.getRecentQueries(
     senderPhoneNumber
   );
-  logger.info("Chat history: " + chatHistory);
+  logger.info("Chat history: " + JSON.stringify(chatHistory));
 
   try {
     // Log before calling OpenAI

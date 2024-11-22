@@ -66,7 +66,7 @@ export function promptForAnswer(
     },
     { role: "user", content: userQuery },
   ];
-  if (chatHistory && chatHistory.length > 0) {
+  if (chatHistory) {
     messages.push({
       role: "system",
       content: `You also have access to the recent chat history. Use this history to maintain context and provide more relevant 
@@ -76,10 +76,6 @@ export function promptForAnswer(
 
     // Reverse chat history to show the oldest entries first
     const reversedChatHistory = [...chatHistory].reverse();
-    logger.info(
-      "reversed chat history: " + JSON.stringify(reversedChatHistory)
-    );
-
     // Add reversed chat history messages
     for (const entry of reversedChatHistory) {
       messages.push({ role: "user", content: entry.query });
