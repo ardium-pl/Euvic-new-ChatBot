@@ -25,16 +25,14 @@ export const dbConfig: mysql.ConnectionOptions = {
 };
 
 // Chat history connection
-export const pool: Pool = createPool({
-    host: process.env.CHAT_MYSQL_HOST,
-    port: parseInt(process.env.CHAT_MYSQL_PORT as string),
-    user: process.env.CHAT_MYSQL_USER,
-    password: process.env.CHAT_MYSQL_PASSWORD,
-    database: process.env.CHAT_MYSQL_DATABASE,
-    waitForConnections: true,
-    connectionLimit: parseInt(process.env.POOL_MAX_SIZE as string),
-    queueLimit: 0,
-});
+export const chatHistoryDbConfig: mysql.ConnectionOptions = {
+  host: process.env.CHAT_MYSQL_HOST,
+  port: parseInt(process.env.CHAT_MYSQL_PORT as string),
+  user: process.env.CHAT_MYSQL_USER,
+  password: process.env.CHAT_MYSQL_PASSWORD,
+  database: process.env.CHAT_MYSQL_DATABASE,
+}
+
 
 
 // MongoDb config

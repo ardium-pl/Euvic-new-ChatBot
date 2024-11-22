@@ -1,42 +1,23 @@
-import { PoolConnection, RowDataPacket } from "mysql2/promise";
+import mysql, { createConnection as mysqlCreateConnection, Connection, RowDataPacket } from "mysql2/promise";
 import { logger } from "../../../insert-data-to-db/utils/logger";
-import { pool } from "../../../config";
 import { ChatHistory } from "../../../types";
-import { Chat } from "openai/resources";
+import { chatHistoryDbConfig } from "../../../config";
 
-
-// Utility to acquire a connection from the pool
-async function withConnection<T>(callback: (connection: PoolConnection) => Promise<T>): Promise<T> {
-    let connection: PoolConnection | null = null;
-
+// Utility to create a connection
+async function createConnection(): Promise<Connection> {
     try {
-        connection = await pool.getConnection();
-        const result = await callback(connection);
-        return result;
+        return await mysqlCreateConnection(chatHistoryDbConfig);;
     } catch (error) {
-        logger.error(`❌ Database operation failed: ${error}`);
+        logger.error(`❌ Failed to establish a database connection: ${error}`);
         throw error;
-    } finally {
-        if (connection) {
-            connection.release();
-        }
     }
 }
 
 export class ChatHistoryHandler {
-    static async createTestConnection(): Promise<void> {
-        await withConnection(async (connection) => {
-            const [rows] = await connection.query<RowDataPacket[]>("SELECT 1");
-            if (rows.length && rows[0]["1"] === 1) {
-                logger.info("✅ Successfully established a test connection.");
-            } else {
-                throw new Error("Test connection failed.");
-            }
-        });
-    }
 
     static async insertOrGetUser(whatsappNumberId: number): Promise<number | null> {
-        return withConnection(async (connection) => {
+        const connection = await createConnection();
+        try {
             const [rows]: any = await connection.execute("SELECT id FROM users WHERE whatsapp_number_id = ?", [
                 whatsappNumberId,
             ]);
@@ -56,27 +37,32 @@ export class ChatHistoryHandler {
             } else {
                 throw new Error("Failed to insert new user");
             }
-        });
+        } finally {
+            await connection.end();
+        }
     }
 
     static async insertQuery(userId: number, query: string, answer: string): Promise<void> {
-        await withConnection(async (connection) => {
-            const [result]: any = await connection.execute("INSERT INTO queries (user_id, query, answer) VALUES (?, ?, ?)", [
-                userId,
-                query,
-                answer,
-            ]);
+        const connection = await createConnection();
+        try {
+            const [result]: any = await connection.execute(
+                "INSERT INTO queries (user_id, query, answer) VALUES (?, ?, ?)",
+                [userId, query, answer]
+            );
 
             if (result.affectedRows > 0) {
                 logger.info("➡️ New answer-query pair inserted successfully.");
             } else {
                 throw new Error("Failed to insert answer-query pair.");
             }
-        });
+        } finally {
+            await connection.end();
+        }
     }
 
     static async getRecentQueries(whatsappNumberId: number): Promise<ChatHistory[]> {
-        return withConnection(async (connection) => {
+        const connection = await createConnection();
+        try {
             const [rows]: any = await connection.execute(
                 `SELECT q.query, q.answer, q.created_at
                  FROM queries q
@@ -94,7 +80,9 @@ export class ChatHistoryHandler {
                 answer: row.answer,
                 created_at: new Date(row.created_at).toISOString(),
             }));
-        });
+        } finally {
+            await connection.end();
+        }
     }
 }
 
