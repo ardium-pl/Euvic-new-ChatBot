@@ -31,7 +31,7 @@ sqlTranslatorRouter.post("/language-to-sql", async (req, res) => {
     // Log before calling OpenAI
     logger.info("🤖 Sending user query to OpenAI for SQL generation...");
     const sqlAnswer = await generateGPTAnswer(
-      promptForSQL(userQuery),
+      promptForSQL(userQuery, chatHistory),
       sqlResponse,
       "sql_response"
     );
@@ -79,7 +79,7 @@ sqlTranslatorRouter.post("/language-to-sql", async (req, res) => {
     // Log before formatting the result
     logger.info("🤖 Sending data to OpenAI for formatting...");
     const formattedAnswer = await generateGPTAnswer(
-      promptForAnswer(userQuery, sqlAnswer.sqlStatement, rows, chatHistory),
+      promptForAnswer(userQuery, sqlAnswer.sqlStatement, rows),
       finalResponse,
       "final_response"
     );
