@@ -10,7 +10,7 @@ export const sqlTranslatorRouter = express.Router();
 sqlTranslatorRouter.post("/language-to-sql", async (req, res) => {
   logger.info("📩 Received a new POST request.");
 
-  const { query: userQuery, senderPhoneNumber: whatsappNumberId } = req.body;
+  const { query: userQuery, whatsappNumberId: senderPhoneNumber } = req.body;
   logger.debug(`📜 User Query: ${userQuery || "No query provided"}`);
 
   if (!userQuery) {
@@ -21,9 +21,9 @@ sqlTranslatorRouter.post("/language-to-sql", async (req, res) => {
     });
     return;
   }
-  logger.info("User query" + userQuery + "Sender phone:" + whatsappNumberId);
+  logger.info("User query" + userQuery + "Sender phone:" + senderPhoneNumber);
   const chatHistory = await ChatHistoryHandler.getRecentQueries(
-    whatsappNumberId
+    senderPhoneNumber
   );
 
   try {
