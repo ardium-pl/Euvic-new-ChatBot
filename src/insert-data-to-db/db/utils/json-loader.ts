@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { DataJson } from "../models/dataMoldes";
+import { DataJson } from "../models/dataDBMoldes";
 
 export function loadJSONFiles(directory: string): DataJson[] {
   const files = fs.readdirSync(directory);

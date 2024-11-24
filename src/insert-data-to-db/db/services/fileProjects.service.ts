@@ -1,5 +1,5 @@
 import { db } from "../config/database";
-import { DataFileProject } from "../models/dataMoldes";
+import { DataFileProject } from "../models/dataDBMoldes";
 import chalk from "chalk";
 
 export async function addFileProjectsToDB(fileProjects: DataFileProject[]) {

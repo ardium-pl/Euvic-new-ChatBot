@@ -7,10 +7,9 @@ import {
   DataClient,
   DataFile,
   DataFileProject,
-  DataJson,
   Project,
   TechnologyProject,
-} from "../models/dataMoldes";
+} from "../models/dataDBMoldes";
 import { addBusinessCasesToDB } from "../services/businessCases.service";
 import { addFilesToDB } from "../services/files.service";
 import { addIndustriesToDB } from "../services/industries.service";
@@ -19,6 +18,7 @@ import { addTechnologiesToDB } from "../services/technologies.service";
 import { addClientsToDB } from "../services/clients.service";
 import { addFileProjectsToDB } from "../services/fileProjects.service";
 import chalk from "chalk";
+import { DataJson } from "../models/JsonDataModel";
 
 // Konwersja `import.meta.url` na ścieżkę pliku
 const __filename = fileURLToPath(import.meta.url);

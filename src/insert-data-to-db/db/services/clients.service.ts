@@ -1,4 +1,4 @@
-import { DataClient } from "../models/dataMoldes";
+import { DataClient } from "../models/dataDBMoldes";
 import { db } from "../config/database";
 import chalk from "chalk";
 
