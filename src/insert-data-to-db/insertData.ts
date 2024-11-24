@@ -2,7 +2,11 @@ import fs from "fs-extra";
 import path from "path";
 import { pdfOcr } from "./ocr/ocr.ts";
 import { convertPptxToPdf } from "./utils/convertPptxToPdf.ts";
-import { getDataPrompt, JSON_DATA_FOLDER, PDF_DATA_FOLDER } from "./utils/credentials.ts";
+import {
+  getDataPrompt,
+  JSON_DATA_FOLDER,
+  PDF_DATA_FOLDER,
+} from "./utils/credentials.ts";
 import { logger } from "./utils/logger.ts";
 import { FileData } from "./zod-json/dataJsonSchema.ts";
 import { parseOcrText } from "./zod-json/dataProcessor";
@@ -24,7 +28,7 @@ async function processFile(fileName: string) {
 
     const ocrDataText = await pdfOcr(pdfFilePath);
     logger.info(`📄 OCR Data Text: ${ocrDataText}`);
-    if(!getDataPrompt) return null;
+    if (!getDataPrompt) return null;
     const parsedData = await parseOcrText(ocrDataText, getDataPrompt);
     logger.info("JSON Schema: ", parsedData);
 
