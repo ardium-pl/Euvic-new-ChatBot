@@ -8,7 +8,7 @@ export async function addTechnologyProjectsToDB(
   for (const techProject of technologyProjects) {
     try {
       const [projectRows] = await db.execute(
-        "SELECT id FROM projekty WHERE opis = ?",
+        "SELECT id FROM projekty WHERE nazwa = ?",
         [techProject.projectName]
       );
 

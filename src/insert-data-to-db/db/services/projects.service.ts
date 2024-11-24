@@ -43,8 +43,10 @@ export async function addProjectsToDB(projectsData: Project[]) {
 
       // Formatowanie daty
       const referenceDate = /^\d{4}$/.test(project.referenceDate)
-        ? `${project.referenceDate}-01-01`
-        : project.referenceDate;
+        ? `${project.referenceDate}-01-01` // Rok -> dodajemy "01-01"
+        : /^\d{4}-\d{2}$/.test(project.referenceDate)
+        ? `${project.referenceDate}-01` // Rok i miesiąc -> dodajemy "-01" jako dzień
+        : project.referenceDate; // Jeśli już pełna data, pozostawiamy bez zmian
 
       // Sprawdzenie istnienia projektu
       const [existingProjectRows] = await connection.execute(
@@ -56,16 +58,17 @@ export async function addProjectsToDB(projectsData: Project[]) {
         // Dodanie projektu
         await connection.execute(
           `INSERT INTO projekty 
-          (id_klienta, id_branzy, id_bizn_case, opis, data_referencji, skala_wdrozenia_wartosc, skala_wdrozenia_opis)
-          VALUES (?, ?, ?, ?, ?, ?, ?)`,
+          (nazwa, opis, id_klienta, id_branzy, id_bizn_case, data_referencji, skala_wdrozenia_wartosc, skala_wdrozenia_opis)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?)`, // Dodano brakującą wartość
           [
-            clientId,
-            industryId,
-            businessCaseId,
-            project.description,
-            referenceDate,
-            project.implementationScaleValue,
-            project.implementationScaleDescription,
+            project.projectName, // Pierwszy parametr: nazwa projektu
+            project.description, // Drugi parametr: opis projektu
+            clientId, // Trzeci parametr: ID klienta
+            industryId, // Czwarty parametr: ID branży
+            businessCaseId, // Piąty parametr: ID biznes case
+            referenceDate, // Szósty parametr: data referencji
+            project.implementationScaleValue, // Siódmy parametr: wartość skali wdrożenia
+            project.implementationScaleDescription, // Ósmy parametr: opis skali wdrożenia
           ]
         );
         console.log(

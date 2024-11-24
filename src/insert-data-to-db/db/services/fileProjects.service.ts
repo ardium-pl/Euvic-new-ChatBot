@@ -7,7 +7,7 @@ export async function addFileProjectsToDB(fileProjects: DataFileProject[]) {
     try {
       // Pobieranie ID projektu na podstawie opisu
       const [projectRows] = await db.execute(
-        "SELECT id FROM projekty WHERE opis = ?",
+        "SELECT id FROM projekty WHERE nazwa = ?",
         [fileProject.projectName]
       );
 
