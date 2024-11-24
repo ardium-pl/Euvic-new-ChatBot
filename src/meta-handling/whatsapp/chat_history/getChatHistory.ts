@@ -42,12 +42,12 @@ export class ChatHistoryHandler {
         }
     }
 
-    static async insertQuery(userId: number, query: string, answer: string): Promise<void> {
+    static async insertQuery(userId: number, query: string, answer: string, sqlQuery: string): Promise<void> {
         const connection = await createConnection();
         try {
             const [result]: any = await connection.execute(
-                "INSERT INTO queries (user_id, query, answer) VALUES (?, ?, ?)",
-                [userId, query, answer]
+                "INSERT INTO queries (user_id, query, answer, sql_query) VALUES (?, ?, ?, ?)",
+                [userId, query, answer, sqlQuery]
             );
 
             if (result.affectedRows > 0) {
@@ -64,7 +64,7 @@ export class ChatHistoryHandler {
         const connection = await createConnection();
         try {
             const [rows]: any = await connection.execute(
-                `SELECT q.query, q.answer, q.created_at
+                `SELECT q.query, q.answer, q.created_at, q.sql_query
                  FROM queries q
                  JOIN users u ON q.user_id = u.id
                  WHERE u.whatsapp_number_id = ?
@@ -79,6 +79,7 @@ export class ChatHistoryHandler {
                 query: row.query,
                 answer: row.answer,
                 created_at: new Date(row.created_at).toISOString(),
+                sql_query: row.sql_query
             }));
         } finally {
             await connection.end();
@@ -86,10 +87,10 @@ export class ChatHistoryHandler {
     }
 }
 
-export async function insertDataMySQL(whatsappNumberId: number, userQuery: string, aiAnswer: string): Promise<void> {
+export async function insertDataMySQL(whatsappNumberId: number, userQuery: string, aiAnswer: string, sqlQuery: string): Promise<void> {
     const userId = await ChatHistoryHandler.insertOrGetUser(whatsappNumberId);
     if (userId) {
-        await ChatHistoryHandler.insertQuery(userId, userQuery, aiAnswer);
+        await ChatHistoryHandler.insertQuery(userId, userQuery, aiAnswer, sqlQuery);
     } else {
         logger.error("❌ Failed to insert or retrieve user.");
     }

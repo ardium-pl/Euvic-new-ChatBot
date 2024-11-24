@@ -73,7 +73,8 @@ export type Example = {
 };
 
 export type ChatHistory = {
-  query: string,
-  answer: string,
-  created_at: string,
-}
+  query: string;
+  answer: string;
+  created_at: string;
+  sql_query: string;
+};

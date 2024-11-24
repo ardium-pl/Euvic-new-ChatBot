@@ -48,7 +48,7 @@ webhookRouter.post("/webhook", async (req: Request, res: Response) => {
           await WhatsAppClient.sendMessage(aiResponse, senderPhoneNumber);
 
           if(aiResponse.status === 'success'){
-            await insertDataMySQL(senderPhoneNumber, userQuery, aiResponse.formattedAnswer)
+            await insertDataMySQL(senderPhoneNumber, userQuery, aiResponse.formattedAnswer, aiResponse.sqlStatement)
           }
 
           logger.info("✅ AI answer sent or error reported.");
