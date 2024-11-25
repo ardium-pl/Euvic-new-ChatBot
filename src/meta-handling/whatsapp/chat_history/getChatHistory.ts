@@ -64,7 +64,7 @@ export class ChatHistoryHandler {
         const connection = await createConnection();
         try {
             const [rows]: any = await connection.execute(
-                `SELECT q.query, q.answer, q.created_at, q.sql_query
+                `SELECT q.query, q.answer, q.created_at
                  FROM queries q
                  JOIN users u ON q.user_id = u.id
                  WHERE u.whatsapp_number_id = ?
