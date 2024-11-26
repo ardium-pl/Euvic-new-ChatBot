@@ -87,7 +87,7 @@ export async function addProjectsToDB(projectsData: Project[]) {
       } else {
         console.log(
           chalk.yellow(
-            `⚠️ Project "${project.description}" already exists in the database.`
+            `⚠️ Project "${project.projectName}" already exists in the database.`
           )
         );
       }
@@ -95,7 +95,7 @@ export async function addProjectsToDB(projectsData: Project[]) {
       await connection.commit();
     } catch (error) {
       console.error(
-        chalk.red(`❌ Error adding project "${project.description}":`, error)
+        chalk.red(`❌ Error adding project "${project.projectName}":`, error)
       );
       await connection.rollback();
     } finally {

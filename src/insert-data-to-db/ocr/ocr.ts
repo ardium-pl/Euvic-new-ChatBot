@@ -26,9 +26,7 @@ export async function pdfOcr(pdfFilePath: string): Promise<string> {
   const outputTextFolder = "./output-text";
   const fileNameWithoutExt = path.basename(pdfFilePath, ".pdf");
 
-  await Promise.all(
-    [imagesFolder, outputTextFolder].map(fs.ensureDir)
-  );
+  await Promise.all([imagesFolder, outputTextFolder].map(fs.ensureDir));
 
   try {
     const imageFilePaths: string[] = await convertPdfToImages(
