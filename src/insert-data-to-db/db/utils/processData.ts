@@ -68,16 +68,16 @@ export async function processData() {
     []
   );
 
-  const clientsData: DataClient[] = jsonData.reduce(
-    (acc: DataClient[], file: DataJson) => {
+  const uniqueClientNames = jsonData.reduce(
+    (acc: Set<string>, file: DataJson) => {
       file.customers.forEach((customer) => {
-        if (customer.clientName && customer.industry) {
-          acc.push({ name: customer.clientName, industry: customer.industry });
+        if (customer.clientName) {
+          acc.add(customer.clientName);
         }
       });
       return acc;
     },
-    []
+    new Set<string>()
   );
 
   const projectsData: Project[] = jsonData.reduce(
@@ -140,16 +140,14 @@ export async function processData() {
     await addIndustriesToDB(industries);
     console.log("Adding files...");
     await addFilesToDB(files);
+    console.log("Adding clients...");
+    await addClientsToDB(uniqueClientNames);
 
-    // Etap 2: Dodaj klientów (zależne od industries)
-    console.log("Adding clients..."); // TODO: Imo trzeba wywalic połaczenie miedzy kileni a branze(to znaczy walic w tabeli klienci id branze bo jak dany klient jest do wielu branzy to problem)
-    await addClientsToDB(clientsData);
-
-    // Etap 3: Dodaj projekty (zależne od clients i business cases)
+    // Etap 2: Dodaj projekty (zależne od clients i business cases)
     console.log("Adding projects...");
     await addProjectsToDB(projectsData);
 
-    // Etap 4: Dodaj relacje wiele-do-wielu
+    // Etap 3: Dodaj relacje wiele-do-wielu
     console.log("Adding technology-project relationships...");
     await addTechnologyProjectsToDB(technologyProjects);
     console.log("Adding file-project relationships...");
@@ -159,7 +157,5 @@ export async function processData() {
   } catch (error) {
     console.error(chalk.red(`❌ Error during data processing:`, error));
   }
-
-  console.log("Business cases added to the database.");
   return;
 }

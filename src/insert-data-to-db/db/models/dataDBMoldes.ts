@@ -27,3 +27,7 @@ export interface DataFileProject {
   fileName: string;
   projectName: string;
 }
+
+export interface ExistingRow {
+  id: number;
+}

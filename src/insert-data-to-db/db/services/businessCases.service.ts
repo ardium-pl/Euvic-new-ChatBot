@@ -1,5 +1,6 @@
 import { db } from "../config/database";
 import chalk from "chalk";
+import { ExistingRow } from "../models/dataDBMoldes";
 
 export async function addBusinessCasesToDB(businessCases: Set<string>) {
   for (const businessCase of businessCases) {
@@ -9,7 +10,7 @@ export async function addBusinessCasesToDB(businessCases: Set<string>) {
         [businessCase]
       );
 
-      if ((rows as any[]).length === 0) {
+      if ((rows as ExistingRow[]).length === 0) {
         await db.execute("INSERT INTO biznes_casy (opis) VALUES (?)", [
           businessCase,
         ]);

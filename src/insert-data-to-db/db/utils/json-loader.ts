@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { DataJson } from "../models/dataDBMoldes";
+import { DataJson } from "../models/JsonDataModel";
 
 export function loadJSONFiles(directory: string): DataJson[] {
   const files = fs.readdirSync(directory);
@@ -20,7 +20,7 @@ export function loadJSONFiles(directory: string): DataJson[] {
           jsonData.push({
             fileName: parsedData.fileName,
             ocrText: parsedData.ocrText,
-            customers: parsedData.customers, // Dodajemy wszystkich customers bez modyfikacji
+            customers: parsedData.customers,
           });
         } else {
           console.error(`Invalid structure in file: ${filePath}`);
@@ -31,5 +31,5 @@ export function loadJSONFiles(directory: string): DataJson[] {
     }
   });
 
-  return jsonData; // Zwróć wszystkie wczytane dane w postaci tablicy obiektów DataJson
+  return jsonData;
 }

@@ -1,25 +1,23 @@
 import { db } from "../config/database";
-import { DataFileProject } from "../models/dataDBMoldes";
+import { DataFileProject, ExistingRow } from "../models/dataDBMoldes";
 import chalk from "chalk";
 
 export async function addFileProjectsToDB(fileProjects: DataFileProject[]) {
   for (const fileProject of fileProjects) {
     try {
-      // Pobieranie ID projektu na podstawie opisu
       const [projectRows] = await db.execute(
         "SELECT id FROM projekty WHERE nazwa = ?",
         [fileProject.projectName]
       );
 
-      // Pobieranie ID pliku na podstawie nazwy
       const [fileRows] = await db.execute(
         "SELECT id FROM pliki WHERE nazwa = ?",
         [fileProject.fileName]
       );
 
       if (
-        (projectRows as any[]).length === 0 ||
-        (fileRows as any[]).length === 0
+        (projectRows as ExistingRow[]).length === 0 ||
+        (fileRows as ExistingRow[]).length === 0
       ) {
         console.log(
           chalk.red(
@@ -29,17 +27,15 @@ export async function addFileProjectsToDB(fileProjects: DataFileProject[]) {
         continue;
       }
 
-      const projectId = (projectRows as any[])[0].id;
-      const fileId = (fileRows as any[])[0].id;
+      const projectId = (projectRows as ExistingRow[])[0].id;
+      const fileId = (fileRows as ExistingRow[])[0].id;
 
-      // Sprawdzanie, czy relacja już istnieje
       const [existingRelationRows] = await db.execute(
         "SELECT id_pliku, id_proj FROM pliki_projekty WHERE id_pliku = ? AND id_proj = ?",
         [fileId, projectId]
       );
 
-      if ((existingRelationRows as any[]).length === 0) {
-        // Dodanie nowej relacji do tabeli `pliki_projekty`
+      if ((existingRelationRows as ExistingRow[]).length === 0) {
         await db.execute(
           "INSERT INTO pliki_projekty (id_pliku, id_proj) VALUES (?, ?)",
           [fileId, projectId]

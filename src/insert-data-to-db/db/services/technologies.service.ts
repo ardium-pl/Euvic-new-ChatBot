@@ -1,5 +1,6 @@
 import { db } from "../config/database";
 import chalk from "chalk";
+import { ExistingRow } from "../models/dataDBMoldes";
 
 export async function addTechnologiesToDB(technologies: Set<string>) {
   for (const technology of technologies) {
@@ -9,7 +10,7 @@ export async function addTechnologiesToDB(technologies: Set<string>) {
         [technology]
       );
 
-      if ((rows as any[]).length === 0) {
+      if ((rows as ExistingRow[]).length === 0) {
         await db.execute("INSERT INTO technologie (nazwa) VALUES (?)", [
           technology,
         ]);

@@ -1,5 +1,5 @@
 import { db } from "../config/database";
-import { DataFile } from "../models/dataDBMoldes";
+import { DataFile, ExistingRow } from "../models/dataDBMoldes";
 import chalk from "chalk";
 
 export async function addFilesToDB(dataFiles: DataFile[]) {
@@ -9,7 +9,7 @@ export async function addFilesToDB(dataFiles: DataFile[]) {
         file.nazwa,
       ]);
 
-      if ((rows as any[]).length === 0) {
+      if ((rows as ExistingRow[]).length === 0) {
         await db.execute(
           "INSERT INTO pliki (nazwa, zawartosc_ocr) VALUES (?, ?)",
           [file.nazwa, file.zawartosc_ocr]

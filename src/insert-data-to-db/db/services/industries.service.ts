@@ -1,5 +1,6 @@
 import { db } from "../config/database";
 import chalk from "chalk";
+import { ExistingRow } from "../models/dataDBMoldes";
 
 export async function addIndustriesToDB(industries: Set<string>) {
   for (const industry of industries) {
@@ -8,7 +9,7 @@ export async function addIndustriesToDB(industries: Set<string>) {
         industry,
       ]);
 
-      if ((rows as any[]).length === 0) {
+      if ((rows as ExistingRow[]).length === 0) {
         await db.execute("INSERT INTO branze (nazwa) VALUES (?)", [industry]);
         console.log(
           chalk.green(`✅ Industry "${industry}" added to the database.`)

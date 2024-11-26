@@ -1,5 +1,5 @@
 import { db } from "../config/database";
-import { Project } from "../models/dataDBMoldes";
+import { ExistingRow, Project } from "../models/dataDBMoldes";
 import chalk from "chalk";
 
 export async function addProjectsToDB(projectsData: Project[]) {
@@ -8,7 +8,6 @@ export async function addProjectsToDB(projectsData: Project[]) {
     try {
       await connection.beginTransaction();
 
-      // Pobranie kluczy obcych
       const [clientRows] = await connection.execute(
         "SELECT id FROM klienci WHERE nazwa = ?",
         [project.clientName]
@@ -22,11 +21,10 @@ export async function addProjectsToDB(projectsData: Project[]) {
         [project.businessCase]
       );
 
-      // Sprawdzenie istnienia kluczy obcych
       if (
-        (industryRows as any[]).length === 0 ||
-        (clientRows as any[]).length === 0 ||
-        (businessCaseRows as any[]).length === 0
+        (industryRows as ExistingRow[]).length === 0 ||
+        (clientRows as ExistingRow[]).length === 0 ||
+        (businessCaseRows as ExistingRow[]).length === 0
       ) {
         console.error(
           chalk.red(
@@ -37,43 +35,53 @@ export async function addProjectsToDB(projectsData: Project[]) {
         continue;
       }
 
-      const clientId = (clientRows as any[])[0].id;
-      const industryId = (industryRows as any[])[0].id;
-      const businessCaseId = (businessCaseRows as any[])[0].id;
+      const clientId = (clientRows as ExistingRow[])[0].id;
+      const industryId = (industryRows as ExistingRow[])[0].id;
+      const businessCaseId = (businessCaseRows as ExistingRow[])[0].id;
 
-      // Formatowanie daty
-      const referenceDate = /^\d{4}$/.test(project.referenceDate)
-        ? `${project.referenceDate}-01-01` // Rok -> dodajemy "01-01"
-        : /^\d{4}-\d{2}$/.test(project.referenceDate)
-        ? `${project.referenceDate}-01` // Rok i miesiąc -> dodajemy "-01" jako dzień
-        : project.referenceDate; // Jeśli już pełna data, pozostawiamy bez zmian
+      const referenceDate = (() => {
+        if (/^\d{4}-\d{2}-\d{2}$/.test(project.referenceDate)) {
+          return project.referenceDate; // Pełna data w formacie YYYY-MM-DD
+        }
 
-      // Sprawdzenie istnienia projektu
+        if (/^\d{4}-\d{2}$/.test(project.referenceDate)) {
+          return `${project.referenceDate}-01`; // Rok i miesiąc w formacie YYYY-MM → YYYY-MM-01
+        }
+
+        if (/^\d{4}$/.test(project.referenceDate)) {
+          return `${project.referenceDate}-01-01`; // Tylko rok w formacie YYYY → YYYY-01-01
+        }
+
+        console.warn(
+          `💡 Invalid date format "${project.referenceDate}". Setting to NULL.`
+        );
+        return null;
+      })();
+
       const [existingProjectRows] = await connection.execute(
         "SELECT id FROM projekty WHERE id_klienta = ? AND id_branzy = ? AND id_bizn_case = ? AND opis = ?",
         [clientId, industryId, businessCaseId, project.description]
       );
 
-      if ((existingProjectRows as any[]).length === 0) {
-        // Dodanie projektu
+      if ((existingProjectRows as ExistingRow[]).length === 0) {
         await connection.execute(
           `INSERT INTO projekty 
           (nazwa, opis, id_klienta, id_branzy, id_bizn_case, data_referencji, skala_wdrozenia_wartosc, skala_wdrozenia_opis)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?)`, // Dodano brakującą wartość
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
           [
-            project.projectName, // Pierwszy parametr: nazwa projektu
-            project.description, // Drugi parametr: opis projektu
-            clientId, // Trzeci parametr: ID klienta
-            industryId, // Czwarty parametr: ID branży
-            businessCaseId, // Piąty parametr: ID biznes case
-            referenceDate, // Szósty parametr: data referencji
-            project.implementationScaleValue, // Siódmy parametr: wartość skali wdrożenia
-            project.implementationScaleDescription, // Ósmy parametr: opis skali wdrożenia
+            project.projectName,
+            project.description,
+            clientId,
+            industryId,
+            businessCaseId,
+            referenceDate,
+            project.implementationScaleValue,
+            project.implementationScaleDescription,
           ]
         );
         console.log(
           chalk.green(
-            `✅ Project "${project.description}" added to the database.`
+            `✅ Project "${project.projectName}" added to the database.`
           )
         );
       } else {

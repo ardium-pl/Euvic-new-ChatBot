@@ -1,5 +1,5 @@
 import { db } from "../config/database";
-import { TechnologyProject } from "../models/dataDBMoldes";
+import { ExistingRow, TechnologyProject } from "../models/dataDBMoldes";
 import chalk from "chalk";
 
 export async function addTechnologyProjectsToDB(
@@ -12,7 +12,7 @@ export async function addTechnologyProjectsToDB(
         [techProject.projectName]
       );
 
-      if ((projectRows as any[]).length === 0) {
+      if ((projectRows as ExistingRow[]).length === 0) {
         console.log(
           chalk.yellow(
             `⚠️ Project "${techProject.projectName}" not found in the database.`
@@ -21,7 +21,7 @@ export async function addTechnologyProjectsToDB(
         continue;
       }
 
-      const projectId = (projectRows as any[])[0].id;
+      const projectId = (projectRows as ExistingRow[])[0].id;
 
       for (const technologyName of techProject.technologies) {
         const [technologyRows] = await db.execute(
@@ -29,7 +29,7 @@ export async function addTechnologyProjectsToDB(
           [technologyName]
         );
 
-        if ((technologyRows as any[]).length === 0) {
+        if ((technologyRows as ExistingRow[]).length === 0) {
           console.log(
             chalk.yellow(
               `⚠️ Technology "${technologyName}" not found in the database.`
@@ -38,14 +38,14 @@ export async function addTechnologyProjectsToDB(
           continue;
         }
 
-        const technologyId = (technologyRows as any[])[0].id;
+        const technologyId = (technologyRows as ExistingRow[])[0].id;
 
         const [existingRows] = await db.execute(
           "SELECT * FROM technologie_projekty WHERE id_tech = ? AND id_proj = ?",
           [technologyId, projectId]
         );
 
-        if ((existingRows as any[]).length === 0) {
+        if ((existingRows as ExistingRow[]).length === 0) {
           await db.execute(
             "INSERT INTO technologie_projekty (id_tech, id_proj) VALUES (?, ?)",
             [technologyId, projectId]
