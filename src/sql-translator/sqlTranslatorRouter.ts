@@ -22,6 +22,17 @@ sqlTranslatorRouter.post("/language-to-sql", async (req, res) => {
     return;
   }
 
+if(userQuery == "-"){
+  res.status(200).json({
+    status: "newTopic",
+    question: userQuery,
+    sqlStatement: "-",
+    formattedAnswer: "Rozpoczęto nowy wątek",
+    rawData: [],
+  })
+  return;
+}
+
   const chatHistory = await ChatHistoryHandler.getRecentQueries(
     senderPhoneNumber
   );
