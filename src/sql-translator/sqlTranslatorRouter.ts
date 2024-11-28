@@ -24,7 +24,7 @@ sqlTranslatorRouter.post("/language-to-sql", async (req, res) => {
 
 if(userQuery == "-"){
   res.status(200).json({
-    status: "newTopic",
+    status: "success",
     question: userQuery,
     sqlStatement: "-",
     formattedAnswer: "Rozpoczęto nowy wątek",
