@@ -1,3 +1,4 @@
+import { number } from "zod";
 import { db } from "../config/database";
 import { ExistingRow, Project } from "../models/dataDBMoldes";
 import chalk from "chalk";
@@ -63,6 +64,14 @@ export async function addProjectsToDB(projectsData: Project[]) {
         [clientId, industryId, businessCaseId, project.description]
       );
 
+      let scaleValue: number;
+
+      if (project.implementationScaleValue <= 2147483647) {
+        scaleValue = project.implementationScaleValue;
+      } else {
+        scaleValue = 2147483647;
+      }
+
       if ((existingProjectRows as ExistingRow[]).length === 0) {
         await connection.execute(
           `INSERT INTO projekty 
@@ -75,7 +84,7 @@ export async function addProjectsToDB(projectsData: Project[]) {
             industryId,
             businessCaseId,
             referenceDate,
-            project.implementationScaleValue,
+            scaleValue,
             project.implementationScaleDescription,
           ]
         );
