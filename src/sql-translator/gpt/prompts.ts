@@ -8,7 +8,7 @@ import { logger } from "../../insert-data-to-db/utils/logger.ts";
 // OpenAI prompt for natural language to SQL translation
 const { dbSchema, examplesForSQL } = await loadDbInformation();
 
-export function promptForSQL(userQuery: string, chatHistory: ChatHistory[]): ChatCompletionMessageParam[] {
+export function promptForSQL(userQuery: string, chatHistory: ChatHistory[] | null): ChatCompletionMessageParam[] {
   if (!PROMPT_FOR_SQL || typeof PROMPT_FOR_SQL !== "string") {
     throw new Error(
       "PROMPT_FOR_SQL is not defined or is not a string in the configuration."
