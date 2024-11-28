@@ -2,14 +2,18 @@ import ansis from 'ansis';
 import cors from 'cors';
 import 'dotenv/config';
 import express from 'express';
-
-const PORT = process.env.PORT ?? 8080;
+import {sqlTranslatorRouter} from './src/sql-translator/sqlTranslatorRouter'
+import  webhookRouter  from "./src/meta-handling/whatsapp/webhook";
+import { PORT } from './src/config';
 
 const app = express();
 
 // Middleware
 app.use(express.json());
 app.use(cors());
+
+app.use(sqlTranslatorRouter);
+app.use(webhookRouter);
 
 
 // Startup
