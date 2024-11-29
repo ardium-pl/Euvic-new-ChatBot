@@ -1,11 +1,10 @@
-import mysql, {
-  createConnection as mysqlCreateConnection,
-  Connection,
-  RowDataPacket,
+import {
+    Connection,
+    createConnection as mysqlCreateConnection
 } from "mysql2/promise";
+import { chatHistoryDbConfig } from "../../../config";
 import { logger } from "../../../insert-data-to-db/utils/logger";
 import { ChatHistory } from "../../../types";
-import { chatHistoryDbConfig } from "../../../config";
 
 // Utility to create a connection
 async function createConnection(): Promise<Connection> {
@@ -75,23 +74,23 @@ export class ChatHistoryHandler {
   static async getRecentQueries(
     whatsappNumberId: number,
     userQuery: string
-  ): Promise<ChatHistory[] | null> {
+  ): Promise<ChatHistory[]> {
     const connection = await createConnection();
     try {
       if (userQuery == "-") {
         await connection.execute(
           `DELETE q
-                     FROM queries q
+                     FROM chat_history q
                      JOIN users u ON q.user_id = u.id
                      WHERE u.whatsapp_number_id = ?
                      AND q.created_at >= NOW() - INTERVAL 2 HOUR`,
           [whatsappNumberId]
         );
-        return null;
+        return [];
       } else {
         const [rows]: any = await connection.execute(
           `SELECT q.query, q.answer, q.created_at
-                     FROM queries q
+                     FROM chat_history q
                      JOIN users u ON q.user_id = u.id
                      WHERE u.whatsapp_number_id = ?
                      AND q.created_at >= NOW() - INTERVAL 2 HOUR
