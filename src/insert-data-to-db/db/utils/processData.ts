@@ -4,6 +4,7 @@ import path from "path";
 import { addTechnologyProjectsToDB } from "../services/technologyProjects.service";
 import { loadJSONFiles } from "./json-loader";
 import {
+  BusinessCasesProject,
   DataClient,
   DataFile,
   DataFileProject,
@@ -31,7 +32,7 @@ export async function processData() {
   const businessCases = jsonData.reduce((acc: Set<string>, file: DataJson) => {
     file.customers.forEach((customer) => {
       if (customer.businessCase) {
-        acc.add(customer.businessCase);
+        customer.businessCase.name.forEach((biz) => acc.add(biz));
       }
     });
     return acc;
@@ -114,6 +115,21 @@ export async function processData() {
     []
   );
 
+  const businessCaseProjects: BusinessCasesProject[] = jsonData.reduce(
+    (acc: BusinessCasesProject[], file: DataJson) => {
+      file.customers.forEach((customer) => {
+        if (customer.projectName && customer.businessCase?.name) {
+          acc.push({
+            projectName: customer.projectName,
+            businessCases: customer.businessCase.name,
+          });
+        }
+      });
+      return acc;
+    },
+    []
+  );
+
   const fileProjects: DataFileProject[] = jsonData.reduce(
     (acc: DataFileProject[], file: DataJson) => {
       file.customers.forEach((customer) => {
@@ -131,26 +147,26 @@ export async function processData() {
 
   try {
     //Etap 1: Dodaj dane niezależne
-    console.log("Adding business cases...");
-    await addBusinessCasesToDB(businessCases);
-    console.log("Adding technologies...");
-    await addTechnologiesToDB(technologies);
-    console.log("Adding industries...");
-    await addIndustriesToDB(industries);
-    console.log("Adding files...");
-    await addFilesToDB(files);
-    console.log("Adding clients...");
-    await addClientsToDB(uniqueClientNames);
+    // console.log("Adding business cases...");
+    // await addBusinessCasesToDB(businessCases);
+    // console.log("Adding technologies...");
+    // await addTechnologiesToDB(technologies);
+    // console.log("Adding industries...");
+    // await addIndustriesToDB(industries);
+    // console.log("Adding files...");
+    // await addFilesToDB(files);
+    // console.log("Adding clients...");
+    // await addClientsToDB(uniqueClientNames);
 
-    // Etap 2: Dodaj projekty (zależne od clients i business cases)
-    console.log("Adding projects...");
-    await addProjectsToDB(projectsData);
+    // // Etap 2: Dodaj projekty (zależne od clients i business cases)
+    // console.log("Adding projects...");
+    // await addProjectsToDB(projectsData);
 
-    // Etap 3: Dodaj relacje wiele-do-wielu
-    console.log("Adding technology-project relationships...");
-    await addTechnologyProjectsToDB(technologyProjects);
-    console.log("Adding file-project relationships...");
-    await addFileProjectsToDB(fileProjects);
+    // // Etap 3: Dodaj relacje wiele-do-wielu
+    // console.log("Adding technology-project relationships...");
+    // await addTechnologyProjectsToDB(technologyProjects);
+    // console.log("Adding file-project relationships...");
+    // await addFileProjectsToDB(fileProjects);
 
     console.log(chalk.green(`✅ All data processed successfully!`));
   } catch (error) {

@@ -22,6 +22,11 @@ export interface TechnologyProject {
   technologies: string[];
 }
 
+export interface BusinessCasesProject {
+  projectName: string;
+  businessCases: string[];
+}
+
 export interface DataFileProject {
   fileName: string;
   projectName: string;
