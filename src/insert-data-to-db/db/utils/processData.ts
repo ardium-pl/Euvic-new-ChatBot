@@ -148,26 +148,26 @@ export async function processData() {
 
   try {
     //Etap 1: Dodaj dane niezależne
-    // console.log("Adding business cases...");
-    // await addBusinessCasesToDB(businessCases);
-    // console.log("Adding technologies...");
-    // await addTechnologiesToDB(technologies);
-    // console.log("Adding industries...");
-    // await addIndustriesToDB(industries);
-    // console.log("Adding files...");
-    // await addFilesToDB(files);
-    // console.log("Adding clients...");
-    // await addClientsToDB(uniqueClientNames);
+    console.log("Adding business cases...");
+    await addBusinessCasesToDB(businessCases);
+    console.log("Adding technologies...");
+    await addTechnologiesToDB(technologies);
+    console.log("Adding industries...");
+    await addIndustriesToDB(industries);
+    console.log("Adding files...");
+    await addFilesToDB(files);
+    console.log("Adding clients...");
+    await addClientsToDB(uniqueClientNames);
 
     // Etap 2: Dodaj projekty (zależne od clients i business cases)
     console.log("Adding projects...");
-    //await addProjectsToDB(projectsData);
+    await addProjectsToDB(projectsData);
 
     // Etap 3: Dodaj relacje wiele-do-wielu
     console.log("Adding technology-project relationships...");
-    //await addTechnologyProjectsToDB(technologyProjects);
+    await addTechnologyProjectsToDB(technologyProjects);
     console.log("Adding file-project relationships...");
-    //await addFileProjectsToDB(fileProjects);
+    await addFileProjectsToDB(fileProjects);
     console.log("Adding businessCases-project relationships...");
     await addBusinessCaseProjectsToDB(businessCaseProjects);
 
