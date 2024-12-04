@@ -17,15 +17,10 @@ export async function addProjectsToDB(projectsData: Project[]) {
         "SELECT id FROM branze WHERE nazwa = ?",
         [project.industryName]
       );
-      const [businessCaseRows] = await connection.execute(
-        "SELECT id FROM biznes_casy WHERE opis = ?",
-        [project.businessCase]
-      );
 
       if (
         (industryRows as ExistingRow[]).length === 0 ||
-        (clientRows as ExistingRow[]).length === 0 ||
-        (businessCaseRows as ExistingRow[]).length === 0
+        (clientRows as ExistingRow[]).length === 0
       ) {
         console.error(
           chalk.red(
@@ -38,7 +33,6 @@ export async function addProjectsToDB(projectsData: Project[]) {
 
       const clientId = (clientRows as ExistingRow[])[0].id;
       const industryId = (industryRows as ExistingRow[])[0].id;
-      const businessCaseId = (businessCaseRows as ExistingRow[])[0].id;
 
       const referenceDate = (() => {
         if (/^\d{4}-\d{2}-\d{2}$/.test(project.referenceDate)) {
@@ -61,7 +55,7 @@ export async function addProjectsToDB(projectsData: Project[]) {
 
       const [existingProjectRows] = await connection.execute(
         "SELECT id FROM projekty WHERE id_klienta = ? AND id_branzy = ? AND id_bizn_case = ? AND opis = ?",
-        [clientId, industryId, businessCaseId, project.description]
+        [clientId, industryId, project.description]
       );
 
       let scaleValue: number;
@@ -82,7 +76,6 @@ export async function addProjectsToDB(projectsData: Project[]) {
             project.description,
             clientId,
             industryId,
-            businessCaseId,
             referenceDate,
             scaleValue,
             project.implementationScaleDescription,

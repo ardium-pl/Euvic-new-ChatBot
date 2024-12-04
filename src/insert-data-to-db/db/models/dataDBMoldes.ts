@@ -12,7 +12,6 @@ export interface Project {
   description: string;
   clientName: string;
   industryName: string;
-  businessCase: string;
   referenceDate: string;
   implementationScaleValue: number;
   implementationScaleDescription: string;
