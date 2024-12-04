@@ -20,6 +20,7 @@ import { addClientsToDB } from "../services/clients.service";
 import { addFileProjectsToDB } from "../services/fileProjects.service";
 import chalk from "chalk";
 import { DataJson } from "../models/JsonDataModel";
+import { addBusinessCaseProjectsToDB } from "../services/businessCasesProjects.service";
 
 // Konwersja `import.meta.url` na ścieżkę pliku
 const __filename = fileURLToPath(import.meta.url);
@@ -158,15 +159,17 @@ export async function processData() {
     // console.log("Adding clients...");
     // await addClientsToDB(uniqueClientNames);
 
-    // // Etap 2: Dodaj projekty (zależne od clients i business cases)
-    // console.log("Adding projects...");
-    // await addProjectsToDB(projectsData);
+    // Etap 2: Dodaj projekty (zależne od clients i business cases)
+    console.log("Adding projects...");
+    //await addProjectsToDB(projectsData);
 
-    // // Etap 3: Dodaj relacje wiele-do-wielu
-    // console.log("Adding technology-project relationships...");
-    // await addTechnologyProjectsToDB(technologyProjects);
-    // console.log("Adding file-project relationships...");
-    // await addFileProjectsToDB(fileProjects);
+    // Etap 3: Dodaj relacje wiele-do-wielu
+    console.log("Adding technology-project relationships...");
+    //await addTechnologyProjectsToDB(technologyProjects);
+    console.log("Adding file-project relationships...");
+    //await addFileProjectsToDB(fileProjects);
+    console.log("Adding businessCases-project relationships...");
+    await addBusinessCaseProjectsToDB(businessCaseProjects);
 
     console.log(chalk.green(`✅ All data processed successfully!`));
   } catch (error) {

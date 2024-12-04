@@ -54,7 +54,7 @@ export async function addProjectsToDB(projectsData: Project[]) {
       })();
 
       const [existingProjectRows] = await connection.execute(
-        "SELECT id FROM projekty WHERE id_klienta = ? AND id_branzy = ? AND id_bizn_case = ? AND opis = ?",
+        "SELECT id FROM projekty WHERE id_klienta = ? AND id_branzy = ?  AND opis = ?",
         [clientId, industryId, project.description]
       );
 
@@ -69,8 +69,8 @@ export async function addProjectsToDB(projectsData: Project[]) {
       if ((existingProjectRows as ExistingRow[]).length === 0) {
         await connection.execute(
           `INSERT INTO projekty 
-          (nazwa, opis, id_klienta, id_branzy, id_bizn_case, data_referencji, skala_wdrozenia_wartosc, skala_wdrozenia_opis)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+          (nazwa, opis, id_klienta, id_branzy, data_referencji, skala_wdrozenia_wartosc, skala_wdrozenia_opis)
+          VALUES (?, ?, ?, ?, ?, ?, ?)`,
           [
             project.projectName,
             project.description,
