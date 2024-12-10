@@ -118,6 +118,7 @@ sqlTranslatorRouter.post("/language-to-sql", async (req, res) => {
       formattedAnswer: formattedAnswer.formattedAnswer,
       rawData: rows,
     });
+    return;
   } catch (error: any) {
     // Log detailed error information
     logger.error(`❌ Error occurred: ${error.message}`);
@@ -127,5 +128,6 @@ sqlTranslatorRouter.post("/language-to-sql", async (req, res) => {
       status: "error",
       errorCode: "PROCESSING_ERR",
     });
+    return;
   }
 });
