@@ -36,7 +36,7 @@ webhookRouter.post("/webhook", async (req: Request, res: Response) => {
         );
         try {
           const response = await axios.post(
-            `https://gww-ardium-dev.up.railway.app/language-to-sql`,
+            `https://demo-final-development.up.railway.app/language-to-sql`,
             { query: userQuery, whatsappNumberId: senderPhoneNumber }
           );
 
