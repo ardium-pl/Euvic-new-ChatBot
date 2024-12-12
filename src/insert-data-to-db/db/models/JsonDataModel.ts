@@ -9,7 +9,7 @@ interface Customer {
   projectName: string;
   technologies: Technologies;
   description: string;
-  businessCase: string;
+  businessCase: BusinessCases;
   referenceDate: string;
   scaleOfImplementationValue: number;
   scaleOfImplementationDescription: string;
@@ -17,5 +17,9 @@ interface Customer {
 }
 
 interface Technologies {
+  name: string[];
+}
+
+interface BusinessCases {
   name: string[];
 }

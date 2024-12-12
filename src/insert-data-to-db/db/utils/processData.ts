@@ -4,6 +4,7 @@ import path from "path";
 import { addTechnologyProjectsToDB } from "../services/technologyProjects.service";
 import { loadJSONFiles } from "./json-loader";
 import {
+  BusinessCasesProject,
   DataClient,
   DataFile,
   DataFileProject,
@@ -19,6 +20,7 @@ import { addClientsToDB } from "../services/clients.service";
 import { addFileProjectsToDB } from "../services/fileProjects.service";
 import chalk from "chalk";
 import { DataJson } from "../models/JsonDataModel";
+import { addBusinessCaseProjectsToDB } from "../services/businessCasesProjects.service";
 
 // Konwersja `import.meta.url` na ścieżkę pliku
 const __filename = fileURLToPath(import.meta.url);
@@ -31,7 +33,7 @@ export async function processData() {
   const businessCases = jsonData.reduce((acc: Set<string>, file: DataJson) => {
     file.customers.forEach((customer) => {
       if (customer.businessCase) {
-        acc.add(customer.businessCase);
+        customer.businessCase.name.forEach((biz) => acc.add(biz));
       }
     });
     return acc;
@@ -88,7 +90,6 @@ export async function processData() {
           description: customer.description,
           clientName: customer.clientName,
           industryName: customer.industry,
-          businessCase: customer.businessCase,
           referenceDate: customer.referenceDate,
           implementationScaleValue: customer.scaleOfImplementationValue,
           implementationScaleDescription:
@@ -115,6 +116,21 @@ export async function processData() {
     []
   );
 
+  const businessCaseProjects: BusinessCasesProject[] = jsonData.reduce(
+    (acc: BusinessCasesProject[], file: DataJson) => {
+      file.customers.forEach((customer) => {
+        if (customer.projectName && customer.businessCase?.name) {
+          acc.push({
+            projectName: customer.projectName,
+            businessCases: customer.businessCase.name,
+          });
+        }
+      });
+      return acc;
+    },
+    []
+  );
+
   const fileProjects: DataFileProject[] = jsonData.reduce(
     (acc: DataFileProject[], file: DataJson) => {
       file.customers.forEach((customer) => {
@@ -131,7 +147,7 @@ export async function processData() {
   );
 
   try {
-    // Etap 1: Dodaj dane niezależne
+    //Etap 1: Dodaj dane niezależne
     console.log("Adding business cases...");
     await addBusinessCasesToDB(businessCases);
     console.log("Adding technologies...");
@@ -152,6 +168,8 @@ export async function processData() {
     await addTechnologyProjectsToDB(technologyProjects);
     console.log("Adding file-project relationships...");
     await addFileProjectsToDB(fileProjects);
+    console.log("Adding businessCases-project relationships...");
+    await addBusinessCaseProjectsToDB(businessCaseProjects);
 
     console.log(chalk.green(`✅ All data processed successfully!`));
   } catch (error) {
