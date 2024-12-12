@@ -9,7 +9,11 @@ const ProjectData = z.object({
     })
     .optional(),
   description: z.string(),
-  businessCase: z.string(),
+  businessCase: z
+    .object({
+      name: z.array(z.string()),
+    })
+    .optional(),
   referenceDate: z.string().optional(),
   scaleOfImplementationValue: z.number().optional(),
   scaleOfImplementationDescription: z.string().optional(),

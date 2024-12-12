@@ -4,7 +4,7 @@ import { WEBHOOK_VERIFY_TOKEN } from "../../config";
 import { logger } from "../../insert-data-to-db/utils/logger";
 import { WhatsAppClient } from "./whatsapp-client";
 import axios from "axios";
-import { PORT, ENDPOINT_URL } from "../../config";
+import { PORT} from "../../config";
 import { LanguageToSQLResponse } from "../../types";
 import { ChatHistoryHandler, insertDataMySQL } from "./chat_history/getChatHistory";
 
@@ -36,7 +36,7 @@ webhookRouter.post("/webhook", async (req: Request, res: Response) => {
         );
         try {
           const response = await axios.post(
-            `${ENDPOINT_URL}${PORT}/language-to-sql`,
+            `https://demo-final-development.up.railway.app/language-to-sql`,
             { query: userQuery, whatsappNumberId: senderPhoneNumber }
           );
 

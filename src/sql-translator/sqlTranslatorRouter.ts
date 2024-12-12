@@ -22,12 +22,23 @@ sqlTranslatorRouter.post("/language-to-sql", async (req, res) => {
     return;
   }
 
+  
   const chatHistory = await ChatHistoryHandler.getRecentQueries(
-    senderPhoneNumber
+    senderPhoneNumber, userQuery
   );
   logger.info("Chat history: " + JSON.stringify(chatHistory));
-
+  
   try {
+    if(userQuery == "-"){
+      res.status(200).json({
+        status: "success",
+        question: userQuery,
+        sqlStatement: "-",
+        formattedAnswer: "Rozpoczęto nowy wątek",
+        rawData: [],
+      })
+      return;
+    }
     // Log before calling OpenAI
     logger.info("🤖 Sending user query to OpenAI for SQL generation...");
     const sqlAnswer = await generateGPTAnswer(
@@ -107,6 +118,7 @@ sqlTranslatorRouter.post("/language-to-sql", async (req, res) => {
       formattedAnswer: formattedAnswer.formattedAnswer,
       rawData: rows,
     });
+    return;
   } catch (error: any) {
     // Log detailed error information
     logger.error(`❌ Error occurred: ${error.message}`);
@@ -116,5 +128,6 @@ sqlTranslatorRouter.post("/language-to-sql", async (req, res) => {
       status: "error",
       errorCode: "PROCESSING_ERR",
     });
+    return;
   }
 });

@@ -12,7 +12,6 @@ export interface Project {
   description: string;
   clientName: string;
   industryName: string;
-  businessCase: string;
   referenceDate: string;
   implementationScaleValue: number;
   implementationScaleDescription: string;
@@ -21,6 +20,11 @@ export interface Project {
 export interface TechnologyProject {
   projectName: string;
   technologies: string[];
+}
+
+export interface BusinessCasesProject {
+  projectName: string;
+  businessCases: string[];
 }
 
 export interface DataFileProject {

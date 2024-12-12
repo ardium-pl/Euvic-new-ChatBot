@@ -12,7 +12,6 @@ export const PHONE_NUMBER_ID = process.env.PHONE_NUMBER_ID;
 export const ACCESS_TOKEN = process.env.ACCESS_TOKEN;
 
 // Express config
-export const ENDPOINT_URL = process.env.ENDPOINT || "http://localhost:";
 export const PORT = process.env.PORT || 8080;
 
 // MySql config
