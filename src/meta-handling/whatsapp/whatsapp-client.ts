@@ -15,7 +15,7 @@ export class WhatsAppClient {
     senderPhoneNumber: string
   ): Promise<"success" | "error"> {
     const url = `${META_ENDPOINT}${PHONE_NUMBER_ID}/messages`;
-  
+
     const createPayload = (message: string) => ({
       messaging_product: "whatsapp",
       recipient_type: "individual",
@@ -26,12 +26,12 @@ export class WhatsAppClient {
         body: message,
       },
     });
-  
+
     const headers = {
       "Content-Type": "application/json",
       Authorization: `Bearer ${ACCESS_TOKEN}`,
     };
-  
+
     try {
       const message =
         typeof aiResponse === "string"
@@ -39,12 +39,12 @@ export class WhatsAppClient {
           : aiResponse.status === "success"
           ? aiResponse.formattedAnswer
           : getUserFriendlyMessage(aiResponse.errorCode);
-  
+
       const payload = createPayload(message);
       logger.info("Payload: " + JSON.stringify(payload));
-  
+
       const response = await axios.post(url, payload, { headers });
-  
+
       if (response.status === 200) {
         logger.info("✅ Message sent successfully!");
         return "success";
@@ -56,8 +56,22 @@ export class WhatsAppClient {
       }
     } catch (error: any) {
       logger.error(`❌ Error while sending message: ${error.message}`);
+
+      // Send a fallback message to the user
+      const fallbackMessage =
+        "Wystąpił problem z przesłaniem odpowiedzi, spróbuj ponownie.";
+
+      try {
+        const fallbackPayload = createPayload(fallbackMessage);
+        await axios.post(url, fallbackPayload, { headers });
+        logger.warn("⚠️ Fallback message sent to the user.");
+      } catch (fallbackError: any) {
+        logger.error(
+          `❌ Failed to send fallback message: ${fallbackError.message}`
+        );
+      }
+
       return "error";
     }
   }
-  
 }
