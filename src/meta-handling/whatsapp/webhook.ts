@@ -39,29 +39,46 @@ webhookRouter.post("/webhook", async (req: Request, res: Response) => {
             { query: userQuery, whatsappNumberId: senderPhoneNumber }
           );
 
-          // Extract the JSON data from the response
           const aiResponse: LanguageToSQLResponse = response.data;
 
           logger.info("AI Response: " + JSON.stringify(aiResponse));
 
-          await WhatsAppClient.sendMessage(aiResponse, senderPhoneNumber);
+          // Attempt to send the AI response
+          const messageStatus = await WhatsAppClient.sendMessage(
+            aiResponse,
+            senderPhoneNumber
+          );
 
-          if(aiResponse.status === 'success'){
-            await insertDataMySQL(senderPhoneNumber, userQuery, aiResponse.formattedAnswer, aiResponse.sqlStatement)
+          if (messageStatus === "success" && aiResponse.status === "success") {
+            await insertDataMySQL(
+              senderPhoneNumber,
+              userQuery,
+              aiResponse.formattedAnswer,
+              aiResponse.sqlStatement
+            );
           }
 
           logger.info("✅ AI answer sent or error reported.");
         } catch (error: any) {
           // Handle AI response errors
-          const errorMessage = error.response?.data;
+          // Handle AI response errors
+          const errorMessage = error.response?.data || "Unknown error occurred";
 
           logger.error(
             `❌ Error from AI response: ${JSON.stringify(errorMessage)}`
           );
 
-          await WhatsAppClient.sendMessage(errorMessage, senderPhoneNumber);
+          // Send the error message but only log the failure
+          const errorStatus = await WhatsAppClient.sendMessage(
+            errorMessage,
+            senderPhoneNumber
+          );
 
-          logger.info("⚠️ Error message sent to the user.");
+          if (errorStatus === "error") {
+            logger.warn("⚠️ Failed to send the error message to the user.");
+          } else {
+            logger.info("⚠️ Error message sent to the user.");
+          }
         }
       } else {
         logger.warn(

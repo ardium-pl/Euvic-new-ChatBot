@@ -11,11 +11,11 @@ export class WhatsAppClient {
    * @param senderPhoneNumber The recipient's phone number.
    */
   static async sendMessage(
-    aiResponse: LanguageToSQLResponse,
+    aiResponse: LanguageToSQLResponse | string, // Allow error messages to be sent
     senderPhoneNumber: string
-  ): Promise<void> {
+  ): Promise<"success" | "error"> {
     const url = `${META_ENDPOINT}${PHONE_NUMBER_ID}/messages`;
-
+  
     const createPayload = (message: string) => ({
       messaging_product: "whatsapp",
       recipient_type: "individual",
@@ -26,41 +26,38 @@ export class WhatsAppClient {
         body: message,
       },
     });
-
+  
     const headers = {
       "Content-Type": "application/json",
       Authorization: `Bearer ${ACCESS_TOKEN}`,
     };
-
+  
     try {
-      const payload = createPayload(
-        aiResponse.status === "success"
+      const message =
+        typeof aiResponse === "string"
+          ? aiResponse
+          : aiResponse.status === "success"
           ? aiResponse.formattedAnswer
-          : getUserFriendlyMessage(aiResponse.errorCode)
-      );
-      logger.info("Payload" + payload);
+          : getUserFriendlyMessage(aiResponse.errorCode);
+  
+      const payload = createPayload(message);
+      logger.info("Payload: " + JSON.stringify(payload));
+  
       const response = await axios.post(url, payload, { headers });
-
+  
       if (response.status === 200) {
         logger.info("✅ Message sent successfully!");
+        return "success";
       } else {
         logger.error(
           `❌ Failed to send message: ${response.status} - ${response.statusText}`
         );
+        return "error";
       }
     } catch (error: any) {
-      if (error.response) {
-        logger.error(
-          `❌ API Error: ${error.response.status} - ${JSON.stringify(
-            error.response.data
-          )}`
-        );
-      } else if (error.request) {
-        logger.error("❌ No response received:", error.request);
-      } else {
-        logger.error(`❌ Error while sending message: ${error.message}`);
-      }
+      logger.error(`❌ Error while sending message: ${error.message}`);
+      return "error";
     }
-    
   }
+  
 }
