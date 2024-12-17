@@ -11,6 +11,7 @@ const webhookRouter = express.Router();
 
 webhookRouter.post("/webhook", async (req: Request, res: Response) => {
   try {
+    res.status(200).send("✅ Acknowledged");
     const data = req.body;
     const mainRequestBody = data.entry[0]?.changes[0]?.value;
 
@@ -60,8 +61,6 @@ webhookRouter.post("/webhook", async (req: Request, res: Response) => {
 
           logger.info("✅ AI answer sent or error reported.");
         } catch (error: any) {
-          // Handle AI response errors
-          // Handle AI response errors
           const errorMessage = error.response?.data || "Unknown error occurred";
 
           logger.error(
@@ -87,7 +86,6 @@ webhookRouter.post("/webhook", async (req: Request, res: Response) => {
       }
     }
 
-    res.status(200).send("✅");
   } catch (error: any) {
     logger.error(`❌ Error processing HTTP request: ${error.message}`);
     res.status(400).send("❌");
