@@ -1,12 +1,11 @@
 import express, { Request, Response } from "express";
 import { WEBHOOK_VERIFY_TOKEN } from "../../config";
 // import { insertDataMySQL } from "../database";
-import { logger } from "../../insert-data-to-db/utils/logger";
-import { WhatsAppClient } from "./whatsapp-client";
 import axios from "axios";
-import { PORT} from "../../config";
+import { logger } from "../../insert-data-to-db/utils/logger";
 import { LanguageToSQLResponse } from "../../types";
-import { ChatHistoryHandler, insertDataMySQL } from "./chat_history/getChatHistory";
+import { insertDataMySQL } from "./chat_history/getChatHistory";
+import { WhatsAppClient } from "./whatsapp-client";
 
 const webhookRouter = express.Router();
 

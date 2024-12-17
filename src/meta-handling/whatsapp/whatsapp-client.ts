@@ -38,7 +38,7 @@ export class WhatsAppClient {
           ? aiResponse.formattedAnswer
           : getUserFriendlyMessage(aiResponse.errorCode)
       );
-
+      logger.info("Payload" + payload);
       const response = await axios.post(url, payload, { headers });
 
       if (response.status === 200) {
@@ -49,7 +49,18 @@ export class WhatsAppClient {
         );
       }
     } catch (error: any) {
-      logger.error(`❌ Error while sending message: ${error.message}`);
+      if (error.response) {
+        logger.error(
+          `❌ API Error: ${error.response.status} - ${JSON.stringify(
+            error.response.data
+          )}`
+        );
+      } else if (error.request) {
+        logger.error("❌ No response received:", error.request);
+      } else {
+        logger.error(`❌ Error while sending message: ${error.message}`);
+      }
     }
+    
   }
 }

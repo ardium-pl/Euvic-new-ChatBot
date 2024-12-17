@@ -1,9 +1,8 @@
-import OpenAI from "openai";
-import { z, ZodTypeAny } from "zod";
 import { zodResponseFormat } from "openai/helpers/zod";
-import { logger } from "../../insert-data-to-db/utils/logger";
 import { ChatCompletionMessageParam } from "openai/resources";
+import { z, ZodTypeAny } from "zod";
 import { openAiClient } from "../../config";
+import { logger } from "../../insert-data-to-db/utils/logger";
 
 export const sqlResponse = z.object({
   isSelect: z.boolean(),
