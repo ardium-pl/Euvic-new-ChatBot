@@ -1,6 +1,6 @@
 import {
-    Connection,
-    createConnection as mysqlCreateConnection
+  Connection,
+  createConnection as mysqlCreateConnection,
 } from "mysql2/promise";
 import { chatHistoryDbConfig } from "../../../config";
 import { logger } from "../../../insert-data-to-db/utils/logger";
@@ -17,36 +17,28 @@ async function createConnection(): Promise<Connection> {
 }
 
 export class ChatHistoryHandler {
-  static async insertOrGetUser(
-    whatsappNumberId: number
-  ): Promise<number | null> {
+  static async insertOrGetUser(whatsappNumberId: number): Promise<number | null> {
     const connection = await createConnection();
     try {
-      const [rows]: any = await connection.execute(
-        "SELECT id FROM users WHERE whatsapp_number_id = ?",
-        [whatsappNumberId]
-      );
-
-      if (rows.length) {
-        logger.info("➡️ Existing user retrieved successfully.");
-        return rows[0].id;
-      }
-
       const [result]: any = await connection.execute(
-        "INSERT INTO users (whatsapp_number_id) VALUES (?)",
+        `
+        INSERT INTO users (whatsapp_number_id)
+        VALUES (?)
+        ON DUPLICATE KEY UPDATE id = LAST_INSERT_ID(id);
+        `,
         [whatsappNumberId]
       );
-
-      if (result.insertId) {
-        logger.info("➡️ New user inserted successfully.");
-        return result.insertId;
-      } else {
-        throw new Error("Failed to insert new user");
-      }
+  
+      logger.info("➡️ User processed successfully.");
+      return result.insertId; // Returns the ID of the existing or newly inserted user
+    } catch (error) {
+      logger.error("➡️ Error processing user:", error);
+      throw error;
     } finally {
       await connection.end();
     }
   }
+  
 
   static async insertQuery(
     userId: number,
