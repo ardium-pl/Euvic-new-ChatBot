@@ -1,3 +1,14 @@
+# Chatbot data
+chatbot-data/
+output-text/
+images/
+json-data/
+examples.json
+euvic_chatbot_schema.json
+test.ts
+**updateFileLinks.ts
+
+
 # Logs
 logs
 *.log
