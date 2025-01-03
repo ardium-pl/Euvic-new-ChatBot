@@ -1,17 +1,17 @@
 import express, { Request, Response } from "express";
 import { WEBHOOK_VERIFY_TOKEN } from "../../config";
 // import { insertDataMySQL } from "../database";
-import { logger } from "../../insert-data-to-db/utils/logger";
-import { WhatsAppClient } from "./whatsapp-client";
 import axios from "axios";
-import { PORT} from "../../config";
+import { logger } from "../../insert-data-to-db/utils/logger";
 import { LanguageToSQLResponse } from "../../types";
-import { ChatHistoryHandler, insertDataMySQL } from "./chat_history/getChatHistory";
+import { insertDataMySQL } from "./chat_history/getChatHistory";
+import { WhatsAppClient } from "./whatsapp-client";
 
 const webhookRouter = express.Router();
 
 webhookRouter.post("/webhook", async (req: Request, res: Response) => {
   try {
+    res.status(200).send("✅ Acknowledged");
     const data = req.body;
     const mainRequestBody = data.entry[0]?.changes[0]?.value;
 
@@ -40,29 +40,44 @@ webhookRouter.post("/webhook", async (req: Request, res: Response) => {
             { query: userQuery, whatsappNumberId: senderPhoneNumber }
           );
 
-          // Extract the JSON data from the response
           const aiResponse: LanguageToSQLResponse = response.data;
 
           logger.info("AI Response: " + JSON.stringify(aiResponse));
 
-          await WhatsAppClient.sendMessage(aiResponse, senderPhoneNumber);
+          // Attempt to send the AI response
+          const messageStatus = await WhatsAppClient.sendMessage(
+            aiResponse,
+            senderPhoneNumber
+          );
 
-          if(aiResponse.status === 'success'){
-            await insertDataMySQL(senderPhoneNumber, userQuery, aiResponse.formattedAnswer, aiResponse.sqlStatement)
+          if (messageStatus === "success" && aiResponse.status === "success") {
+            await insertDataMySQL(
+              senderPhoneNumber,
+              userQuery,
+              aiResponse.formattedAnswer,
+              aiResponse.sqlStatement
+            );
           }
 
           logger.info("✅ AI answer sent or error reported.");
         } catch (error: any) {
-          // Handle AI response errors
-          const errorMessage = error.response?.data;
+          const errorMessage = error.response?.data || "Unknown error occurred";
 
           logger.error(
             `❌ Error from AI response: ${JSON.stringify(errorMessage)}`
           );
 
-          await WhatsAppClient.sendMessage(errorMessage, senderPhoneNumber);
+          // Send the error message but only log the failure
+          const errorStatus = await WhatsAppClient.sendMessage(
+            errorMessage,
+            senderPhoneNumber
+          );
 
-          logger.info("⚠️ Error message sent to the user.");
+          if (errorStatus === "error") {
+            logger.warn("⚠️ Failed to send the error message to the user.");
+          } else {
+            logger.info("⚠️ Error message sent to the user.");
+          }
         }
       } else {
         logger.warn(
@@ -71,7 +86,6 @@ webhookRouter.post("/webhook", async (req: Request, res: Response) => {
       }
     }
 
-    res.status(200).send("✅");
   } catch (error: any) {
     logger.error(`❌ Error processing HTTP request: ${error.message}`);
     res.status(400).send("❌");

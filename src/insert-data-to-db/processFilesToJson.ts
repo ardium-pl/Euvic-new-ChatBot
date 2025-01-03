@@ -9,7 +9,7 @@ import {
 } from "./utils/credentials.ts";
 import { logger } from "./utils/logger.ts";
 import { FileData } from "./zod-json/dataJsonSchema.ts";
-import { parseOcrText } from "./zod-json/dataProcessor";
+import { parseOcrText } from "./zod-json/dataProcessor.ts";
 
 async function processFile(fileName: string) {
   try {
