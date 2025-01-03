@@ -1,33 +1,28 @@
 import { db } from "../config/database";
 import chalk from "chalk";
-import { ExistingRow } from "../models/dataDBMoldes";
 
 export async function addTechnologiesToDB(technologies: Set<string>) {
   for (const technology of technologies) {
     try {
-      const [rows] = await db.execute(
-        "SELECT id FROM technologie WHERE nazwa = ?",
-        [technology]
+      await db.execute("INSERT INTO technologie (nazwa) VALUES (?)", [
+        technology,
+      ]);
+      console.log(
+        chalk.green(`✅ Technology "${technology}" added to the database.`)
       );
-
-      if ((rows as ExistingRow[]).length === 0) {
-        await db.execute("INSERT INTO technologie (nazwa) VALUES (?)", [
-          technology,
-        ]);
-        console.log(
-          chalk.green(`✅ Technology "${technology}" added to the database.`)
-        );
-      } else {
+    } catch (error: any) {
+      if (error.code === "ER_DUP_ENTRY") {
         console.log(
           chalk.yellow(
             `⚠️ Technology "${technology}" already exists in the database.`
           )
         );
+      } else {
+        console.error(
+          chalk.red(`❌ Error adding technology "${technology}":`),
+          error
+        );
       }
-    } catch (error) {
-      console.error(
-        chalk.red(`❌ Error adding technology "${technology}":`, error)
-      );
     }
   }
 }

@@ -1,27 +1,21 @@
 import { db } from "../config/database";
 import chalk from "chalk";
-import { ExistingRow } from "../models/dataDBMoldes";
 
 export async function addBusinessCasesToDB(businessCases: Set<string>) {
   for (const businessCase of businessCases) {
     try {
-      const [rows] = await db.execute(
-        "SELECT id FROM biznes_casy WHERE opis = ?",
-        [businessCase]
+      await db.execute("INSERT INTO biznes_casy (opis) VALUES (?)", [
+        businessCase,
+      ]);
+      console.log(
+        chalk.green(
+          `✅ Business case "${chalk.bold(
+            businessCase
+          )}" added to the database.`
+        )
       );
-
-      if ((rows as ExistingRow[]).length === 0) {
-        await db.execute("INSERT INTO biznes_casy (opis) VALUES (?)", [
-          businessCase,
-        ]);
-        console.log(
-          chalk.green(
-            `✅ Business case "${chalk.bold(
-              businessCase
-            )}" added to the database.`
-          )
-        );
-      } else {
+    } catch (error: any) {
+      if (error.code === "ER_DUP_ENTRY") {
         console.log(
           chalk.yellow(
             `⚠️ Business case "${chalk.bold(
@@ -29,14 +23,14 @@ export async function addBusinessCasesToDB(businessCases: Set<string>) {
             )}" already exists in the database.`
           )
         );
+      } else {
+        console.error(
+          chalk.red(
+            `❌ Error adding business case "${chalk.bold(businessCase)}":`
+          ),
+          error
+        );
       }
-    } catch (error) {
-      console.error(
-        chalk.red(
-          `❌ Error adding business case "${chalk.bold(businessCase)}":`
-        ),
-        error
-      );
     }
   }
 }

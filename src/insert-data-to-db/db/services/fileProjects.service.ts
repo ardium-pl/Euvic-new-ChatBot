@@ -1,64 +1,44 @@
 import { db } from "../config/database";
-import { DataFileProject, ExistingRow } from "../models/dataDBMoldes";
+import { DataFileProject } from "../models/dataDBMoldes";
 import chalk from "chalk";
 
 export async function addFileProjectsToDB(fileProjects: DataFileProject[]) {
   for (const fileProject of fileProjects) {
     try {
-      const [projectRows] = await db.execute(
-        "SELECT id FROM projekty WHERE nazwa = ?",
-        [fileProject.projectName]
+      await db.execute(
+        `INSERT INTO pliki_projekty (id_pliku, id_proj)
+         VALUES (
+           (SELECT id FROM pliki WHERE nazwa = ?),
+           (SELECT id FROM projekty WHERE nazwa = ?)
+         )`,
+        [fileProject.fileName, fileProject.projectName]
       );
-
-      const [fileRows] = await db.execute(
-        "SELECT id FROM pliki WHERE nazwa = ?",
-        [fileProject.fileName]
+      console.log(
+        chalk.green(
+          `✅ File-project relationship added: File "${fileProject.fileName}" -> Project "${fileProject.projectName}".`
+        )
       );
-
-      if (
-        (projectRows as ExistingRow[]).length === 0 ||
-        (fileRows as ExistingRow[]).length === 0
-      ) {
-        console.log(
-          chalk.red(
-            `❌ File "${fileProject.fileName}" or project "${fileProject.projectName}" not found in the database.`
-          )
-        );
-        continue;
-      }
-
-      const projectId = (projectRows as ExistingRow[])[0].id;
-      const fileId = (fileRows as ExistingRow[])[0].id;
-
-      const [existingRelationRows] = await db.execute(
-        "SELECT id_pliku, id_proj FROM pliki_projekty WHERE id_pliku = ? AND id_proj = ?",
-        [fileId, projectId]
-      );
-
-      if ((existingRelationRows as ExistingRow[]).length === 0) {
-        await db.execute(
-          "INSERT INTO pliki_projekty (id_pliku, id_proj) VALUES (?, ?)",
-          [fileId, projectId]
-        );
-        console.log(
-          chalk.green(
-            `✅ File-project relationship added: File "${fileProject.fileName}" -> Project "${fileProject.projectName}".`
-          )
-        );
-      } else {
+    } catch (error: any) {
+      if (error.code === "ER_DUP_ENTRY") {
         console.log(
           chalk.yellow(
             `⚠️ File-project relationship already exists: File "${fileProject.fileName}" -> Project "${fileProject.projectName}".`
           )
         );
+      } else if (error.code === "ER_NO_REFERENCED_ROW") {
+        console.log(
+          chalk.red(
+            `❌ File "${fileProject.fileName}" or project "${fileProject.projectName}" not found in the database.`
+          )
+        );
+      } else {
+        console.error(
+          chalk.red(
+            `❌ Error adding file-project relationship: File "${fileProject.fileName}" -> Project "${fileProject.projectName}".`,
+            error
+          )
+        );
       }
-    } catch (error) {
-      console.error(
-        chalk.red(
-          `❌ Error adding file-project relationship: File "${fileProject.fileName}" -> Project "${fileProject.projectName}".`,
-          error
-        )
-      );
     }
   }
 }

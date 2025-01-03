@@ -5,7 +5,6 @@ import { addTechnologyProjectsToDB } from "../services/technologyProjects.servic
 import { loadJSONFiles } from "./json-loader";
 import {
   BusinessCasesProject,
-  DataClient,
   DataFile,
   DataFileProject,
   Project,
@@ -149,15 +148,15 @@ export async function processData() {
   try {
     //Etap 1: Dodaj dane niezależne
     console.log("Adding business cases...");
-    //await addBusinessCasesToDB(businessCases);
+    await addBusinessCasesToDB(businessCases);
     console.log("Adding technologies...");
-    //await addTechnologiesToDB(technologies);
+    await addTechnologiesToDB(technologies);
     console.log("Adding industries...");
-    //await addIndustriesToDB(industries);
+    await addIndustriesToDB(industries);
     console.log("Adding files...");
-    //await addFilesToDB(files);
+    await addFilesToDB(files);
     console.log("Adding clients...");
-    //await addClientsToDB(uniqueClientNames);
+    await addClientsToDB(uniqueClientNames);
 
     // Etap 2: Dodaj projekty (zależne od clients i business cases)
     console.log("Adding projects...");

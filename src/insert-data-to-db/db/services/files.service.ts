@@ -1,31 +1,41 @@
 import { db } from "../config/database";
-import { DataFile, ExistingRow } from "../models/dataDBMoldes";
+import { DataFile } from "../models/dataDBMoldes";
 import chalk from "chalk";
 
 export async function addFilesToDB(dataFiles: DataFile[]) {
-  for (const file of dataFiles) {
-    try {
-      const [rows] = await db.execute("SELECT id FROM pliki WHERE nazwa = ?", [
-        file.nazwa,
-      ]);
+  if (dataFiles.length === 0) {
+    console.log(chalk.yellow(`⚠️ No files to add.`));
+    return;
+  }
 
-      if ((rows as ExistingRow[]).length === 0) {
-        await db.execute(
-          "INSERT INTO pliki (nazwa, zawartosc_ocr) VALUES (?, ?)",
-          [file.nazwa, file.zawartosc_ocr]
-        );
-        console.log(
-          chalk.green(`✅ File "${file.nazwa}" added to the database.`)
-        );
-      } else {
-        console.log(
-          chalk.yellow(
-            `⚠️ File "${file.nazwa}" already exists in the database.`
-          )
-        );
-      }
-    } catch (error) {
-      console.error(chalk.red(`❌ Error adding file "${file.nazwa}":`, error));
+  const values = dataFiles.map(() => "(?, ?)").join(", ");
+  const params = dataFiles.flatMap((file) => [file.nazwa, file.zawartosc_ocr]);
+
+  try {
+    const result: any = await db.execute(
+      `INSERT INTO pliki (nazwa, zawartosc_ocr) VALUES ${values}
+       ON DUPLICATE KEY UPDATE nazwa = nazwa`,
+      params
+    );
+
+    const affectedRows = result[0]?.affectedRows || 0;
+    const insertedRows = affectedRows - dataFiles.length;
+
+    if (insertedRows > 0) {
+      console.log(
+        chalk.green(`✅ Added ${insertedRows} new files to the database.`)
+      );
     }
+    if (affectedRows > insertedRows) {
+      console.log(
+        chalk.yellow(
+          `⚠️ ${
+            affectedRows - insertedRows
+          } files were already in the database.`
+        )
+      );
+    }
+  } catch (error: any) {
+    console.error(chalk.red(`❌ Error adding files to the database:`, error));
   }
 }
