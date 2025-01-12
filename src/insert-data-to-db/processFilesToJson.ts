@@ -17,7 +17,7 @@ async function processFile(fileName: string) {
     [PDF_DATA_FOLDER, JSON_DATA_FOLDER].map((folder) => fs.ensureDir(folder));
     let pdfFilePath = path.join(PDF_DATA_FOLDER, fileName);
 
-    // Convert PPTX to PDF if necessary
+    // Convert PPTX to PDF if necessary // TODO: wywalić stąd funkcje konwersi z pptx na pdf(konieczne) i zrobić to przed tą funckcją
     if (path.extname(fileName).toLowerCase() === ".pptx") {
       logger.info(`🔄 Converting PPTX to PDF: ${fileName}`);
       const pdfFileName = `${path.basename(fileName, ".pptx")}.pdf`;
@@ -62,7 +62,7 @@ async function main() {
     await Promise.all(
       files.map((file) => {
         const fileExtension = path.extname(file).toLowerCase();
-        if (fileExtension === ".pdf" || fileExtension === ".pptx") {
+        if (fileExtension === ".pdf" || fileExtension === ".pptx") { //TODO: tutaj dodac elif na pliki które są wordem
           return processFile(file);
         } else {
           logger.info(`Skipping unsupported file format: ${file}`);

@@ -9,6 +9,8 @@ import { logger } from './logger';
  * @param outputPath - Optional path for the output PDF file.
  * @returns A promise that resolves when the conversion is complete.
  */
+
+//TODO: najlepiej zrobić tu funckje na nowo bo ta funckja słąbo działa 
 export async function convertPptxToPdf(filePath: string, outputPath: string): Promise<void> {
     return new Promise<void>((resolve, reject) => {
         const extend = '.pdf';
