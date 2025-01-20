@@ -17,15 +17,6 @@ async function processFile(fileName: string) {
     [PDF_DATA_FOLDER, JSON_DATA_FOLDER].map((folder) => fs.ensureDir(folder));
     let pdfFilePath = path.join(PDF_DATA_FOLDER, fileName);
 
-    // Convert PPTX to PDF if necessary // TODO: wywalić stąd funkcje konwersi z pptx na pdf(konieczne) i zrobić to przed tą funckcją
-    if (path.extname(fileName).toLowerCase() === ".pptx") {
-      logger.info(`🔄 Converting PPTX to PDF: ${fileName}`);
-      const pdfFileName = `${path.basename(fileName, ".pptx")}.pdf`;
-      pdfFilePath = path.join(PDF_DATA_FOLDER, pdfFileName);
-      await convertPptxToPdf(path.join(PDF_DATA_FOLDER, fileName), pdfFilePath);
-      logger.info(`✅ Conversion complete: ${pdfFilePath}`);
-    }
-
     const ocrDataText = await pdfOcr(pdfFilePath);
     logger.info(`📄 OCR Data Text: ${ocrDataText}`);
     if (!getDataPrompt) return null;
@@ -60,12 +51,38 @@ async function main() {
     }
 
     await Promise.all(
-      files.map((file) => {
-        const fileExtension = path.extname(file).toLowerCase();
-        if (fileExtension === ".pdf" || fileExtension === ".pptx") { //TODO: tutaj dodac elif na pliki które są wordem
-          return processFile(file);
+      files.map((fileName) => {
+        const fileExtension = path.extname(fileName).toLowerCase();
+
+        if (fileExtension === ".pdf") { //TODO: tutaj dodac elif na pliki które są wordem
+          return processFile(fileName);
+
+        } else if (fileExtension === ".pptx") {
+
+          logger.info(`🔄 Converting PPTX to PDF: ${fileName}`);
+          let pdfFilePath = path.join(PDF_DATA_FOLDER, fileName);
+          const pdfFileName = `${path.basename(fileName, ".pptx")}.pdf`;
+          pdfFilePath = path.join(PDF_DATA_FOLDER, pdfFileName);
+          convertPptxToPdf(path.join(PDF_DATA_FOLDER, fileName), pdfFilePath);
+          logger.info(`✅ Conversion complete: ${pdfFilePath}`);
+
+          return processFile(fileName)
+
+        } else if (fileExtension === ".doc") {
+
+          // logger.info(`🔄 Converting DOC to PDF: ${fileName}`);
+          // let pdfFilePath = path.join(PDF_DATA_FOLDER, fileName);
+          // const pdfFileName = `${path.basename(fileName, ".doc")}.pdf`;
+          // pdfFilePath = path.join(PDF_DATA_FOLDER, pdfFileName);
+          // convertPptxToPdf(path.join(PDF_DATA_FOLDER, fileName), pdfFilePath);
+          // logger.info(`✅ Conversion complete: ${pdfFilePath}`);
+
+          // return processFile(fileName)
+          logger.info(`Skipping .doc file format: ${fileName} (Module not implemented yet)`);
+          return Promise.resolve();
+
         } else {
-          logger.info(`Skipping unsupported file format: ${file}`);
+          logger.info(`Skipping unsupported file format: ${fileName}`);
           return Promise.resolve();
         }
       })
