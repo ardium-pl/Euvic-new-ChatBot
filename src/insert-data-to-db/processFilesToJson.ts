@@ -74,7 +74,7 @@ async function main() {
           // let pdfFilePath = path.join(PDF_DATA_FOLDER, fileName);
           // const pdfFileName = `${path.basename(fileName, ".doc")}.pdf`;
           // pdfFilePath = path.join(PDF_DATA_FOLDER, pdfFileName);
-          // convertPptxToPdf(path.join(PDF_DATA_FOLDER, fileName), pdfFilePath);
+          // convertDocToPdf(path.join(PDF_DATA_FOLDER, fileName), pdfFilePath);
           // logger.info(`✅ Conversion complete: ${pdfFilePath}`);
 
           // return processFile(fileName)
