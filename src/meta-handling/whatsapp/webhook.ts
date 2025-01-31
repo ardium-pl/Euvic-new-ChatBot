@@ -43,8 +43,7 @@ webhookRouter.post("/webhook", async (req: Request, res: Response) => {
           const aiResponse: LanguageToSQLResponse = response.data;
 
           logger.info("AI Response: " + JSON.stringify(aiResponse));
-
-          // Attempt to send the AI response
+          
           const messageStatus = await WhatsAppClient.sendMessage(
             aiResponse,
             senderPhoneNumber
