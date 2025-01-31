@@ -1,6 +1,5 @@
 import express, { Request, Response } from "express";
-import { WEBHOOK_VERIFY_TOKEN } from "../../config";
-// import { insertDataMySQL } from "../database";
+import { WEBHOOK_VERIFY_TOKEN, apiUrl } from "../../config";
 import axios from "axios";
 import { logger } from "../../insert-data-to-db/utils/logger";
 import { LanguageToSQLResponse } from "../../types";
@@ -36,14 +35,14 @@ webhookRouter.post("/webhook", async (req: Request, res: Response) => {
         );
         try {
           const response = await axios.post(
-            `https://prod-production-01b0.up.railway.app/language-to-sql`,
+            `${apiUrl}/language-to-sql`,
             { query: userQuery, whatsappNumberId: senderPhoneNumber }
           );
 
           const aiResponse: LanguageToSQLResponse = response.data;
 
           logger.info("AI Response: " + JSON.stringify(aiResponse));
-          
+
           const messageStatus = await WhatsAppClient.sendMessage(
             aiResponse,
             senderPhoneNumber
