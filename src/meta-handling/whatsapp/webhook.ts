@@ -35,7 +35,7 @@ webhookRouter.post("/webhook", async (req: Request, res: Response) => {
         );
         try {
           const response = await axios.post(
-            `${apiUrl}/language-to-sql`,
+            `https://${apiUrl}/language-to-sql`,
             { query: userQuery, whatsappNumberId: senderPhoneNumber }
           );
 
