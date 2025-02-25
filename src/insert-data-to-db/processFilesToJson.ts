@@ -10,6 +10,8 @@ import {
 import { logger } from "./utils/logger.ts";
 import { FileData } from "./zod-json/dataJsonSchema.ts";
 import { parseOcrText } from "./zod-json/dataProcessor.ts";
+import { verifyJson } from "./verifcation-json-data/jsonVerifier.ts";
+import { generateVerificationInstructions } from "./verifcation-json-data/descriptionGenerator.ts";
 
 async function processFile(fileName: string) {
   try {
@@ -32,10 +34,28 @@ async function processFile(fileName: string) {
     const parsedData = await parseOcrText(ocrDataText, getDataPrompt);
     logger.info("JSON Schema: ", parsedData);
 
+    // Weryfikacja JSON
+    const verificationInstructions = await generateVerificationInstructions(
+      parsedData
+    );
+    const verifiedData = await verifyJson(
+      ocrDataText,
+      parsedData,
+      verificationInstructions
+    );
+
+    logger.info("JSON verifed Schema: ", verifiedData);
+
+    if (!verifiedData) {
+      logger.warn(
+        "⚠️ Weryfikacja JSON nie powiodła się, zapisuję dane bez weryfikacji."
+      );
+    }
+
     const fileJsonData: FileData = {
       fileName: fileName,
       ocrText: ocrDataText,
-      customers: parsedData.customers,
+      customers: verifiedData.customers,
     };
 
     const jsonFileName = `${path.basename(
@@ -62,7 +82,8 @@ async function main() {
     await Promise.all(
       files.map((file) => {
         const fileExtension = path.extname(file).toLowerCase();
-        if (fileExtension === ".pdf" || fileExtension === ".pptx") { //TODO: tutaj dodac elif na pliki które są wordem
+        if (fileExtension === ".pdf" || fileExtension === ".pptx") {
+          //TODO: tutaj dodac elif na pliki które są wordem
           return processFile(file);
         } else {
           logger.info(`Skipping unsupported file format: ${file}`);
