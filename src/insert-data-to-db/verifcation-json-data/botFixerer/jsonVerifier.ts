@@ -1,7 +1,10 @@
 import { zodResponseFormat } from "openai/helpers/zod";
-import { openAiClient } from "../../config";
-import { CustomersData, CustomersDataType } from "../zod-json/dataJsonSchema";
-import { logger } from "../utils/logger";
+import { openAiClient } from "../../../config";
+import {
+  CustomersData,
+  CustomersDataType,
+} from "../../zod-json/dataJsonSchema";
+import { logger } from "../../utils/logger";
 
 export async function verifyJson(
   ocrText: string,
@@ -37,7 +40,6 @@ export async function verifyJson(
     const message = completion.choices[0]?.message;
 
     if (message?.parsed) {
-      logger.info("verifed complted!!!");
       return message.parsed;
     } else if (message?.refusal) {
       throw new Error(` 🤖 AI refused to verify the JSON: ${message.refusal}`);

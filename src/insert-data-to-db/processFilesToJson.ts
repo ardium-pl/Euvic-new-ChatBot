@@ -10,8 +10,7 @@ import {
 import { logger } from "./utils/logger.ts";
 import { FileData } from "./zod-json/dataJsonSchema.ts";
 import { parseOcrText } from "./zod-json/dataProcessor.ts";
-import { verifyJson } from "./verifcation-json-data/jsonVerifier.ts";
-import { generateVerificationInstructions } from "./verifcation-json-data/descriptionGenerator.ts";
+import { jsonFixes } from "./verifcation-json-data/jsonMainFixer.ts";
 
 async function processFile(fileName: string) {
   try {
@@ -32,30 +31,15 @@ async function processFile(fileName: string) {
     logger.info(`📄 OCR Data Text: ${ocrDataText}`);
     if (!getDataPrompt) return null;
     const parsedData = await parseOcrText(ocrDataText, getDataPrompt);
-    logger.info("JSON Schema: ", parsedData);
+    logger.info("JSON was made!!!");
 
     // Weryfikacja JSON
-    const verificationInstructions = await generateVerificationInstructions(
-      parsedData
-    );
-    const verifiedData = await verifyJson(
-      ocrDataText,
-      parsedData,
-      verificationInstructions
-    );
-
-    logger.info("JSON verifed Schema: ", verifiedData);
-
-    if (!verifiedData) {
-      logger.warn(
-        "⚠️ Weryfikacja JSON nie powiodła się, zapisuję dane bez weryfikacji."
-      );
-    }
+    const finalData = await jsonFixes(parsedData, ocrDataText);
 
     const fileJsonData: FileData = {
       fileName: fileName,
       ocrText: ocrDataText,
-      customers: verifiedData.customers,
+      customers: finalData.customers,
     };
 
     const jsonFileName = `${path.basename(
