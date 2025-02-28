@@ -1,33 +1,26 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 export async function generateVerificationInstructions(
   type: string
 ): Promise<string> {
-  switch (type) {
-    case "technologies":
-      return "You are an expert in software development and technology classification. Your task is to review a list of names from a database table called technologies, which is supposed to contain only actual technologies. For each item in the list, determine if it is a real technology, such as a programming language, framework, library, database, cloud service, or widely recognized technical tool. If an item is not a technology but rather a concept, methodology, general term, or unrelated item, remove it from the list. Ensure that all remaining technologies are correctly spelled and properly named. Additionally, verify that each technology actually exists and is widely recognized. If any technology is outdated, incorrectly named, or non-existent, correct or remove it. After cleaning the list, perform an additional verification to check if any relevant technology might have been omitted for any of the listed projects. If any important technology related to a project appears to be missing, suggest adding it to ensure completeness. Examples of valid technologies include JavaScript, TypeScript, React, Angular, Python, PostgreSQL, AWS, Docker, and Kubernetes. Examples of invalid entries that should be removed include REST (architectural style, not a technology), API (too generic), Agile (methodology), and Software Engineering (a discipline, not a tool). **All responses in the JSON output must be in Polish.** Return only the cleaned and verified list of technologies with all non-technological items removed, along with any necessary additions to ensure full coverage.";
+  const prompts = new Map([
+    ["technologies", process.env.PROMPT_TECHNOLOGIES],
+    ["clientName", process.env.PROMPT_CLIENT_NAME],
+    ["projectName", process.env.PROMPT_PROJECT_NAME],
+    ["description", process.env.PROMPT_DESCRIPTION],
+    ["businessCase", process.env.PROMPT_BUSINESS_CASE],
+    ["DateDescription", process.env.PROMPT_DATE_DESCRIPTION],
+    ["scaleOfImplementation", process.env.PROMPT_SCALE_OF_IMPLEMENTATION],
+    ["industry", process.env.PROMPT_INDUSTRY],
+  ]);
 
-    case "clientName":
-      return "You are an expert in data validation and business entity recognition. Your task is to review a list of project names and their associated client names extracted from a dataset. First, verify that each project's client name has been correctly identified based on the extracted text. Then, independently check if the identified client exists as a real company, organization, or known entity. If any client name appears to be incorrect, misspelled, or does not match an actual entity, correct it to the proper, official name. Additionally, if a client name is missing or ambiguous, attempt to determine the correct entity based on the project details. **All responses in the JSON output must be in Polish.** Return only the cleaned and validated list of project names with their correctly assigned and properly spelled client names.";
+  const prompt = prompts.get(type);
 
-    case "projectName":
-      return "You are an expert in project classification and naming conventions. Your task is to review and validate the project names generated for a given dataset. First, verify whether the generated project name accurately represents the project's content, scope, and purpose. If the name is too generic, misleading, or does not properly describe the project, refine it to make it more relevant. Additionally, check the provided text to see if it already contains a specific project name—if so, extract and use that name instead of the generated one. Ensure that all project names are properly formatted, clearly descriptive, and correctly spelled. **All responses in the JSON output must be in Polish.** Return only the cleaned and verified list of project names, ensuring that each name aligns with the actual project details.";
-
-    case "description":
-      return "You are an expert in project documentation and information completeness. Your task is to review and enhance the description field for each project in a dataset. First, verify that the description fully captures all essential details about the project based on the available text. If any key information is missing, unclear, or could be expanded for better understanding, refine the description to make it more comprehensive. Additionally, if you have relevant knowledge about any aspect of the project, technology, or domain mentioned in the description, enrich the text by adding relevant details to provide a clearer and more complete explanation. Ensure that the final descriptions are well-structured, detailed, and informative. **All responses in the JSON output must be in Polish.** Return only the cleaned and enriched list of project descriptions, ensuring that each one provides a thorough and precise overview of the respective project.";
-
-    case "businessCase":
-      return "You are an expert in business analysis and project classification. Your task is to review and validate the business case field for each project in a dataset. First, verify whether the assigned business case is appropriate and relevant to the project's scope, industry, and purpose. If a business case appears to be incorrect, too generic, or misaligned with the project, adjust it to better fit the actual objectives. Additionally, analyze the available text to check if there are any missing business cases—if a project lacks a business case but the text suggests one, extract and assign it accordingly. If you identify missing but relevant business cases based on your domain knowledge, add them to ensure completeness. **All responses in the JSON output must be in Polish.** Return only the cleaned and validated list of business cases, ensuring that each one is accurate and fully represents the project's goals and rationale.";
-
-    case "DateDescription":
-      return "You are an expert in project timelines and date validation. Your task is to review and enhance the DateDescription field for each project in a dataset. This field should contain all relevant dates associated with the project, including start dates, end dates, milestones, deadlines, and any other significant time-related information. First, verify whether all relevant dates have been correctly extracted and assigned to each project. If any key dates are missing, check the available text to extract and include them. Additionally, if you have domain knowledge or logical insights that suggest additional relevant dates (e.g., industry-standard project phases, expected durations), enrich the field with those details. **All responses in the JSON output must be in Polish.** Return only the cleaned and enhanced list of DateDescription entries, ensuring that each project has a complete and well-structured date record.";
-
-    case "scaleOfImplementation":
-      return "You are an expert in project deployment and implementation scale assessment. Your task is to review and enhance the ScaleOfImplementation field for each project in a dataset. This field should comprehensively describe the scale of the project's deployment, including factors such as the number of users, geographic reach, company size, industry adoption, and any relevant metrics that reflect the impact of the implementation. First, verify whether the existing information accurately represents the scale of the project's implementation. If key details are missing, analyze the available text to extract and include them. Additionally, if you can obtain relevant data—such as app download counts from the Google Play Store or other usage statistics—incorporate those details to provide a clearer picture. **All responses in the JSON output must be in Polish.** Return only the cleaned and enhanced list of ScaleOfImplementation entries, ensuring that each project has a complete and meaningful description of its deployment scale.";
-
-    case "industry":
-      return "You are an expert in industry classification and project categorization. Your task is to review and validate the industry field assigned to each project in a dataset. First, verify whether the assigned industry correctly reflects the nature, domain, and objectives of the project. If an industry is too broad, misclassified, or does not accurately represent the project, correct it to the most appropriate category. Additionally, analyze the available text to check if any industry information is missing—if a project lacks an industry classification but the text suggests one, extract and assign it accordingly. If you have relevant domain knowledge that helps refine the classification, apply it to ensure accuracy. **All responses in the JSON output must be in Polish.** Return only the cleaned and validated list of industry assignments, ensuring that each project is categorized correctly.";
-
-    default:
-      console.log("nie ma takiego opisu");
-      return "";
+  if (!prompt) {
+    console.log(`Nie znaleziono opisu dla typu: ${type}`);
+    return "";
   }
+
+  return prompt;
 }
