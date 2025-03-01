@@ -11,7 +11,7 @@ import { logger } from "./utils/logger.ts";
 import { FileData } from "./zod-json/dataJsonSchema.ts";
 import { parseOcrText } from "./zod-json/dataProcessor.ts";
 
-async function processFile(fileName: string) {
+export async function processFile(fileName: string) {
   try {
     logger.info(`🧾 Reading file: ${fileName}`);
     [PDF_DATA_FOLDER, JSON_DATA_FOLDER].map((folder) => fs.ensureDir(folder));

@@ -5,7 +5,8 @@
   "main": "index.ts",
   "type": "module",
   "scripts": {
-    "start": "tsx index.ts"
+    "start": "tsx index.ts",
+    "test": "vitest --config vitest.config.ts"
   },
   "keywords": [],
   "author": "",
@@ -43,6 +44,7 @@
   },
   "devDependencies": {
     "@types/express": "^5.0.0",
-    "@types/fs-extra": "^11.0.4"
+    "@types/fs-extra": "^11.0.4",
+    "vitest": "^3.0.7"
   }
 }
