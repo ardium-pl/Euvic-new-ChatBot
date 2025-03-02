@@ -97,7 +97,6 @@ export async function processData() {
     },
     []
   );
-  console.log(projectsData);
 
   const technologyProjects: TechnologyProject[] = jsonData.reduce(
     (acc: TechnologyProject[], file: DataJson) => {
