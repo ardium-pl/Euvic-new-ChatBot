@@ -43,7 +43,7 @@ export async function jsonFixes(
   parsedData = await correctBusinessCases(parsedData);
   logger.info("✅ Business Case'y zostały poprawione!");
 
-  logger.info("✅ JSON został w pełni zweryfikowany i poprawiony!", parsedData);
+  logger.info("✅ JSON został w pełni zweryfikowany i poprawiony!");
 
   return parsedData;
 }

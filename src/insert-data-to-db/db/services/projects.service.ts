@@ -1,4 +1,3 @@
-import { people } from "googleapis/build/src/apis/people";
 import { db } from "../config/database";
 import { Project } from "../models/dataDBMoldes";
 import chalk from "chalk";

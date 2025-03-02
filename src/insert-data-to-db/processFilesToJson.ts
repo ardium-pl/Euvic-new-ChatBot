@@ -31,7 +31,7 @@ async function processFile(fileName: string) {
     logger.info(`📄 OCR Data Text: ${ocrDataText}`);
     if (!getDataPrompt) return null;
     const parsedData = await parseOcrText(ocrDataText, getDataPrompt);
-    logger.info("JSON was made!!!");
+    logger.info("JSON was made !");
 
     // Weryfikacja JSON
     const finalData = await jsonFixes(parsedData, ocrDataText);
@@ -83,3 +83,4 @@ async function main() {
 }
 
 await main();
+process.exit(0);
