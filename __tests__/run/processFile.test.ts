@@ -7,7 +7,7 @@ import {
   JSON_DATA_FOLDER,
   PDF_DATA_FOLDER,
 } from "../../src/insert-data-to-db/utils/credentials";
-import { FileData, ReferenceData } from "../../src/insert-data-to-db/zod-json/dataJsonSchema";
+import { ReferenceProjectDataType, FileDataType, ReferenceFileDataType, ProjectDataType } from "../../src/insert-data-to-db/zod-json/dataJsonSchema";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -33,6 +33,21 @@ afterEach(async () => {
   await fs.emptyDir(JSON_DATA_FOLDER);
 });
 
+const mapCustomers = (customersArray: ReferenceProjectDataType[]): ProjectDataType[] => {
+  return customersArray.map((customer) => ({
+    clientName: customer.name,
+    projectName: "",
+    description: customer.projects.description,
+    technologies: customer.projects.technologies,
+    businessCase: customer.projects.businessCase ? { name: [customer.projects.businessCase] } : undefined,
+    referenceDate: customer.projects.referenceDate,
+    scaleOfImplementationValue: customer.projects.scaleOfImplementationValue,
+    scaleOfImplementationDescription: customer.projects.scaleOfImplementationDescription,
+    industry: customer.projects.industry
+
+  }))
+};
+
 describe("processFile function", () => {
   it.each(testFiles)(
     "should correctly process %s and generate a valid JSON file",
@@ -49,11 +64,14 @@ describe("processFile function", () => {
 
       expect(await fs.pathExists(generatedJsonPath)).toBe(true);
 
-      const generatedJson: FileData = await fs.readJson(generatedJsonPath);
-      const referenceJson: ReferenceData = await fs.readJson(referenceJsonPath);
+      const generatedJson: FileDataType = await fs.readJson(generatedJsonPath);
+      const referenceJson: ReferenceFileDataType = await fs.readJson(referenceJsonPath);
 
-      expect(generatedJson.fileName).toEqual(referenceJson.fileName);      
-      expect(generatedJson.customers).toEqual(referenceJson.customers);
+      const genCustomers: ProjectDataType[] = generatedJson.customers
+      const refCustomers: ProjectDataType[] = mapCustomers(referenceJson.customers);
+
+      expect(generatedJson.fileName).toEqual(referenceJson.fileName);
+      expect(genCustomers).toEqual(refCustomers);
 
     }
   );

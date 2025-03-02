@@ -41,18 +41,22 @@ export const CustomersData = z.object({
   customers: z.array(ProjectData),
 });
 
-export type FileData = {
-  fileName: string;
-  ocrText: string;
-  customers: ProjectDataType[];
-};
+const FileData = z.object({
+  fileName: z.string(),
+  ocrText: z.string(),
+  customers: z.array(ProjectData)
+})
 
-export type ReferenceData = {
-  fileName: string;
-  ocrText: string;
-  customers: ReferenceProjectDataType[];
-}
+const ReferenceData = z.object({
+  fileName: z.string(),
+  ocrText: z.string(),
+  customers: z.array(ReferenceProjectData)
+})
 
+export type ProjectDataType = z.infer<typeof ProjectData>;
+export type ReferenceProjectDataType = z.infer<typeof ReferenceProjectData>;
 export type CustomersDataType = z.infer<typeof CustomersData>;
-type ProjectDataType = z.infer<typeof ProjectData>;
-type ReferenceProjectDataType = z.infer<typeof ReferenceProjectData>;
+export type FileDataType = z.infer<typeof FileData>;
+export type ReferenceFileDataType = z.infer<typeof ReferenceData>;
+
+

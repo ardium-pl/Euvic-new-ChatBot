@@ -8,7 +8,7 @@ import {
   PDF_DATA_FOLDER,
 } from "./utils/credentials.ts";
 import { logger } from "./utils/logger.ts";
-import { FileData } from "./zod-json/dataJsonSchema.ts";
+import { FileDataType } from "./zod-json/dataJsonSchema.ts";
 import { parseOcrText } from "./zod-json/dataProcessor.ts";
 
 export async function processFile(fileName: string) {
@@ -32,7 +32,7 @@ export async function processFile(fileName: string) {
     const parsedData = await parseOcrText(ocrDataText, getDataPrompt);
     logger.info("JSON Schema: ", parsedData);
 
-    const fileJsonData: FileData = {
+    const fileJsonData: FileDataType = {
       fileName: fileName,
       ocrText: ocrDataText,
       customers: parsedData.customers,
