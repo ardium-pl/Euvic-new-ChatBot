@@ -14,7 +14,7 @@ const ProjectData = z.object({
       name: z.array(z.string()),
     })
     .optional(),
-  DateDescription: z.string().optional(),
+  dateDescription: z.string().optional(),
   scaleOfImplementation: z.string().optional(),
   industry: z.string().optional(),
 });
