@@ -7,7 +7,7 @@ import {
   JSON_DATA_FOLDER,
   PDF_DATA_FOLDER,
 } from "../../src/insert-data-to-db/utils/credentials";
-import { FileData } from "../../src/insert-data-to-db/zod-json/dataJsonSchema";
+import { FileData, ReferenceData } from "../../src/insert-data-to-db/zod-json/dataJsonSchema";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -49,9 +49,11 @@ describe("processFile function", () => {
 
       expect(await fs.pathExists(generatedJsonPath)).toBe(true);
 
-      // Odczyt wygenerowanego i oczekiwanego JSON-a
       const generatedJson: FileData = await fs.readJson(generatedJsonPath);
-      const referenceJson: FileData = await fs.readJson(referenceJsonPath);
+      const referenceJson: ReferenceData = await fs.readJson(referenceJsonPath);
+
+      expect(generatedJson.fileName).toEqual(referenceJson.fileName);      
+      expect(generatedJson.customers).toEqual(referenceJson.customers);
 
     }
   );

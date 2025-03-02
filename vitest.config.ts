@@ -10,7 +10,6 @@ export default defineConfig({
     exclude: ["__tests__/ignore/**"],
     watch: false,
     reporters: ["verbose"],
-    // outputFile: "test-results.json",
     // silent: true,
     chaiConfig: {
       truncateThreshold: 0,
