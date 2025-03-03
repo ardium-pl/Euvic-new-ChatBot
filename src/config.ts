@@ -45,4 +45,14 @@ export const PROMPT_FOR_ANSWER = process.env.PROMPT_FOR_ANSWER;
 export const PROMPT_FOR_SQL = process.env.PROMPT_FOR_SQL;
 
 //Api URL
-export const apiUrl = process.env.API_URL; 
+export const NODE_ENV = process.env.NODE_ENV;
+
+const config: Record<string, string> = {
+    local: "http://localhost:3000",
+    development: "https://demo-final-development.up.railway.app",
+    production: "https://prod-production-01b0.up.railway.app",
+};
+
+if(!NODE_ENV) throw new Error("NODE_ENV is not defined");
+
+export const apiUrl = config[NODE_ENV];
