@@ -8,9 +8,10 @@ import { registerWebhook } from "./registerWebhook";
 const SITE_ID = process.env.SITE_ID;
 const DOCUMENT_LIBRARY = "Dokumenty";
 const sharepointRouter: Router = express.Router();
+await registerWebhook();
 
 sharepointRouter.post("/webhook/sharepoint", async (req, res) => {
-  await registerWebhook();
+
   try {
     const sharePointService = new SharePointService();
 
