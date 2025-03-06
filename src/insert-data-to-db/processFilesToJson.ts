@@ -12,7 +12,7 @@ import { FileData } from "./zod-json/dataJsonSchema.ts";
 import { parseOcrText } from "./zod-json/dataProcessor.ts";
 import { jsonFixes } from "./verifcation-json-data/jsonMainFixer.ts";
 
-async function processFile(fileName: string) {
+export async function processFile(fileName: string) {
   try {
     logger.info(`🧾 Reading file: ${fileName}`);
     [PDF_DATA_FOLDER, JSON_DATA_FOLDER].map((folder) => fs.ensureDir(folder));
@@ -82,5 +82,5 @@ async function main() {
   }
 }
 
-await main();
-process.exit(0);
+//await main();
+//process.exit(0);

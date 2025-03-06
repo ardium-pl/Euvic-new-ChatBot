@@ -1,10 +1,11 @@
-import ansis from 'ansis';
-import cors from 'cors';
-import 'dotenv/config';
-import express from 'express';
-import {sqlTranslatorRouter} from './src/sql-translator/sqlTranslatorRouter'
-import  webhookRouter  from "./src/meta-handling/whatsapp/webhook";
-import { PORT } from './src/config';
+import ansis from "ansis";
+import cors from "cors";
+import "dotenv/config";
+import express from "express";
+import { sqlTranslatorRouter } from "./src/sql-translator/sqlTranslatorRouter";
+import sharepointRouter from "./src/insert-data-to-db/sharepoint/sharepointlistener";
+import webhookRouter from "./src/meta-handling/whatsapp/webhook";
+import { PORT } from "./src/config";
 
 const app = express();
 
@@ -14,7 +15,7 @@ app.use(cors());
 
 app.use(sqlTranslatorRouter);
 app.use(webhookRouter);
-
+app.use(sharepointRouter);
 
 // Startup
 console.log(`Starting server...`);
