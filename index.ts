@@ -6,6 +6,7 @@ import { sqlTranslatorRouter } from "./src/sql-translator/sqlTranslatorRouter";
 import sharepointRouter from "./src/insert-data-to-db/sharepoint/sharepointlistener";
 import webhookRouter from "./src/meta-handling/whatsapp/webhook";
 import { PORT } from "./src/config";
+import { registerWebhook } from "./src/insert-data-to-db/sharepoint/registerWebhook";
 
 const app = express();
 
@@ -16,7 +17,7 @@ app.use(cors());
 app.use(sqlTranslatorRouter);
 // app.use(webhookRouter);
 app.use(sharepointRouter);
-
+await registerWebhook();
 // Startup
 console.log(`Starting server...`);
 app.listen(PORT, () => {
