@@ -13,8 +13,12 @@ await registerWebhook();
 sharepointRouter.post("/webhook/sharepoint", async (req, res) => {
 
   try {
+    if(req.body.validationToken){
+      res.status(200).send(req.body.validationToken);
+      return
+    } 
+    
     const sharePointService = new SharePointService();
-
     const { value } = req.body;
     for (const event of value) {
       if (event.resourceData && event.changeType === "created") {
@@ -33,7 +37,6 @@ sharepointRouter.post("/webhook/sharepoint", async (req, res) => {
         }
       }
     }
-    res.status(200).send("OK");
   } catch (error) {
     logger.error(`❌ Błąd w webhooku`);
     res.status(500).send("Błąd serwera");
