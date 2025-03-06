@@ -3,16 +3,15 @@ import express, { Router } from "express";
 import { SharePointService } from "./sharepointService";
 import { processFile } from "../processFilesToJson";
 import { logger } from "../utils/logger";
-import { registerWebhook } from "./registerWebhook";
 
 const SITE_ID = process.env.SITE_ID;
 const DOCUMENT_LIBRARY = "Dokumenty";
 const sharepointRouter: Router = express.Router();
 
 sharepointRouter.post("/webhook/sharepoint", async (req, res) => {
-
+  logger.info(`🔔 Otrzymano webhook z SharePointa`, req.body);
   try {
-    if(req.body.validationToken){
+    if(req.body){
       res.status(200).send(req.body.validationToken);
       return
     } 
