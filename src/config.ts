@@ -48,7 +48,7 @@ export const PROMPT_FOR_SQL = process.env.PROMPT_FOR_SQL;
 // Express config
 export const NODE_ENV = process.env.NODE_ENV;
 const config: Record<string, string> = {
-  local: "https://2417-178-235-210-48.ngrok-free.app",
+  local: "http://localhost:8080",
   development: "https://demo-final-development.up.railway.app",
   production: "https://prod-production-01b0.up.railway.app",
 };
