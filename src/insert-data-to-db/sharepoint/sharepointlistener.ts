@@ -4,11 +4,11 @@ import { SharePointService } from "./sharepointService";
 import { processFile } from "../processFilesToJson";
 import { logger } from "../utils/logger";
 import { SITE_ID, DOCUMENT_LIBRARY } from "../../config";
+import { ChangeNotificationCollection, ChangeNotification, Request } from "@microsoft/microsoft-graph-types";
 
 const sharepointRouter: Router = express.Router();
 
 sharepointRouter.post("/webhook/sharepoint", async (req, res) => {
-  console.log(`🔔 Otrzymano webhook z SharePointa`, req.body);
   const validationToken = req.query.validationToken;
   try {
     if(validationToken){
