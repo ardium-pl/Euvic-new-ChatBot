@@ -2,11 +2,7 @@ import "dotenv/config";
 import { Client } from "@microsoft/microsoft-graph-client";
 import "isomorphic-fetch";
 import { getAccessToken } from "../utils/auth";
-
-const WEBHOOK_URL =
-  "https://demo-final-development.up.railway.app/webhook/sharepoint"; // Adres webhooka
-const SUBSCRIPTION_EXPIRY = new Date(Date.now() + 86400000).toISOString(); // 24h ważn
-const DOCUMENT_LIBRARY_ID = process.env.DOCUMENT_LIBRARY_ID;
+import { LIST_ID, WEBHOOK_URL, SUBSCRIPTION_EXPIRY, SITE_ID } from "../../config";
 
 export async function registerWebhook() {
   try {
@@ -18,7 +14,7 @@ export async function registerWebhook() {
     });
 
     const response = await client.api("/subscriptions").post({
-      resource: `/drives/${DOCUMENT_LIBRARY_ID}/root`,
+      resource: `/sites/${SITE_ID}/lists/${LIST_ID}`,
       changeType: "updated",
       notificationUrl: WEBHOOK_URL,
       expirationDateTime: SUBSCRIPTION_EXPIRY,

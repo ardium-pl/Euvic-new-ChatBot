@@ -3,9 +3,8 @@ import express, { Router } from "express";
 import { SharePointService } from "./sharepointService";
 import { processFile } from "../processFilesToJson";
 import { logger } from "../utils/logger";
+import { SITE_ID, DOCUMENT_LIBRARY } from "../../config";
 
-const SITE_ID = process.env.SITE_ID;
-const DOCUMENT_LIBRARY = "Dokumenty";
 const sharepointRouter: Router = express.Router();
 
 sharepointRouter.post("/webhook/sharepoint", async (req, res) => {
