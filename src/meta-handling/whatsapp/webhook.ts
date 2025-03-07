@@ -1,4 +1,4 @@
-import express, { Request, Response } from "express";
+import express, { Request, Response, Router } from "express";
 import { apiUrl, WEBHOOK_VERIFY_TOKEN } from "../../config";
 // import { insertDataMySQL } from "../database";
 import axios from "axios";
@@ -7,7 +7,7 @@ import { LanguageToSQLResponse } from "../../types";
 import { insertDataMySQL } from "./chat_history/getChatHistory";
 import { WhatsAppClient } from "./whatsapp-client";
 
-const webhookRouter = express.Router();
+const webhookRouter: Router = express.Router();
 
 webhookRouter.post("/webhook", async (req: Request, res: Response) => {
   try {

@@ -1,11 +1,11 @@
-import express from "express";
+import express, { Router } from "express";
 import { logger } from "../insert-data-to-db/utils/logger.js";
 import { executeSQL } from "./database/mySql.js";
 import { finalResponse, generateGPTAnswer, sqlResponse } from "./gpt/openAi.js";
 import { promptForAnswer, promptForSQL } from "./gpt/prompts.js";
 import { ChatHistoryHandler } from "../meta-handling/whatsapp/chat_history/getChatHistory.js";
 
-export const sqlTranslatorRouter = express.Router();
+export const sqlTranslatorRouter: Router = express.Router();
 
 sqlTranslatorRouter.post("/language-to-sql", async (req, res) => {
   logger.info("📩 Received a new POST request.");
