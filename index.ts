@@ -17,13 +17,13 @@ app.use(cors());
 app.use(sqlTranslatorRouter);
 // app.use(webhookRouter);
 app.use(sharepointRouter);
-await registerWebhook();
 // Startup
 console.log(`Starting server...`);
-app.listen(PORT, () => {
+app.listen(PORT, async() => {
   console.log(`Running on port ${ansis.greenBright.underline(String(PORT))}!`);
-
+  
   try {
+    await registerWebhook();
     console.log(`Connected to database!`);
   } catch (err) {
     throw err;

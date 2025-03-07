@@ -15,7 +15,7 @@ export async function registerWebhook() {
 
     const response = await client.api("/subscriptions").post({
       resource: `/sites/${SITE_ID}/lists/${LIST_ID}`,
-      changeType: "created",
+      changeType: "updated",
       notificationUrl: WEBHOOK_URL,
       expirationDateTime: SUBSCRIPTION_EXPIRY,
       clientState: "secretClientState",
