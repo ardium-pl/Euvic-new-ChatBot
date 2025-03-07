@@ -11,10 +11,10 @@ const sharepointRouter: Router = express.Router();
 sharepointRouter.post("/webhook/sharepoint", async (req, res) => {
   const validationToken = req.query.validationToken;
   console.log("📩 Received a new POST request from SharePoint.", req.query);
-  console.log("📩 Received a new POST request from SharePoint. RESOURCE DATA", req.body.value[0].resourceData);
-  console.log("📩 Received a new POST request from SharePoint. BODY", req.body);
   try {
     if(validationToken){
+      console.log("📩 Received a new POST request from SharePoint. RESOURCE DATA", req.body.value[0].resourceData);
+      console.log("📩 Received a new POST request from SharePoint. BODY", req.body);
       res.status(200).send(validationToken);
       return
     } 
