@@ -8,7 +8,7 @@ import { SITE_ID, DOCUMENT_LIBRARY } from "../../config";
 const sharepointRouter: Router = express.Router();
 
 sharepointRouter.post("/webhook/sharepoint", async (req, res) => {
-  console.log(`🔔 Otrzymano webhook z SharePointa`, req.body);
+  console.log(`🔔 Otrzymano webhook z SharePointa`, req);
   try {
     if(req.body){
       res.status(200).send(req.body.validationToken);
