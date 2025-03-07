@@ -12,7 +12,13 @@ const app = express();
 
 // Middleware
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  allowedHeaders: "*", // Allow all headers
+  origin: "*", // Allow all origins
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Allow necessary HTTP methods
+  preflightContinue: false,
+  optionsSuccessStatus: 204
+}));
 
 app.use(sqlTranslatorRouter);
 // app.use(webhookRouter);
