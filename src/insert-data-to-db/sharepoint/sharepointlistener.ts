@@ -12,7 +12,6 @@ sharepointRouter.post("/webhook/sharepoint", async (req, res) => {
   const validationToken = req.query.validationToken;
   try {
     if(validationToken){
-      logger.info('cos tam jest w body', validationToken);
       res.status(200).send(validationToken);
       return
     } 
