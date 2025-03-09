@@ -4,8 +4,8 @@ import {
   expect,
   beforeEach,
   afterEach,
-  beforeAll,
   afterAll,
+  beforeAll,
 } from "vitest";
 import fs from "fs-extra";
 import path from "path";
@@ -21,6 +21,7 @@ import {
   ReferenceFileDataType,
   ProjectDataType,
 } from "../../src/insert-data-to-db/zod-json/dataJsonSchema";
+import { before } from "lodash";
 
 type TestFile = { pdf: string; json: string; test: boolean };
 
@@ -39,6 +40,18 @@ const testFilesInfo = JSON.parse(
 const testFiles: TestFile[] = testFilesInfo.files.filter(
   ({ test }: { test: boolean }) => test
 );
+
+const customerKeys: Array<keyof ProjectDataType> = [
+  // "description",
+  "clientName",
+  "projectName",
+  "technologies",
+  "businessCase",
+  "referenceDate",
+  // "scaleOfImplementationValue",
+  // "scaleOfImplementationDescription",
+  // "industry",
+];
 
 function mapCustomers(
   customersArray: ReferenceProjectDataType[]
@@ -63,26 +76,32 @@ function getFieldArray(array: ProjectDataType[], field: keyof ProjectDataType) {
   return array.map((customer) => customer[field]);
 }
 
-beforeAll(async () => {
+const beforeAllCallback = async () => {
+  console.log("🔥 beforeAll START");
   // upewnienie się że katalogi istnieją
   await fs.ensureDir(JSON_DEST);
   await fs.ensureDir(PDF_DEST);
 
   // kopiowanie testowych pdf do katalogu
-  await Promise.all(
-    testFiles.map(async (testFile) => {
-      const testPdfPath = path.join(PDF_SOURCE, testFile.pdf);
-      await fs.copy(testPdfPath, path.join(PDF_DEST, testFile.pdf));
-    })
-  );
+  for (const testFile of testFiles) {
+    const testPdfPath = path.join(PDF_SOURCE, testFile.pdf);
+    console.log(
+      `📂 Kopiowanie: ${testPdfPath} -> ${path.join(PDF_DEST, testFile.pdf)}`
+    );
+    fs.copySync(testPdfPath, path.join(PDF_DEST, testFile.pdf));
+  }
 
   // procesowanie plików testowych
   await Promise.all(
     testFiles.map(async (testFile) => {
+      console.log(`🔄 Procesowanie: ${testFile.pdf}`);
       await processFile(testFile.pdf);
     })
   );
-});
+  console.log("✅ beforeAll ZAKOŃCZONE");
+};
+
+await beforeAllCallback()
 
 afterAll(async () => {
   const generatedFiles = await fs.readdir(JSON_DEST);
@@ -99,36 +118,43 @@ afterAll(async () => {
   await Promise.all([fs.emptyDir(JSON_DEST), fs.emptyDir(PDF_DEST)]);
 });
 
-describe.each(testFiles)("processFile function", async (testFile) => {
-  console.log(`✅ Testuję plik: ${testFile.pdf}`);
+describe("processFile function", () => {
+  testFiles.forEach((testFile) => {
+    console.log(`✅ Testuję plik: ${testFile.pdf}`);
 
-  // ścieżki do jsonów
-  const referenceJsonPath = path.join(JSON_SOURCE, testFile.json); // jsony referencyjne
-  const generatedJsonPath = path.join(JSON_DEST, testFile.json); // jsony wygenerowane przez program
+    // ścieżki do jsonów
+    const referenceJsonPath = path.join(JSON_SOURCE, testFile.json); // jsony referencyjne
+    const generatedJsonPath = path.join(JSON_DEST, testFile.json); // jsony wygenerowane przez program
 
-  // sprawdza czy dobrze wygenerowane jsony
-  it("generated json should exist", async () => {
-    expect(await fs.pathExists(generatedJsonPath)).toBe(true);
-  });
+    // sprawdza czy dobrze wygenerowane jsony
+    it("generated json should exist", async () => {
+      expect(fs.pathExistsSync(generatedJsonPath)).toBe(true);
+    });
 
-  // czytanie jsonów
-  const generatedJson: FileDataType = await fs.readJson(generatedJsonPath);
-  const referenceJson: ReferenceFileDataType = await fs.readJson(
-    referenceJsonPath
-  );
+    // czytanie jsonów
+    const generatedJson: FileDataType = fs.readJsonSync(generatedJsonPath);
+    const referenceJson: ReferenceFileDataType =
+      fs.readJsonSync(referenceJsonPath);
 
-  //mapowanie danych na ten sam typ
-  const customersGen: ProjectDataType[] = generatedJson.customers;
-  const customersRef: ProjectDataType[] = mapCustomers(referenceJson.customers);
+    //mapowanie danych na ten sam typ
+    const customersGen: ProjectDataType[] = generatedJson.customers;
+    const customersRef: ProjectDataType[] = mapCustomers(
+      referenceJson.customers
+    );
 
-  it("should compare fileName field", () => {
-    expect(generatedJson.fileName).toEqual(referenceJson.fileName);
-  });
+    it("should compare fileName field", () => {
+      expect(generatedJson.fileName).toEqual(referenceJson.fileName);
+    });
 
-  it("should compare clientName field", () => {
-    const clientNameGen = getFieldArray(customersGen, "clientName");
-    const clientNameRef = getFieldArray(customersRef, "clientName");
+    it.each(customerKeys)("should compare different fields", (key) => {
+      const clientNameGen = getFieldArray(customersGen, key);
+      const clientNameRef = getFieldArray(customersRef, key);
 
-    expect(clientNameGen).toEqual(clientNameRef);
+      expect(clientNameGen).toEqual(clientNameRef);
+    });
   });
 });
+
+// describe("jacie", () => {
+//   expect(true).toBe(true);
+// });
