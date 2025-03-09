@@ -6,6 +6,8 @@ export default defineConfig({
     globals: true,
     environment: "node",
     testTimeout: 60000,
+    hookTimeout: 60000,
+
     include: ["__tests__/run/*.test.ts"],
     exclude: ["__tests__/ignore/**"],
     watch: false,
