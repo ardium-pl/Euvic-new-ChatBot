@@ -143,4 +143,5 @@ dist
 # test folders
 reference-json/
 test-pdfs/
+generated-json/
 __tests__/config.json
