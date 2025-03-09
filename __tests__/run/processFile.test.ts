@@ -22,17 +22,15 @@ import {
   ProjectDataType,
 } from "../../src/insert-data-to-db/zod-json/dataJsonSchema";
 
+type TestFile = { pdf: string; json: string; test: boolean };
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-// ścieżki do katalogów
 const TEST_FILES_INFO_PATH = path.resolve(__dirname, "../config.json");
 const PDF_SOURCE = path.resolve(__dirname, "../test-pdfs");
 const JSON_SOURCE = path.resolve(__dirname, "../reference-json");
 const JSON_GEN = path.resolve(__dirname, "../generated-json");
 const JSON_SERIE = "gen-1";
-
-type TestFile = { pdf: string; json: string; test: boolean };
 
 const testFilesInfo = JSON.parse(
   fs.readFileSync(TEST_FILES_INFO_PATH, "utf-8")
@@ -41,6 +39,29 @@ const testFilesInfo = JSON.parse(
 const testFiles: TestFile[] = testFilesInfo.files.filter(
   ({ test }: { test: boolean }) => test
 );
+
+function mapCustomers(
+  customersArray: ReferenceProjectDataType[]
+): ProjectDataType[] {
+  return customersArray.map((customer) => ({
+    clientName: customer.name,
+    projectName: "",
+    description: customer.projects.description,
+    technologies: customer.projects.technologies,
+    businessCase: customer.projects.businessCase
+      ? { name: [customer.projects.businessCase] }
+      : undefined,
+    referenceDate: customer.projects.referenceDate,
+    scaleOfImplementationValue: customer.projects.scaleOfImplementationValue,
+    scaleOfImplementationDescription:
+      customer.projects.scaleOfImplementationDescription,
+    industry: customer.projects.industry,
+  }));
+}
+
+function getFieldArray(array: ProjectDataType[], field: keyof ProjectDataType) {
+  return array.map((customer) => customer[field]);
+}
 
 beforeAll(async () => {
   // upewnienie się że katalogi istnieją
@@ -78,35 +99,7 @@ afterAll(async () => {
   await Promise.all([fs.emptyDir(JSON_DEST), fs.emptyDir(PDF_DEST)]);
 });
 
-function mapCustomers(
-  customersArray: ReferenceProjectDataType[]
-): ProjectDataType[] {
-  return customersArray.map((customer) => ({
-    clientName: customer.name,
-    projectName: "",
-    description: customer.projects.description,
-    technologies: customer.projects.technologies,
-    businessCase: customer.projects.businessCase
-      ? { name: [customer.projects.businessCase] }
-      : undefined,
-    referenceDate: customer.projects.referenceDate,
-    scaleOfImplementationValue: customer.projects.scaleOfImplementationValue,
-    scaleOfImplementationDescription:
-      customer.projects.scaleOfImplementationDescription,
-    industry: customer.projects.industry,
-  }));
-}
-
-// describe each dla każdego pliku
-// oba pliki są mapowane na ProjectDataType
-// pliki są mapowane na obiekt tablic
-
-function getFieldArray(array: ProjectDataType[], field: keyof ProjectDataType) {
-  return array.map((customer) => customer[field]);
-}
-
 describe.each(testFiles)("processFile function", async (testFile) => {
-
   console.log(`✅ Testuję plik: ${testFile.pdf}`);
 
   // ścieżki do jsonów
@@ -116,7 +109,7 @@ describe.each(testFiles)("processFile function", async (testFile) => {
   // sprawdza czy dobrze wygenerowane jsony
   it("generated json should exist", async () => {
     expect(await fs.pathExists(generatedJsonPath)).toBe(true);
-  })
+  });
 
   // czytanie jsonów
   const generatedJson: FileDataType = await fs.readJson(generatedJsonPath);
@@ -126,17 +119,16 @@ describe.each(testFiles)("processFile function", async (testFile) => {
 
   //mapowanie danych na ten sam typ
   const customersGen: ProjectDataType[] = generatedJson.customers;
-  const customersRef: ProjectDataType[] = mapCustomers(
-    referenceJson.customers
-  );
-  it("should correctly process %s and generate a valid JSON file", async () => {
+  const customersRef: ProjectDataType[] = mapCustomers(referenceJson.customers);
 
-
-    // porównywanie jsonów
+  it("should compare fileName field", () => {
     expect(generatedJson.fileName).toEqual(referenceJson.fileName);
-    // expect(customersGen).toEqual(customersRef);
-    expect(getFieldArray(customersGen, "clientName")).toEqual(
-      getFieldArray(customersRef, "clientName")
-    );
+  });
+
+  it("should compare clientName field", () => {
+    const clientNameGen = getFieldArray(customersGen, "clientName");
+    const clientNameRef = getFieldArray(customersRef, "clientName");
+
+    expect(clientNameGen).toEqual(clientNameRef);
   });
 });
