@@ -144,4 +144,5 @@ dist
 reference-json/
 test-pdfs/
 generated-json/
-__tests__/config.json
+__tests__/keysToTest.json
+__tests__/testFilesInfo.json

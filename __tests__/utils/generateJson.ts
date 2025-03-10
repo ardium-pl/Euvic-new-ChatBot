@@ -7,17 +7,15 @@ import { TestFile } from "./types";
 import path from "path";
 import { fileURLToPath } from "url";
 import { processFile } from "../../src/insert-data-to-db/processFilesToJson";
-import 'dotenv/config';
-
+import "dotenv/config";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const TEST_FILES_INFO_PATH = path.resolve(__dirname, "../config.json");
+const TEST_FILES_INFO_PATH = path.resolve(__dirname, "../testFilesInfo.json");
 const PDF_SOURCE = path.resolve(__dirname, "../data/test-pdfs");
 const JSON_STORAGE = path.resolve(__dirname, "../data/generated-json");
-const OUTPUT_TEXT = path.resolve(__dirname, "../../output-text")
-const JSON_SERIE = "gen-1";
-
+const OUTPUT_TEXT = path.resolve(__dirname, "../../output-text");
+const JSON_SERIE = "ref-2";
 
 const testFilesInfo = JSON.parse(
   fs.readFileSync(TEST_FILES_INFO_PATH, "utf-8")
@@ -27,8 +25,7 @@ const testFiles: TestFile[] = testFilesInfo.files.filter(
   ({ test }: { test: boolean }) => test
 );
 
- async function generateJson() {
-  console.log("🔥 beforeAll START");
+async function generateJson() {
   // upewnienie się że katalogi istnieją
   await fs.ensureDir(JSON_DEST);
   await fs.ensureDir(PDF_DEST);
@@ -49,10 +46,9 @@ const testFiles: TestFile[] = testFilesInfo.files.filter(
       await processFile(testFile.pdf);
     })
   );
-  console.log("✅ beforeAll ZAKOŃCZONE");
 
   const generatedFiles = await fs.readdir(JSON_DEST);
-  
+
   await Promise.all(
     generatedFiles.map(async (file) => {
       const sourcePath = path.join(JSON_DEST, file);
@@ -61,8 +57,11 @@ const testFiles: TestFile[] = testFilesInfo.files.filter(
       await fs.move(sourcePath, destinationPath, { overwrite: true });
     })
   );
-  await Promise.all([fs.emptyDir(JSON_DEST), fs.emptyDir(PDF_DEST), fs.emptyDir(OUTPUT_TEXT)]);
-
+  await Promise.all([
+    fs.emptyDir(JSON_DEST),
+    fs.emptyDir(PDF_DEST),
+    fs.emptyDir(OUTPUT_TEXT),
+  ]);
 }
 
-await generateJson()
+await generateJson();
