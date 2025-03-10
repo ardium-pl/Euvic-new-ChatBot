@@ -139,3 +139,10 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# test folders
+reference-json/
+test-pdfs/
+generated-json/
+__tests__/keysToTest.json
+__tests__/testFilesInfo.json
