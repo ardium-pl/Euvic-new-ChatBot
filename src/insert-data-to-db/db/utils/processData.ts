@@ -1,5 +1,6 @@
 import { fileURLToPath } from "url";
 import fs from "fs";
+
 import path from "path";
 import { addTechnologyProjectsToDB } from "../services/technologyProjects.service";
 import { loadJSONFiles } from "./json-loader";
@@ -89,10 +90,9 @@ export async function processData() {
           description: customer.description,
           clientName: customer.clientName,
           industryName: customer.industry,
-          referenceDate: customer.referenceDate,
-          implementationScaleValue: customer.scaleOfImplementationValue,
-          implementationScaleDescription:
-            customer.scaleOfImplementationDescription,
+
+          dateDescription: customer.dateDescription,
+          scaleOfImplementation: customer.scaleOfImplementation,
         });
       });
       return acc;

@@ -10,6 +10,7 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+
 const VISION_AUTH = {
   credentials: {
     client_email: process.env.GOOGLE_CLIENT_EMAIL as string,
@@ -22,20 +23,20 @@ const VISION_AUTH = {
 };
 
 export async function pdfOcr(pdfFilePath: string): Promise<string> {
-  //tu tak nie wolnp maja byc metadane
   const imagesFolder = path.resolve(__dirname, "../../../images");
   const outputTextFolder = path.resolve(__dirname, "../../../output-text");
+
   const fileNameWithoutExt = path.basename(pdfFilePath, ".pdf");
 
   await Promise.all([imagesFolder, outputTextFolder].map(fs.ensureDir));
 
   try {
-    // tu jakies problemy
+
     const imageFilePaths: string[] = await convertPdfToImages(
       pdfFilePath,
       imagesFolder
     );
-    
+
     if (imageFilePaths.length === 0) {
       logger.error("No images were generated from the PDF");
       return "";
@@ -92,7 +93,10 @@ async function _saveDataToTxt(
   }
 }
 
-export async function fileOcr(imageFilePath: string): Promise<string | null> {
+
+export async function fileOcr(
+  imageFilePath: string
+): Promise<string | null> {
   const client = new vision.ImageAnnotatorClient(VISION_AUTH);
 
   logger.info(` 🕶️ Processing image with Google Vision: ${imageFilePath}`);
@@ -108,6 +112,7 @@ export async function fileOcr(imageFilePath: string): Promise<string | null> {
 
     logger.info(` 💚 Successfully processed image ${imageFilePath}`);
     return googleVisionText;
+
   } catch (err: any) {
     logger.error(`Error during Google Vision OCR processing: ${err.message}`);
     return null;
