@@ -25,15 +25,15 @@ sharepointRouter.post("/webhook/sharepoint", async (req, res) => {
         logger.info(`📂 Nowy plik dodany do SharePoint: ${fileId}`);
 
         if (!SITE_ID) throw new Error("nie ma SITE_ID");
-        const filePath = await sharePointService.downloadFile(
-          SITE_ID,
-          DOCUMENT_LIBRARY,
-          fileId
-        );
+        // const filePath = await sharePointService.downloadFile(
+        //   SITE_ID,
+        //   DOCUMENT_LIBRARY,
+        //   fileId
+        // );
 
-        if (filePath) {
-          await processFile(filePath);
-        }
+        // if (filePath) {
+        //   await processFile(filePath);
+        // }
       }
     }
   } catch (error) {
