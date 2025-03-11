@@ -14,7 +14,7 @@ import { FileData } from "./zod-json/dataJsonSchema.ts";
 import { parseOcrText } from "./zod-json/dataProcessor.ts";
 import { checkIfFileExists } from "./sharepoint/sharepointSql.ts";
 
-export async function processFile(fileName: string) {
+export async function processFile(fileName: string, fileItemId: string, fileLink: string) { // TODO: Dorbić logikę z dodawaniem fileItemId oraz fileLink do naszej bazki
   try {
     logger.info(`🧾 Reading file: ${fileName}`);
     [PDF_DATA_FOLDER, JSON_DATA_FOLDER].map((folder) => fs.ensureDir(folder));
@@ -66,16 +66,19 @@ async function processAllFiles() {
       items.map(async (item) => {
         if (!item.driveItem || !item.id || !item.driveItem.id) return;
         
-        const exists = await checkIfFileExists(item.driveItem.id);
+        const fileItemId = item.driveItem.id;
+        const exists = await checkIfFileExists(fileItemId);
         if (exists) return;
         
         try {
-          const fileName = await sharePointService.downloadFileFromList(item.id);
-          if (!fileName) return;
-          console.log("FileName: ", fileName, "ItemID: ", item.driveItem.id);
+          const fileName = await sharePointService.downloadFileFromList(item.id);   
+          const fileLink = item.webUrl
+          
+          if (!fileName || !fileLink) return;
+          
           
           logger.info(`Processing file: ${fileName}`);
-          // await processFile(fileName);
+          await processFile(fileName, fileItemId, fileLink);
         } catch (error) {
           console.error(`Error downloading file for item with id: ${item.id}`, error);
         }
