@@ -13,6 +13,10 @@ export const finalResponse = z.object({
   formattedAnswer: z.string(),
 });
 
+export const languageResponse = z.object({
+  language: z.string()
+})
+
 export async function generateGPTAnswer(prompt: ChatCompletionMessageParam[], responseFormat: ZodTypeAny, responseName: string) {
   try {
     const completion = await openAiClient.beta.chat.completions.parse({
