@@ -1,6 +1,9 @@
 import fs from "fs-extra";
 import path from "path";
 import { pdfOcr } from "./ocr/ocr.ts";
+import {
+  SharePointService
+} from "./sharepoint/sharepointService.ts";
 import { convertPptxToPdf } from "./utils/convertPptxToPdf.ts";
 import {
   getDataPrompt,
@@ -8,9 +11,9 @@ import {
   PDF_DATA_FOLDER,
 } from "./utils/credentials.ts";
 import { logger } from "./utils/logger.ts";
+import { jsonFixes } from "./verifcation-json-data/jsonMainFixer.ts";
 import { FileData } from "./zod-json/dataJsonSchema.ts";
 import { parseOcrText } from "./zod-json/dataProcessor.ts";
-import { jsonFixes } from "./verifcation-json-data/jsonMainFixer.ts";
 
 export async function processFile(fileName: string) {
   try {
@@ -54,33 +57,34 @@ export async function processFile(fileName: string) {
   }
 }
 
-async function main() {
-  try {
-    const files = await fs.readdir(PDF_DATA_FOLDER);
+async function processAllFiles() {
+  const sharePointService = new SharePointService();
 
-    if (files.length === 0) {
-      logger.info("No files found to process.");
-      return;
-    }
+  try {
+    const items = await sharePointService.getAllFilesFromList();
 
     await Promise.all(
-      files.map((file) => {
-        const fileExtension = path.extname(file).toLowerCase();
-        if (fileExtension === ".pdf" || fileExtension === ".pptx") {
-          //TODO: tutaj dodac elif na pliki które są wordem
-          return processFile(file);
-        } else {
-          logger.info(`Skipping unsupported file format: ${file}`);
-          return Promise.resolve();
+      items.map(async (item) => {
+        if (item.driveItem && item.id) {
+          try {
+            const fileName = await sharePointService.downloadFileFromList(
+              item.id
+            );
+            if (fileName) {
+              logger.info(`Processing file: ${fileName}`);
+              await processFile(fileName);
+            }
+          } catch (error) {
+            console.error(
+              `Error downloading file for item with id: ${item.id}`,
+              error
+            );
+          }
         }
       })
     );
-
-    logger.info("All files processed successfully.");
-  } catch (err: any) {
-    logger.error(`An error occurred during file processing: ${err.message}`);
+  } catch (error) {
+    logger.error("Error processing all files:", error);
   }
 }
-
-//await main();
-//process.exit(0);
+await processAllFiles();

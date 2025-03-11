@@ -1,4 +1,4 @@
-import mysql, { createPool, Pool } from "mysql2/promise";
+import mysql from "mysql2/promise";
 import OpenAI from "openai";
 
 export const openAiClient = new OpenAI({
@@ -63,5 +63,8 @@ export const WEBHOOK_URL =
 export const SUBSCRIPTION_EXPIRY = new Date(Date.now() + 86400000).toISOString(); // 24h ważn
 export const LIST_ID = process.env.LIST_ID;
 export const SITE_ID = process.env.SITE_ID;
-export const DOCUMENT_LIBRARY = "Dokumenty";
+
+
+
+
 
