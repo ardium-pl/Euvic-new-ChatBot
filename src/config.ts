@@ -58,9 +58,6 @@ if(!NODE_ENV) throw new Error("NODE_ENV is not defined");
 export const apiUrl = config[NODE_ENV];
 
 // Sharepoint credentials
-export const WEBHOOK_URL =
-  `${apiUrl}/webhook/sharepoint`; // Adres webhooka
-export const SUBSCRIPTION_EXPIRY = new Date(Date.now() + 86400000).toISOString(); // 24h ważn
 export const LIST_ID = process.env.LIST_ID;
 export const SITE_ID = process.env.SITE_ID;
 

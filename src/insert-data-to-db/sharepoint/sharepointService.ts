@@ -7,8 +7,6 @@ import path from "path";
 import { LIST_ID, SITE_ID } from "../../config";
 import { getAccessToken } from "../utils/auth"; // Pobieramy token dynamicznie
 import { PDF_DATA_FOLDER } from "../utils/credentials";
-import { logger } from "../utils/logger";
-
 
 export const FILE_EXSTENSIONS = [
   "pdf",
@@ -67,6 +65,7 @@ export class SharePointService {
         console.error("Download URL is missing in the driveItem.");
         return null;
       }
+
       const response = await fetch(downloadUrl);
       if (!response.ok) {
         console.error("Failed to fetch file content:", response.statusText);
@@ -91,7 +90,6 @@ export class SharePointService {
         .api(`/sites/${SITE_ID}/lists/${LIST_ID}/items?expand=driveItem`)
         .get();
 
-      // Cast the returned items as ListItem[]
       return response.value as ListItem[];
     } catch (error) {
       console.error("Błąd pobierania plików z listy:", error);

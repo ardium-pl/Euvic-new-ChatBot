@@ -1,9 +1,7 @@
 import fs from "fs-extra";
 import path from "path";
 import { pdfOcr } from "./ocr/ocr.ts";
-import {
-  SharePointService
-} from "./sharepoint/sharepointService.ts";
+import { SharePointService } from "./sharepoint/sharepointService.ts";
 import { convertPptxToPdf } from "./utils/convertPptxToPdf.ts";
 import {
   getDataPrompt,
@@ -14,6 +12,7 @@ import { logger } from "./utils/logger.ts";
 import { jsonFixes } from "./verifcation-json-data/jsonMainFixer.ts";
 import { FileData } from "./zod-json/dataJsonSchema.ts";
 import { parseOcrText } from "./zod-json/dataProcessor.ts";
+import { checkIfFileExists } from "./sharepoint/sharepointSql.ts";
 
 export async function processFile(fileName: string) {
   try {
@@ -62,24 +61,22 @@ async function processAllFiles() {
 
   try {
     const items = await sharePointService.getAllFilesFromList();
-
+    
     await Promise.all(
       items.map(async (item) => {
-        if (item.driveItem && item.id) {
-          try {
-            const fileName = await sharePointService.downloadFileFromList(
-              item.id
-            );
-            if (fileName) {
-              logger.info(`Processing file: ${fileName}`);
-              await processFile(fileName);
-            }
-          } catch (error) {
-            console.error(
-              `Error downloading file for item with id: ${item.id}`,
-              error
-            );
-          }
+        if (!item.driveItem || !item.id) return;
+        
+        const exists = await checkIfFileExists(item.id);
+        if (exists) return;
+        
+        try {
+          const fileName = await sharePointService.downloadFileFromList(item.id);
+          if (!fileName) return;
+          
+          logger.info(`Processing file: ${fileName}`);
+          await processFile(fileName);
+        } catch (error) {
+          console.error(`Error downloading file for item with id: ${item.id}`, error);
         }
       })
     );
