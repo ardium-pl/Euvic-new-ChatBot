@@ -86,10 +86,13 @@ export function promptForAnswer(
       
       Raw data retrieved from our database:
       ${JSON.stringify(rowData, null, 2)}
-
-      Here is the language in which you must answer
-      ${language}
       `,
+    },
+    {role: 'system',
+      content: `
+            You have to answer in this language:
+      ${language}
+      `
     },
     { role: "user", content: userQuery },
   ];

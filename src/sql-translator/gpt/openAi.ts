@@ -17,7 +17,7 @@ export const languageResponse = z.object({
   language: z.string()
 })
 
-export async function generateGPTAnswer(prompt: ChatCompletionMessageParam[], responseFormat: ZodTypeAny, responseName: string) {
+export async function generateGPTAnswer<T extends ZodTypeAny>(prompt: ChatCompletionMessageParam[], responseFormat: T, responseName: string): Promise<z.infer<T> | null> {
   try {
     const completion = await openAiClient.beta.chat.completions.parse({
       model: 'gpt-4o',
@@ -30,14 +30,10 @@ export async function generateGPTAnswer(prompt: ChatCompletionMessageParam[], re
       // Custom feedback after disturbing user input
       return null;
     }
-    logger.info("Successfully generated an AI response! ✅");
+    logger.info("Successfully generated an AI response! ✅" );
     return response.parsed;
   } catch (error: any) {
-    if (error.constructor.name == "LengthFinishReasonError") {
-      // Retry with a higher max tokens
-    } else {
-      // Handle other exceptions
-    }
     logger.error(error);
+    return null
   }
 }
