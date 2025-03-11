@@ -64,17 +64,18 @@ async function processAllFiles() {
     
     await Promise.all(
       items.map(async (item) => {
-        if (!item.driveItem || !item.id) return;
+        if (!item.driveItem || !item.id || !item.driveItem.id) return;
         
-        const exists = await checkIfFileExists(item.id);
+        const exists = await checkIfFileExists(item.driveItem.id);
         if (exists) return;
         
         try {
           const fileName = await sharePointService.downloadFileFromList(item.id);
           if (!fileName) return;
+          console.log("FileName: ", fileName, "ItemID: ", item.driveItem.id);
           
           logger.info(`Processing file: ${fileName}`);
-          await processFile(fileName);
+          // await processFile(fileName);
         } catch (error) {
           console.error(`Error downloading file for item with id: ${item.id}`, error);
         }
