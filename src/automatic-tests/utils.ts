@@ -4,6 +4,7 @@ import { ChatCompletionMessageParam } from "openai/resources";
 import { z } from "zod";
 import OpenAI from "openai";
 import * as dotenv from "dotenv";
+import { Example, DbSchema } from "../types.ts";
 
 dotenv.config();
 
@@ -11,24 +12,24 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-
-// Funkcja do pobrania struktury bazy danych
-export async function getDbStructure(): Promise<{ dbSchema: object; examplesForSQL: object } | undefined> {
+// Zwraca strukturę bazy danych
+export async function getDbStructure(): Promise<
+  { dbSchema: DbSchema; examplesForSQL: Example[] } | undefined
+> {
   try {
 
+    // Pobieranie struktury bazy danych
     console.info("Pobieranie struktury bazy danych...");
     const { dbSchema, examplesForSQL } = await loadDbInformation();
-
     if (!dbSchema) {
       console.error("Nie udało się pobrać struktury bazy danych.");
       return undefined;
+    } else {
+      console.info("Struktura bazy danych została pobrana.");
     }
 
-    console.info("Struktura bazy danych została pobrana.");
     return { dbSchema, examplesForSQL };
-
   } catch (error) {
-
     console.error("Wystąpił błąd podczas pobierania bazy danych:", error);
     throw error;
   }
@@ -37,7 +38,7 @@ export async function getDbStructure(): Promise<{ dbSchema: object; examplesForS
 // Funkcja do wysyłania zapytań do GPT
 export async function getGPTAnswer<T>(
   prompt: ChatCompletionMessageParam[],
-  responseSchema: z.ZodType<T>,
+  responseSchema: z.ZodType<T>
 ): Promise<T | null> {
   try {
     const completion = await openai.beta.chat.completions.parse({

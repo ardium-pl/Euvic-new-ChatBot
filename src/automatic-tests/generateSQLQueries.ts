@@ -1,20 +1,26 @@
-// import "dotenv/config";
 import { z } from "zod";
 import { getDbStructure } from "./utils";
 import { ChatCompletionMessageParam } from "openai/resources";
 import * as fs from "fs";
 import { getGPTAnswer } from "./utils";
+import { DbSchema } from "../types";
 
 const sqlQueryResponseSchema = z.object({
   statements: z.array(z.string()),
 });
 
-// Funkcja do generowania zapytań SQL
-async function getSqlQueries(dbSchema: object): Promise<string[] | null> {
+const GENERETED_SQL_PATH = "genereted_sql.json";
+
+// Na podstawie struktury bazy danych generuje przykładowe zapytania SQL
+async function getSqlQueries(dbSchema: DbSchema): Promise<string[] | null> {
   const prompt: ChatCompletionMessageParam[] = [
     {
       role: "system",
-      content: `You are an AI assistant specializing in SQL query generation. Based on the provided database schema, generate 10 realistic, simple and correct SQL queries. The database schema is given below:\n\n${JSON.stringify(dbSchema, null, 2)}`,
+      content: `You are an AI assistant specializing in SQL query generation. Based on the provided database schema, generate 10 realistic, simple and correct SQL queries. The database schema is given below:\n\n${JSON.stringify(
+        dbSchema,
+        null,
+        2
+      )}`,
     },
     {
       role: "user",
@@ -22,43 +28,58 @@ async function getSqlQueries(dbSchema: object): Promise<string[] | null> {
     },
   ];
 
-  console.info("Generowanie zapytań SQL...");
-  const response = await getGPTAnswer<{ statements: string[] }>(prompt, sqlQueryResponseSchema);
+  console.info(
+    "Generowanie przykładowych zapytań SQL na podstawie struktury ..."
+  );
+  const response = await getGPTAnswer<{ statements: string[] }>(
+    prompt,
+    sqlQueryResponseSchema
+  );
 
-  // Zwrot tablicy stringów z obiektu
-  return response?.statements || null;}
+  // Zwrot tablicy stringów wygenerowanych przez GPT
+  return response?.statements || null;
+}
 
-// Funkcja zapisująca dane do pliku JSON
-function saveToFile(data: any, filename: string) {
+// Zapisuje dane do pliku JSON
+function saveToFile(data: string[], filename: string) {
   try {
     fs.writeFileSync(filename, JSON.stringify(data, null, 2));
     console.info(`Dane zapisano do pliku: ${filename}`);
   } catch (error) {
-    console.error("Wystąpił błąd podczas zapisywania do pliku:", error);
+    console.error(
+      `Wystąpił błąd podczas zapisywania do pliku ${filename}:`,
+      error
+    );
   }
 }
 
-// Funkcja główna do generowania zapytań SQL
-async function generateSqlQueries() {
+// Generuje i zapisuje do pliku JSON przykładowe zapytania SQL na podstawie struktury bazy danych
+export async function generateSqlQueries(): Promise<void> {
   try {
+    // Pobieranie struktury bazy danych
     const dbStructure = await getDbStructure();
     if (!dbStructure) {
-      console.error("Nie można kontynuować bez struktury bazy danych.");
+      console.error("Nie udało się dostać dbStructure.");
       return;
     }
 
+    // Generowanie zapytań SQL
     const sqlQueries = await getSqlQueries(dbStructure.dbSchema);
     if (!sqlQueries || sqlQueries.length === 0) {
       console.error("Nie wygenerowano żadnych zapytań SQL.");
       return;
+    } else {
+      console.info("Zapytania SQL wygenerowane pomyślnie!");
     }
-
-    console.info("Zapytania SQL wygenerowane pomyślnie!");
-    saveToFile(sqlQueries, "generated_sql_queries.json");
+    // Zapisywanie wygenerowanych zapytań SQL do JSON
+    saveToFile(sqlQueries, GENERETED_SQL_PATH);
+    if (!fs.existsSync(GENERETED_SQL_PATH)) {
+      console.error(
+        `Nie udał się zapisać danych do ścieżki: ${GENERETED_SQL_PATH}.`
+      );
+      return;
+    }
   } catch (error) {
-    console.error("Wystąpił błąd podczas generowania zapytań SQL:", error);
+    console.error("Wystąpił błąd podczas generowania zapytań SQL: ", error);
   }
 }
-
-// Uruchomienie funkcji głównej
-generateSqlQueries();
