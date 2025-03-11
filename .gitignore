@@ -143,3 +143,4 @@ dist
 # tests
 src/automatic-tests/logs
 src/automatic-tests/*.json
+__tests__/
