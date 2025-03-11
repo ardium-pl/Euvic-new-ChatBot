@@ -34,7 +34,7 @@ sqlTranslatorRouter.post("/language-to-sql", async (req, res) => {
         status: "success",
         question: userQuery,
         sqlStatement: "-",
-        formattedAnswer: "Rozpoczęto nowy wątek",
+        formattedAnswer: "Rozpoczęto nowy wątek/A new thread has been started",
         rawData: [],
       })
       return;
