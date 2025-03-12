@@ -5,19 +5,38 @@ import { z } from "zod";
 import OpenAI from "openai";
 import * as dotenv from "dotenv";
 import { Example, DbSchema } from "../types.ts";
+import * as fs from "fs";
 
-dotenv.config();
+
+// Schemat odpowiedzi dla tłumaczenia na język naturalny
+export const naturalLanguageResponseSchema = z.object({
+  statement: z.string(),
+});
+
+export const GENERATED_SQL_PATH = "generatedSql.json";
+export const GENERATED_NATURAL_PATH = "generatedNatural.json";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
+
+export function saveToFile<T>(data: T, filename: string) {
+  try {
+    fs.writeFileSync(filename, JSON.stringify(data, null, 2));
+    console.info(`Dane zapisano do pliku: ${filename}`);
+  } catch (error) {
+    console.error(
+      `Wystąpił błąd podczas zapisywania do pliku ${filename}:`,
+      error
+    );
+  }
+}
 
 // Zwraca strukturę bazy danych
 export async function getDbStructure(): Promise<
   { dbSchema: DbSchema; examplesForSQL: Example[] } | undefined
 > {
   try {
-
     // Pobieranie struktury bazy danych
     console.info("Pobieranie struktury bazy danych...");
     const { dbSchema, examplesForSQL } = await loadDbInformation();

@@ -4,12 +4,13 @@ import { ChatCompletionMessageParam } from "openai/resources";
 import * as fs from "fs";
 import { getGPTAnswer } from "./utils";
 import { DbSchema } from "../types";
+import { GENERATED_SQL_PATH } from "./utils";
+import { saveToFile } from "./utils";
 
 const sqlQueryResponseSchema = z.object({
   statements: z.array(z.string()),
 });
 
-const GENERETED_SQL_PATH = "genereted_sql.json";
 
 // Na podstawie struktury bazy danych generuje przykładowe zapytania SQL
 async function getSqlQueries(dbSchema: DbSchema): Promise<string[] | null> {
@@ -41,17 +42,7 @@ async function getSqlQueries(dbSchema: DbSchema): Promise<string[] | null> {
 }
 
 // Zapisuje dane do pliku JSON
-function saveToFile(data: string[], filename: string) {
-  try {
-    fs.writeFileSync(filename, JSON.stringify(data, null, 2));
-    console.info(`Dane zapisano do pliku: ${filename}`);
-  } catch (error) {
-    console.error(
-      `Wystąpił błąd podczas zapisywania do pliku ${filename}:`,
-      error
-    );
-  }
-}
+
 
 // Generuje i zapisuje do pliku JSON przykładowe zapytania SQL na podstawie struktury bazy danych
 export async function generateSqlQueries(): Promise<void> {
@@ -72,10 +63,10 @@ export async function generateSqlQueries(): Promise<void> {
       console.info("Zapytania SQL wygenerowane pomyślnie!");
     }
     // Zapisywanie wygenerowanych zapytań SQL do JSON
-    saveToFile(sqlQueries, GENERETED_SQL_PATH);
-    if (!fs.existsSync(GENERETED_SQL_PATH)) {
+    saveToFile<string[]>(sqlQueries, GENERATED_SQL_PATH);
+    if (!fs.existsSync(GENERATED_SQL_PATH)) {
       console.error(
-        `Nie udał się zapisać danych do ścieżki: ${GENERETED_SQL_PATH}.`
+        `Nie udał się zapisać danych do ścieżki: ${GENERATED_SQL_PATH}.`
       );
       return;
     }
