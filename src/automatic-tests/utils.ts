@@ -14,19 +14,32 @@ export const naturalLanguageResponseSchema = z.object({
 export const GENERATED_SQL_PATH = "generatedSql.json";
 export const GENERATED_NATURAL_PATH = "generatedNatural.json";
 export const PROCESSED_QUERIES_PATH = "processedQueries.json";
+export const COMPARED_QUERIES_PATH = "comparedQueries.json";
+
+export type SqlNaturalType = {
+  sql: string;
+  natural: string;
+};
+
+export type ProcessedQueriesType = SqlNaturalType & {
+  response: string;
+};
+
+export type ComparedQueriesType = ProcessedQueriesType & {
+  isSame: boolean;
+};
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-export function saveToFile<T>(data: T, filename: string) {
+export function saveToFile<T>(data: T, filename: string): void {
   try {
     fs.writeFileSync(filename, JSON.stringify(data, null, 2));
     console.info(`Dane zapisano do pliku: ${filename}`);
   } catch (error) {
     console.error(
-      `Wystąpił błąd podczas zapisywania do pliku ${filename}:`,
-      error
+      `Wystąpił błąd podczas zapisywania do pliku ${filename}: ${error}`
     );
   }
 }
