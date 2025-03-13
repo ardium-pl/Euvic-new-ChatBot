@@ -26,6 +26,8 @@ export const CustomersData = z.object({
 export type FileData = {
   fileName: string;
   ocrText: string;
+  fileItemId: string;
+  fileLink: string;
   customers: ProjectDataType[];
 };
 

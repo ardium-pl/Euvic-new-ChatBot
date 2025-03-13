@@ -13,6 +13,7 @@ import { jsonFixes } from "./verifcation-json-data/jsonMainFixer.ts";
 import { FileData } from "./zod-json/dataJsonSchema.ts";
 import { parseOcrText } from "./zod-json/dataProcessor.ts";
 import { checkIfFileExists } from "./sharepoint/sharepointSql.ts";
+import { addDataToDB } from "./db/app.ts";
 
 export async function processFile(fileName: string, fileItemId: string, fileLink: string) { // TODO: Dorbić logikę z dodawaniem fileItemId oraz fileLink do naszej bazki
   try {
@@ -39,8 +40,10 @@ export async function processFile(fileName: string, fileItemId: string, fileLink
     const finalData = await jsonFixes(parsedData, ocrDataText);
 
     const fileJsonData: FileData = {
-      fileName: fileName,
+      fileName,
       ocrText: ocrDataText,
+      fileItemId, 
+      fileLink,
       customers: finalData.customers,
     };
 
@@ -79,6 +82,8 @@ async function processAllFiles() {
           
           logger.info(`Processing file: ${fileName}`);
           await processFile(fileName, fileItemId, fileLink);
+          await addDataToDB();
+
         } catch (error) {
           console.error(`Error downloading file for item with id: ${item.id}`, error);
         }
@@ -88,4 +93,5 @@ async function processAllFiles() {
     logger.error("Error processing all files:", error);
   }
 }
+
 await processAllFiles();

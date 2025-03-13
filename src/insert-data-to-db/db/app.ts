@@ -2,7 +2,7 @@ import { db } from "./config/database";
 import { processData } from "./utils/processData";
 import chalk from "chalk";
 
-async function main() {
+export async function addDataToDB() {
   console.log(chalk.blue("🚀 Starting the data processing application..."));
 
   try {
@@ -32,8 +32,3 @@ async function main() {
     }
   }
 }
-
-main().catch((err) => {
-  console.error(chalk.red("❌ Unexpected error in the application:"), err);
-  process.exit(1);
-});
