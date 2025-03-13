@@ -15,7 +15,12 @@ import { parseOcrText } from "./zod-json/dataProcessor.ts";
 import { checkIfFileExists } from "./sharepoint/sharepointSql.ts";
 import { addDataToDB } from "./db/app.ts";
 
-export async function processFile(fileName: string, fileItemId: string, fileLink: string) { // TODO: Dorbić logikę z dodawaniem fileItemId oraz fileLink do naszej bazki
+export async function processFile(
+  fileName: string,
+  fileItemId: string,
+  fileLink: string
+) {
+  // TODO: Dorbić logikę z dodawaniem fileItemId oraz fileLink do naszej bazki
   try {
     logger.info(`🧾 Reading file: ${fileName}`);
     [PDF_DATA_FOLDER, JSON_DATA_FOLDER].map((folder) => fs.ensureDir(folder));
@@ -42,7 +47,7 @@ export async function processFile(fileName: string, fileItemId: string, fileLink
     const fileJsonData: FileData = {
       fileName,
       ocrText: ocrDataText,
-      fileItemId, 
+      fileItemId,
       fileLink,
       customers: finalData.customers,
     };
@@ -64,28 +69,46 @@ async function processAllFiles() {
 
   try {
     const items = await sharePointService.getAllFilesFromList();
-    
+
     await Promise.all(
       items.map(async (item) => {
         if (!item.driveItem || !item.id || !item.driveItem.id) return;
-        
+
         const fileItemId = item.driveItem.id;
         const exists = await checkIfFileExists(fileItemId);
         if (exists) return;
-        
+
         try {
-          const fileName = await sharePointService.downloadFileFromList(item.id);   
-          const fileLink = item.webUrl
-          
-          if (!fileName || !fileLink) return;
-          
-          
+          // In your main processing function
+          const fileDetails = await sharePointService.getFileDetailsFromList(
+            item.id
+          );
+          if (!fileDetails) return;
+  
+
+          const { fileName, downloadUrl } = fileDetails;
+          const fileLink = item.webUrl;
+
+          if (!fileLink) return logger.error("FileLink doesnt exist");
+
+
+          const downloadSuccess = await sharePointService.downloadFile(
+            downloadUrl,
+            fileName
+          );
+          if (!downloadSuccess) return logger.error("File wasnt downloaded properly");
+
+
+          logger.info(`Processing file: ${fileName}`);
+          await processFile(fileName, fileItemId, fileLink);
           logger.info(`Processing file: ${fileName}`);
           await processFile(fileName, fileItemId, fileLink);
           await addDataToDB();
-
         } catch (error) {
-          console.error(`Error downloading file for item with id: ${item.id}`, error);
+          console.error(
+            `Error downloading file for item with id: ${item.id}`,
+            error
+          );
         }
       })
     );
