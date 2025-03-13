@@ -3,10 +3,8 @@ import { zodResponseFormat } from "openai/helpers/zod";
 import { ChatCompletionMessageParam } from "openai/resources";
 import { z } from "zod";
 import OpenAI from "openai";
-import * as dotenv from "dotenv";
 import { Example, DbSchema } from "../types.ts";
 import * as fs from "fs";
-
 
 // Schemat odpowiedzi dla tłumaczenia na język naturalny
 export const naturalLanguageResponseSchema = z.object({
@@ -15,6 +13,7 @@ export const naturalLanguageResponseSchema = z.object({
 
 export const GENERATED_SQL_PATH = "generatedSql.json";
 export const GENERATED_NATURAL_PATH = "generatedNatural.json";
+export const PROCESSED_QUERIES_PATH = "processedQueries.json";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -29,6 +28,22 @@ export function saveToFile<T>(data: T, filename: string) {
       `Wystąpił błąd podczas zapisywania do pliku ${filename}:`,
       error
     );
+  }
+}
+
+// Funkcja do odczytu zapytań naturalnych z pliku
+export function readFromFile<T>(filename: string): T[] {
+  try {
+    const fileContent = fs.readFileSync(filename, "utf-8");
+    const parsedData: T[] = JSON.parse(fileContent);
+    if (!parsedData || parsedData.length === 0) {
+      console.log(`Plik jest pusty: ${filename}`);
+      return [];
+    }
+    return parsedData;
+  } catch (error) {
+    console.error(`Błąd podczas odczytu pliku ${filename}:`, error);
+    return [];
   }
 }
 
