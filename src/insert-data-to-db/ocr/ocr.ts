@@ -5,6 +5,7 @@ import path from "path";
 import { convertPdfToImages } from "../utils/convertPdfToImages";
 import { deleteFile } from "../utils/deleteFile";
 import { logger } from "../utils/logger";
+
 import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -23,15 +24,14 @@ const VISION_AUTH = {
 };
 
 export async function pdfOcr(pdfFilePath: string): Promise<string> {
+
   const imagesFolder = path.resolve(__dirname, "../../../images");
   const outputTextFolder = path.resolve(__dirname, "../../../output-text");
-
   const fileNameWithoutExt = path.basename(pdfFilePath, ".pdf");
 
   await Promise.all([imagesFolder, outputTextFolder].map(fs.ensureDir));
 
   try {
-
     const imageFilePaths: string[] = await convertPdfToImages(
       pdfFilePath,
       imagesFolder
@@ -93,7 +93,6 @@ async function _saveDataToTxt(
   }
 }
 
-
 export async function fileOcr(
   imageFilePath: string
 ): Promise<string | null> {
@@ -111,7 +110,6 @@ export async function fileOcr(
     }
 
     logger.info(` 💚 Successfully processed image ${imageFilePath}`);
-    return googleVisionText;
 
   } catch (err: any) {
     logger.error(`Error during Google Vision OCR processing: ${err.message}`);

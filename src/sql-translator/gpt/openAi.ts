@@ -1,6 +1,7 @@
 import { zodResponseFormat } from "openai/helpers/zod";
 import { ChatCompletionMessageParam } from "openai/resources";
-import { z, ZodTypeAny } from "zod";
+import { z, ZodType,ZodTypeAny } from "zod";
+
 import { openAiClient } from "../../config";
 import { logger } from "../../insert-data-to-db/utils/logger";
 
@@ -8,6 +9,9 @@ export const sqlResponse = z.object({
   isSelect: z.boolean(),
   sqlStatement: z.string(),
 });
+
+export type SqlResponse = z.infer<typeof sqlResponse>;
+
 
 export const finalResponse = z.object({
   formattedAnswer: z.string(),
@@ -22,6 +26,7 @@ export async function generateGPTAnswer(prompt: ChatCompletionMessageParam[], re
     });
 
     const response = completion.choices[0].message;
+
     if (response.refusal) {
       // Custom feedback after disturbing user input
       return null;

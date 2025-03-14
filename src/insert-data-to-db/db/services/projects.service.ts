@@ -21,7 +21,6 @@ export async function addProjectsToDB(projectsData: Project[]) {
             project.description,
             project.clientName,
             project.industryName,
-
             project.dateDescription,
             project.scaleOfImplementation,
           ]

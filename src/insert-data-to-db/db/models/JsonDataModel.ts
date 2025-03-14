@@ -11,6 +11,7 @@ interface Customer {
   description: string;
   businessCase: BusinessCases;
 
+
   dateDescription: string;
   scaleOfImplementation: string;
   industry: string;

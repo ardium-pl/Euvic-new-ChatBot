@@ -1,6 +1,7 @@
 import mysql, { createPool, Pool } from "mysql2/promise";
 import OpenAI from "openai";
 
+
 export const openAiClient = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
