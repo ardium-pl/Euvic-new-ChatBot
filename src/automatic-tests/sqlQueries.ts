@@ -2,7 +2,7 @@ import { z } from "zod";
 import { getDbStructure } from "./utils";
 import { ChatCompletionMessageParam } from "openai/resources";
 import * as fs from "fs";
-import { getGPTAnswer } from "./utils";
+import { generateGPTAnswer } from "../sql-translator/gpt/openAi";
 import { DbSchema } from "../types";
 import { GENERATED_SQL_PATH } from "./utils";
 import { saveToFile } from "./utils";
@@ -32,9 +32,10 @@ async function getSqlQueries(dbSchema: DbSchema): Promise<string[] | null> {
   console.info(
     "Generowanie przykładowych zapytań SQL na podstawie struktury ..."
   );
-  const response = await getGPTAnswer<{ statements: string[] }>(
+  const response = await generateGPTAnswer<{ statements: string[] }>(
     prompt,
-    sqlQueryResponseSchema
+    sqlQueryResponseSchema,
+    "response"
   );
 
   // Zwrot tablicy stringów wygenerowanych przez GPT

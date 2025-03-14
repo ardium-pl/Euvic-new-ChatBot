@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import { getDbStructure } from "./utils";
-import { getGPTAnswer } from "./utils";
+import { generateGPTAnswer } from "../sql-translator/gpt/openAi";
 import { ChatCompletionMessageParam } from "openai/resources";
 import { naturalLanguageResponseSchema } from "./utils";
 import { DbSchema } from "../types";
@@ -28,9 +28,10 @@ async function translateSqlToNaturalLanguage(
   console.info(
     "Wysyłanie zapytania do GPT w celu konwersji na język naturalny..."
   );
-  const response = await getGPTAnswer<{ statement: string }>(
+  const response = await generateGPTAnswer<{ statement: string }>(
     prompt,
-    naturalLanguageResponseSchema
+    naturalLanguageResponseSchema,
+    "response" 
   );
 
   // Zwrot zapytania naturalnego wygenerowanego przez GPT
