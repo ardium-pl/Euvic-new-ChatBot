@@ -9,17 +9,13 @@ export function mapCustomers(
   customersArray: ReferenceProjectDataType[]
 ): ProjectDataType[] {
   return customersArray.map((customer) => ({
-    clientName: customer.name,
+    clientName: customer.clientName,
     projectName: "",
-    description: customer.projects.description,
-    technologies: customer.projects.technologies,
-    businessCase: customer.projects.businessCase
-      ? { name: [customer.projects.businessCase] }
-      : undefined,
-    referenceDate: customer.projects.referenceDate,
-    scaleOfImplementationValue: customer.projects.scaleOfImplementationValue,
-    scaleOfImplementationDescription:
-      customer.projects.scaleOfImplementationDescription,
-    industry: customer.projects.industry,
+    description: customer.description,
+    technologies: customer.technologies,
+    businessCase: customer.businessCase ? customer.businessCase : undefined,
+    dateDescription: customer.referenceDate,
+    scaleOfImplementation: customer.scaleOfImplementationDescription,
+    industry: customer.industry,
   }));
 }

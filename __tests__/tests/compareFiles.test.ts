@@ -33,18 +33,6 @@ const customerKeys: Array<keyof ProjectDataType> = keysToTest.keys
   .filter((item: { key: string; test: boolean }) => item.key)
   .map((item: { key: string }) => item.key);
 
-// [
-//   // "description",
-//   "clientName",
-//   "projectName",
-//   "technologies",
-//   "businessCase",
-//   "referenceDate",
-//   // "scaleOfImplementationValue",
-//   // "scaleOfImplementationDescription",
-//   // "industry",
-// ];
-
 describe("processFile function", () => {
   testFiles.forEach((testFile) => {
     console.log(`✅ Testuję plik: ${testFile.pdf}`);
