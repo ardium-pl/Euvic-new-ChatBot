@@ -1,11 +1,11 @@
 import * as fs from "fs";
-import { getDbStructure } from "./utils";
 import { generateGPTAnswer } from "../sql-translator/gpt/openAi";
 import { ChatCompletionMessageParam } from "openai/resources";
 import { naturalLanguageResponseSchema } from "./utils";
 import { DbSchema } from "../types";
 import { GENERATED_SQL_PATH } from "./utils";
 import { GENERATED_NATURAL_PATH } from "./utils";
+import { loadDbInformation } from "../sql-translator/database/mongoDb";
 
 // Zwraca zapytanie naturalne wygenerowane na podstawie SQL
 async function translateSqlToNaturalLanguage(
@@ -31,7 +31,7 @@ async function translateSqlToNaturalLanguage(
   const response = await generateGPTAnswer<{ statement: string }>(
     prompt,
     naturalLanguageResponseSchema,
-    "response" 
+    "response"
   );
 
   // Zwrot zapytania naturalnego wygenerowanego przez GPT
@@ -52,8 +52,8 @@ export async function translateSqlQueries() {
     }
 
     // Pobieranie struktury bazy danych
-    const dbSchema = await getDbStructure();
-    if (!dbSchema?.dbSchema) {
+    const { dbSchema, examplesForSQL } = await loadDbInformation();
+    if (!dbSchema) {
       console.error("Nie można kontynuować bez struktury bazy danych.");
       return;
     }
@@ -64,7 +64,7 @@ export async function translateSqlQueries() {
     for (const sqlQuery of sqlQueries) {
       const naturalQuery = await translateSqlToNaturalLanguage(
         sqlQuery,
-        dbSchema.dbSchema
+        dbSchema
       );
       if (!naturalQuery) {
         console.error(`Nie udało się przetłumaczyć zapytania SQL: ${sqlQuery}`);

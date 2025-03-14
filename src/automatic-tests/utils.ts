@@ -1,8 +1,7 @@
-import { loadDbInformation } from "../sql-translator/database/mongoDb.ts";
 import { z } from "zod";
-import OpenAI from "openai";
-import { Example, DbSchema } from "../types.ts";
+import { DbSchema } from "../types.ts";
 import * as fs from "fs";
+import { ChatCompletionMessageParam } from "openai/resources/index";
 
 // Schemat odpowiedzi dla tłumaczenia na język naturalny
 export const naturalLanguageResponseSchema = z.object({
@@ -27,9 +26,30 @@ export type ComparedQueriesType = ProcessedQueriesType & {
   isSame: boolean;
 };
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+export async function promptFor10Sql(
+  dbSchema: DbSchema
+): Promise<ChatCompletionMessageParam[]> {
+  const userQuery: string = "Generate 10 SQL queries.";
+  const messages: ChatCompletionMessageParam[] = [
+    {
+      role: "system",
+      content: `You are an AI assistant specializing in SQL query generation. Based on the provided database schema, generate 10 realistic, simple and correct SQL queries. The database schema is given below:\n\n${JSON.stringify(
+        dbSchema,
+        null,
+        2
+      )}`,
+    },
+    {
+      role: "system",
+      content: `
+      The comprehensive JSON formatted schema of our database:
+      ${JSON.stringify(dbSchema, null, 2)}
+      `,
+    },
+    { role: "user", content: userQuery },
+  ];
+  return messages;
+}
 
 export function saveToFile<T>(data: T, filename: string): void {
   try {
@@ -55,27 +75,5 @@ export function readFromFile<T>(filename: string): T[] {
   } catch (error) {
     console.error(`Błąd podczas odczytu pliku ${filename}:`, error);
     return [];
-  }
-}
-
-// Zwraca strukturę bazy danych
-export async function getDbStructure(): Promise<
-  { dbSchema: DbSchema; examplesForSQL: Example[] } | undefined
-> {
-  try {
-    // Pobieranie struktury bazy danych
-    console.info("Pobieranie struktury bazy danych...");
-    const { dbSchema, examplesForSQL } = await loadDbInformation();
-    if (!dbSchema) {
-      console.error("Nie udało się pobrać struktury bazy danych.");
-      return undefined;
-    } else {
-      console.info("Struktura bazy danych została pobrana.");
-    }
-
-    return { dbSchema, examplesForSQL };
-  } catch (error) {
-    console.error("Wystąpił błąd podczas pobierania bazy danych:", error);
-    throw error;
   }
 }

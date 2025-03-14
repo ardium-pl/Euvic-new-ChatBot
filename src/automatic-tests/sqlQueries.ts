@@ -1,39 +1,23 @@
 import { z } from "zod";
-import { getDbStructure } from "./utils";
 import { ChatCompletionMessageParam } from "openai/resources";
 import * as fs from "fs";
 import { generateGPTAnswer } from "../sql-translator/gpt/openAi";
 import { DbSchema } from "../types";
-import { GENERATED_SQL_PATH } from "./utils";
+import { GENERATED_SQL_PATH, promptFor10Sql } from "./utils";
 import { saveToFile } from "./utils";
+import { loadDbInformation } from "../sql-translator/database/mongoDb";
 
 const sqlQueryResponseSchema = z.object({
   statements: z.array(z.string()),
 });
 
-
 // Na podstawie struktury bazy danych generuje przykładowe zapytania SQL
 async function getSqlQueries(dbSchema: DbSchema): Promise<string[] | null> {
-  const prompt: ChatCompletionMessageParam[] = [
-    {
-      role: "system",
-      content: `You are an AI assistant specializing in SQL query generation. Based on the provided database schema, generate 10 realistic, simple and correct SQL queries. The database schema is given below:\n\n${JSON.stringify(
-        dbSchema,
-        null,
-        2
-      )}`,
-    },
-    {
-      role: "user",
-      content: "Generate 10 SQL queries for the given database schema.",
-    },
-  ];
-
   console.info(
     "Generowanie przykładowych zapytań SQL na podstawie struktury ..."
   );
   const response = await generateGPTAnswer<{ statements: string[] }>(
-    prompt,
+    await promptFor10Sql(dbSchema),
     sqlQueryResponseSchema,
     "response"
   );
@@ -42,21 +26,18 @@ async function getSqlQueries(dbSchema: DbSchema): Promise<string[] | null> {
   return response?.statements || null;
 }
 
-// Zapisuje dane do pliku JSON
-
-
 // Generuje i zapisuje do pliku JSON przykładowe zapytania SQL na podstawie struktury bazy danych
 export async function generateSqlQueries(): Promise<void> {
   try {
     // Pobieranie struktury bazy danych
-    const dbStructure = await getDbStructure();
-    if (!dbStructure) {
+    const { dbSchema, examplesForSQL } = await loadDbInformation();
+    if (!dbSchema) {
       console.error("Nie udało się dostać dbStructure.");
       return;
     }
 
     // Generowanie zapytań SQL
-    const sqlQueries = await getSqlQueries(dbStructure.dbSchema);
+    const sqlQueries = await getSqlQueries(dbSchema);
     if (!sqlQueries || sqlQueries.length === 0) {
       console.error("Nie wygenerowano żadnych zapytań SQL.");
       return;
