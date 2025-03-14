@@ -26,6 +26,14 @@ export type ComparedQueriesType = ProcessedQueriesType & {
   isSame: boolean;
 };
 
+export const questionResSchema = z.object({
+  question: z.string(),
+  answerRef: z.string(),
+});
+
+export type QuestionRedSchemaType = z.infer<typeof questionResSchema>
+
+
 export async function promptFor10Sql(
   dbSchema: DbSchema
 ): Promise<ChatCompletionMessageParam[]> {

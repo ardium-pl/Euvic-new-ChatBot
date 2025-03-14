@@ -7,16 +7,16 @@ import { GENERATED_SQL_PATH, promptFor10Sql } from "./utils";
 import { saveToFile } from "./utils";
 import { loadDbInformation } from "../sql-translator/database/mongoDb";
 
-const sqlQueryResponseSchema = z.object({
-  statements: z.array(z.string()),
-});
-
 // Na podstawie struktury bazy danych generuje przykładowe zapytania SQL
-async function getSqlQueries(dbSchema: DbSchema): Promise<string[] | null> {
+async function get10SqlQueries(dbSchema: DbSchema): Promise<string[] | null> {
+  const sqlQueryResponseSchema = z.object({
+    statements: z.array(z.string()),
+  });
+
   console.info(
     "Generowanie przykładowych zapytań SQL na podstawie struktury ..."
   );
-  const response = await generateGPTAnswer<{ statements: string[] }>(
+  const response = await generateGPTAnswer(
     await promptFor10Sql(dbSchema),
     sqlQueryResponseSchema,
     "response"
@@ -26,7 +26,7 @@ async function getSqlQueries(dbSchema: DbSchema): Promise<string[] | null> {
   return response?.statements || null;
 }
 
-// Generuje i zapisuje do pliku JSON przykładowe zapytania SQL na podstawie struktury bazy danych
+// Generuje i zapisuje do pliku JSON 10 przykładowych zapytań SQL na podstawie struktury bazy danych
 export async function generateSqlQueries(): Promise<void> {
   try {
     // Pobieranie struktury bazy danych
@@ -37,7 +37,7 @@ export async function generateSqlQueries(): Promise<void> {
     }
 
     // Generowanie zapytań SQL
-    const sqlQueries = await getSqlQueries(dbSchema);
+    const sqlQueries = await get10SqlQueries(dbSchema);
     if (!sqlQueries || sqlQueries.length === 0) {
       console.error("Nie wygenerowano żadnych zapytań SQL.");
       return;
