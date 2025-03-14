@@ -10,6 +10,7 @@ import {
 import { logger } from "./utils/logger.ts";
 import { FileData } from "./zod-json/dataJsonSchema.ts";
 import { parseOcrText } from "./zod-json/dataProcessor.ts";
+import { jsonFixes } from "./verifcation-json-data/jsonMainFixer.ts";
 
 async function processFile(fileName: string) {
   try {
@@ -17,7 +18,7 @@ async function processFile(fileName: string) {
     [PDF_DATA_FOLDER, JSON_DATA_FOLDER].map((folder) => fs.ensureDir(folder));
     let pdfFilePath = path.join(PDF_DATA_FOLDER, fileName);
 
-    // Convert PPTX to PDF if necessary
+    // Convert PPTX to PDF if necessary // TODO: wywalić stąd funkcje konwersi z pptx na pdf(konieczne) i zrobić to przed tą funckcją
     if (path.extname(fileName).toLowerCase() === ".pptx") {
       logger.info(`🔄 Converting PPTX to PDF: ${fileName}`);
       const pdfFileName = `${path.basename(fileName, ".pptx")}.pdf`;
@@ -30,12 +31,15 @@ async function processFile(fileName: string) {
     logger.info(`📄 OCR Data Text: ${ocrDataText}`);
     if (!getDataPrompt) return null;
     const parsedData = await parseOcrText(ocrDataText, getDataPrompt);
-    logger.info("JSON Schema: ", parsedData);
+    logger.info("JSON was made !");
+
+    // Weryfikacja JSON
+    const finalData = await jsonFixes(parsedData, ocrDataText);
 
     const fileJsonData: FileData = {
       fileName: fileName,
       ocrText: ocrDataText,
-      customers: parsedData.customers,
+      customers: finalData.customers,
     };
 
     const jsonFileName = `${path.basename(
@@ -63,6 +67,7 @@ async function main() {
       files.map((file) => {
         const fileExtension = path.extname(file).toLowerCase();
         if (fileExtension === ".pdf" || fileExtension === ".pptx") {
+          //TODO: tutaj dodac elif na pliki które są wordem
           return processFile(file);
         } else {
           logger.info(`Skipping unsupported file format: ${file}`);
@@ -78,3 +83,4 @@ async function main() {
 }
 
 await main();
+process.exit(0);

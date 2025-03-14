@@ -89,10 +89,8 @@ export async function processData() {
           description: customer.description,
           clientName: customer.clientName,
           industryName: customer.industry,
-          referenceDate: customer.referenceDate,
-          implementationScaleValue: customer.scaleOfImplementationValue,
-          implementationScaleDescription:
-            customer.scaleOfImplementationDescription,
+          dateDescription: customer.dateDescription,
+          scaleOfImplementation: customer.scaleOfImplementation,
         });
       });
       return acc;

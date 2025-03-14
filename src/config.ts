@@ -1,8 +1,5 @@
 import mysql, { createPool, Pool } from "mysql2/promise";
 import OpenAI from "openai";
-import * as dotenv from "dotenv";
-
-dotenv.config();
 
 
 export const openAiClient = new OpenAI({

@@ -10,9 +10,10 @@ interface Customer {
   technologies: Technologies;
   description: string;
   businessCase: BusinessCases;
-  referenceDate: string;
-  scaleOfImplementationValue: number;
-  scaleOfImplementationDescription: string;
+
+
+  dateDescription: string;
+  scaleOfImplementation: string;
   industry: string;
 }
 

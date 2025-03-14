@@ -12,9 +12,9 @@ export interface Project {
   description: string;
   clientName: string;
   industryName: string;
-  referenceDate: string;
-  implementationScaleValue: number;
-  implementationScaleDescription: string;
+
+  dateDescription: string;
+  scaleOfImplementation: string;
 }
 
 export interface TechnologyProject {
