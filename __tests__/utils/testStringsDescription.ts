@@ -1,5 +1,5 @@
 import { ChatCompletionMessageParam } from "openai/resources";
-import { generateGPTAnswer } from "../sql-translator/gpt/openAi";
+import { generateGPTAnswer } from "../../src/sql-translator/gpt/openAi";
 import { questionResSchema, QuestionRedSchemaType } from "./utils";
 
 function promptForStringQuestion(
@@ -24,7 +24,7 @@ function promptForStringQuestion(
   return messages;
 }
 
-async function getStringQuestion(
+export async function getStringQuestion(
   projectObject: any
 ): Promise<QuestionRedSchemaType | null> {
   console.info(

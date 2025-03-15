@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { DbSchema } from "../types.ts";
+import { DbSchema } from "../../src/types.ts";
 import * as fs from "fs";
 import { ChatCompletionMessageParam } from "openai/resources/index";
 

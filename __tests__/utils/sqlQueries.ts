@@ -1,11 +1,11 @@
 import { z } from "zod";
 import { ChatCompletionMessageParam } from "openai/resources";
 import * as fs from "fs";
-import { generateGPTAnswer } from "../sql-translator/gpt/openAi";
-import { DbSchema } from "../types";
+import { generateGPTAnswer } from "../../src/sql-translator/gpt/openAi";
+import { DbSchema } from "../../src/types";
 import { GENERATED_SQL_PATH, promptFor10Sql } from "./utils";
 import { saveToFile } from "./utils";
-import { loadDbInformation } from "../sql-translator/database/mongoDb";
+import { loadDbInformation } from "../../src/sql-translator/database/mongoDb";
 
 // Na podstawie struktury bazy danych generuje przykładowe zapytania SQL
 async function get10SqlQueries(dbSchema: DbSchema): Promise<string[] | null> {

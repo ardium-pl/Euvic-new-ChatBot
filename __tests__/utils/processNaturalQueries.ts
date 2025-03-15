@@ -2,9 +2,9 @@ import {
   generateGPTAnswer,
   sqlResponse,
   SqlResponse,
-} from "../sql-translator/gpt/openAi";
-import { promptForSQL } from "../sql-translator/gpt/prompts";
-import { ChatHistoryHandler } from "../meta-handling/whatsapp/chat_history/getChatHistory";
+} from "../../src/sql-translator/gpt/openAi";
+import { promptForSQL } from "../../src/sql-translator/gpt/prompts";
+import { ChatHistoryHandler } from "../../src/meta-handling/whatsapp/chat_history/getChatHistory";
 import {
   saveToFile,
   readFromFile,

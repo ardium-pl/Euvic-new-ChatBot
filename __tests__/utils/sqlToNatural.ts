@@ -1,11 +1,11 @@
 import * as fs from "fs";
-import { generateGPTAnswer } from "../sql-translator/gpt/openAi";
+import { generateGPTAnswer } from "../../src/sql-translator/gpt/openAi";
 import { ChatCompletionMessageParam } from "openai/resources";
 import { naturalLanguageResponseSchema } from "./utils";
-import { DbSchema } from "../types";
+import { DbSchema } from "../../src/types";
 import { GENERATED_SQL_PATH } from "./utils";
 import { GENERATED_NATURAL_PATH } from "./utils";
-import { loadDbInformation } from "../sql-translator/database/mongoDb";
+import { loadDbInformation } from "../../src/sql-translator/database/mongoDb";
 
 // Zwraca zapytanie naturalne wygenerowane na podstawie SQL
 async function translateSqlToNaturalLanguage(

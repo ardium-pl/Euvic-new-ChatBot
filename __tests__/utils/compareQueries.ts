@@ -1,4 +1,4 @@
-import { executeSQL } from "../sql-translator/database/mySql"; // Import funkcji executeSQL
+import { executeSQL } from "../../src/sql-translator/database/mySql"; // Import funkcji executeSQL
 import { RowDataPacket } from "mysql2";
 import {
   saveToFile,
