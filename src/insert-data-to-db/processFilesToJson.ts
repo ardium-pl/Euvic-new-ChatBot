@@ -11,6 +11,9 @@ import { logger } from "./utils/logger.ts";
 import { FileDataType } from "./zod-json/dataJsonSchema.ts";
 import { parseOcrText } from "./zod-json/dataProcessor.ts";
 import { jsonFixes } from "./verifcation-json-data/jsonMainFixer.ts";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
 
 export async function processFile(fileName: string) {
   try {
@@ -82,5 +85,7 @@ async function main() {
   }
 }
 
-await main();
-process.exit(0);
+if (process.argv[1] === __filename) {
+  await main();
+  process.exit(0);
+}

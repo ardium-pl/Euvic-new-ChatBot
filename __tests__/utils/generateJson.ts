@@ -9,22 +9,29 @@ import { fileURLToPath } from "url";
 import { processFile } from "../../src/insert-data-to-db/processFilesToJson";
 import "dotenv/config";
 
+// ścieżki
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const TEST_FILES_INFO_PATH = path.resolve(__dirname, "../testFilesInfo.json");
+const TEST_FILES_INFO_PATH = path.resolve(
+  __dirname,
+  "../config/testFilesInfo.json"
+);
 const PDF_SOURCE = path.resolve(__dirname, "../data/test-pdfs");
 const JSON_STORAGE = path.resolve(__dirname, "../data/generated-json");
 const OUTPUT_TEXT = path.resolve(__dirname, "../../output-text");
-const JSON_SERIE = "ref-2";
+const JSON_SERIE = "two_newModel_3";
 
+// wczytanie info które PDFy testować
 const testFilesInfo = JSON.parse(
   fs.readFileSync(TEST_FILES_INFO_PATH, "utf-8")
 );
-
 const testFiles: TestFile[] = testFilesInfo.files.filter(
   ({ test }: { test: boolean }) => test
 );
 
+console.log(testFiles);
+
+// generuje json na podstawie określonych pdfów
 async function generateJson() {
   // upewnienie się że katalogi istnieją
   await fs.ensureDir(JSON_DEST);
@@ -47,8 +54,8 @@ async function generateJson() {
     })
   );
 
+  // przenoszenie wygenerowanych jsonów
   const generatedFiles = await fs.readdir(JSON_DEST);
-
   await Promise.all(
     generatedFiles.map(async (file) => {
       const sourcePath = path.join(JSON_DEST, file);
@@ -57,6 +64,8 @@ async function generateJson() {
       await fs.move(sourcePath, destinationPath, { overwrite: true });
     })
   );
+
+  // opróżnianie katalogów
   await Promise.all([
     fs.emptyDir(JSON_DEST),
     fs.emptyDir(PDF_DEST),
@@ -64,4 +73,7 @@ async function generateJson() {
   ]);
 }
 
-await generateJson();
+if (process.argv[1] === __filename) {
+  await generateJson();
+  process.exit(0);
+}
