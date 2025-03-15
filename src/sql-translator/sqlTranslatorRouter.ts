@@ -1,11 +1,13 @@
 import express, { Router } from "express";
 import { logger } from "../insert-data-to-db/utils/logger.js";
-import { executeSQL } from "./database/mySql.js";
-import { finalResponse, generateGPTAnswer, sqlResponse } from "./gpt/openAi.js";
-import { promptForAnswer, promptForSQL } from "./gpt/prompts.js";
 import { ChatHistoryHandler } from "../meta-handling/whatsapp/chat_history/getChatHistory.js";
+import { executeSQL } from "./database/mySql.js";
+import { finalResponse, generateGPTAnswer, languageResponse, sqlResponse } from "./gpt/openAi.js";
+import { promptForAnswer, promptForLanguageDetection, promptForSQL } from "./gpt/prompts.js";
+
 
 export const sqlTranslatorRouter: Router = express.Router();
+
 
 sqlTranslatorRouter.post("/language-to-sql", async (req, res) => {
   logger.info("📩 Received a new POST request.");
@@ -87,10 +89,18 @@ sqlTranslatorRouter.post("/language-to-sql", async (req, res) => {
       return;
     }
 
+    const language = await generateGPTAnswer(
+      promptForLanguageDetection(userQuery),
+      languageResponse,
+      "language"
+    );
+
+
+    logger.info("Language ", language?.language);
     // Log before formatting the result
     logger.info("🤖 Sending data to OpenAI for formatting...");
     const formattedAnswer = await generateGPTAnswer(
-      promptForAnswer(userQuery, sqlAnswer.sqlStatement, rows),
+      promptForAnswer(userQuery, sqlAnswer.sqlStatement, rows, language!.language),
       finalResponse,
       "final_response"
     );

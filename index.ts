@@ -6,6 +6,7 @@ import { sqlTranslatorRouter } from "./src/sql-translator/sqlTranslatorRouter";
 import webhookRouter from "./src/meta-handling/whatsapp/webhook";
 import { PORT } from "./src/config";
 
+
 const app = express();
 
 // Middleware
@@ -25,3 +26,4 @@ app.listen(PORT, async() => {
     throw err;
   }
 });
+

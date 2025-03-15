@@ -61,7 +61,3 @@ export const apiUrl = config[NODE_ENV];
 export const LIST_ID = process.env.LIST_ID;
 export const SITE_ID = process.env.SITE_ID;
 
-
-
-
-
