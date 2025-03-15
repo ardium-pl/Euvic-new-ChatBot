@@ -17,7 +17,7 @@ import { addTechnologiesToDB } from "../services/technologies.service";
 import { addClientsToDB } from "../services/clients.service";
 import { addFileProjectsToDB } from "../services/fileProjects.service";
 import chalk from "chalk";
-import { DataJson } from "../models/JsonDataModel";
+import { FileData } from "../../zod-json/dataJsonSchema";
 import { addBusinessCaseProjectsToDB } from "../services/businessCasesProjects.service";
 
 // Konwersja `import.meta.url` na ścieżkę pliku
@@ -26,9 +26,9 @@ const __dirname = path.dirname(__filename);
 const jsonDataDirectory = path.join(__dirname, "../../utils/json-data");
 
 export async function processData() {
-  const jsonData: DataJson[] = loadJSONFiles(jsonDataDirectory);
+  const jsonData: FileData[] = loadJSONFiles(jsonDataDirectory);
 
-  const businessCases = jsonData.reduce((acc: Set<string>, file: DataJson) => {
+  const businessCases = jsonData.reduce((acc: Set<string>, file: FileData) => {
     file.customers.forEach((customer) => {
       if (customer.businessCase) {
         customer.businessCase.name.forEach((biz) => acc.add(biz));
@@ -37,7 +37,7 @@ export async function processData() {
     return acc;
   }, new Set<string>());
 
-  const technologies = jsonData.reduce((acc: Set<string>, file: DataJson) => {
+  const technologies = jsonData.reduce((acc: Set<string>, file: FileData) => {
     file.customers.forEach((customer) => {
       if (customer.technologies) {
         customer.technologies.name.forEach((tech) => acc.add(tech));
@@ -46,7 +46,7 @@ export async function processData() {
     return acc;
   }, new Set<string>());
 
-  const industries = jsonData.reduce((acc: Set<string>, file: DataJson) => {
+  const industries = jsonData.reduce((acc: Set<string>, file: FileData) => {
     file.customers.forEach((customer) => {
       if (customer.industry) {
         acc.add(customer.industry);
@@ -56,7 +56,7 @@ export async function processData() {
   }, new Set<string>());
 
   const files: DataFile[] = jsonData.reduce(
-    (acc: DataFile[], file: DataJson) => {
+    (acc: DataFile[], file: FileData) => {
       if (file.fileName && file.ocrText) {
         acc.push({
           nazwa: file.fileName,
@@ -71,7 +71,7 @@ export async function processData() {
   );
 
   const uniqueClientNames = jsonData.reduce(
-    (acc: Set<string>, file: DataJson) => {
+    (acc: Set<string>, file: FileData) => {
       file.customers.forEach((customer) => {
         if (customer.clientName) {
           acc.add(customer.clientName);
@@ -83,7 +83,7 @@ export async function processData() {
   );
 
   const projectsData: Project[] = jsonData.reduce(
-    (acc: Project[], file: DataJson) => {
+    (acc: Project[], file: FileData) => {
       file.customers.forEach((customer) => {
         acc.push({
           projectName: customer.projectName,
@@ -100,7 +100,7 @@ export async function processData() {
   );
 
   const technologyProjects: TechnologyProject[] = jsonData.reduce(
-    (acc: TechnologyProject[], file: DataJson) => {
+    (acc: TechnologyProject[], file: FileData) => {
       file.customers.forEach((customer) => {
         if (customer.projectName && customer.technologies?.name) {
           acc.push({
@@ -115,7 +115,7 @@ export async function processData() {
   );
 
   const businessCaseProjects: BusinessCasesProject[] = jsonData.reduce(
-    (acc: BusinessCasesProject[], file: DataJson) => {
+    (acc: BusinessCasesProject[], file: FileData) => {
       file.customers.forEach((customer) => {
         if (customer.projectName && customer.businessCase?.name) {
           acc.push({
@@ -130,7 +130,7 @@ export async function processData() {
   );
 
   const fileProjects: DataFileProject[] = jsonData.reduce(
-    (acc: DataFileProject[], file: DataJson) => {
+    (acc: DataFileProject[], file: FileData) => {
       file.customers.forEach((customer) => {
         if (customer.projectName) {
           acc.push({

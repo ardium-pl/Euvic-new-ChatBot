@@ -4,6 +4,7 @@ export interface DataFile {
   link_do_pliku: string;
   sharepoint_id: string;
 }
+
 export interface DataClient {
   name: string;
   industry: string;
@@ -13,9 +14,9 @@ export interface Project {
   projectName: string;
   description: string;
   clientName: string;
-  industryName: string;
-  dateDescription: string;
-  scaleOfImplementation: string;
+  industryName: string | undefined;
+  dateDescription: string | undefined;
+  scaleOfImplementation: string | undefined;
 }
 
 export interface TechnologyProject {

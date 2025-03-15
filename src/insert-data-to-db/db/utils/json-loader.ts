@@ -1,17 +1,17 @@
 import fs from "fs";
 import path from "path";
-import { DataJson } from "../models/JsonDataModel";
+import { FileData } from "../../zod-json/dataJsonSchema";
 
-export function loadJSONFiles(directory: string): DataJson[] {
+export function loadJSONFiles(directory: string): FileData[] {
   const files = fs.readdirSync(directory);
-  const jsonData: DataJson[] = [];
+  const jsonData: FileData[] = [];
 
   files.forEach((file) => {
     const filePath = path.join(directory, file);
     if (file.endsWith(".json")) {
       const data = fs.readFileSync(filePath, "utf-8");
       try {
-        const parsedData: DataJson = JSON.parse(data);
+        const parsedData: FileData = JSON.parse(data);
         if (
           parsedData.fileName &&
           parsedData.ocrText &&
