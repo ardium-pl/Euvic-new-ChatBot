@@ -14,9 +14,8 @@ const ProjectData = z.object({
       name: z.array(z.string()),
     })
     .optional(),
-  referenceDate: z.string().optional(),
-  scaleOfImplementationValue: z.number().optional(),
-  scaleOfImplementationDescription: z.string().optional(),
+  dateDescription: z.string().optional(),
+  scaleOfImplementation: z.string().optional(),
   industry: z.string().optional(),
 });
 
@@ -27,6 +26,8 @@ export const CustomersData = z.object({
 export type FileData = {
   fileName: string;
   ocrText: string;
+  fileItemId: string;
+  fileLink: string;
   customers: ProjectDataType[];
 };
 

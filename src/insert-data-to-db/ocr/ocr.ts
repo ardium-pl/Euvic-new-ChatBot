@@ -6,7 +6,6 @@ import { convertPdfToImages } from "../utils/convertPdfToImages";
 import { deleteFile } from "../utils/deleteFile";
 import { logger } from "../utils/logger";
 
-
 const VISION_AUTH = {
   credentials: {
     client_email: process.env.GOOGLE_CLIENT_EMAIL as string,
@@ -65,6 +64,8 @@ export async function pdfOcr(pdfFilePath: string): Promise<string> {
       deleteFile(imageFilePath);
     }
 
+    deleteFile(pdfFilePath);
+
     return concatenatedResults;
   } catch (err: any) {
     logger.error(`Error processing ${pdfFilePath}:`, err);
@@ -87,9 +88,7 @@ async function _saveDataToTxt(
   }
 }
 
-export async function fileOcr(
-  imageFilePath: string
-): Promise<string | null> {
+export async function fileOcr(imageFilePath: string): Promise<string | null> {
   const client = new vision.ImageAnnotatorClient(VISION_AUTH);
 
   logger.info(` 🕶️ Processing image with Google Vision: ${imageFilePath}`);
@@ -104,7 +103,7 @@ export async function fileOcr(
     }
 
     logger.info(` 💚 Successfully processed image ${imageFilePath}`);
-    return  googleVisionText ;
+    return googleVisionText;
   } catch (err: any) {
     logger.error(`Error during Google Vision OCR processing: ${err.message}`);
     return null;

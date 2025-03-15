@@ -7,35 +7,21 @@ export async function addProjectsToDB(projectsData: Project[]) {
     const connection = await db.getConnection();
     try {
       await connection.beginTransaction();
-      const referenceDate = (() => {
-        if (/^\d{4}-\d{2}-\d{2}$/.test(project.referenceDate))
-          return project.referenceDate;
-        if (/^\d{4}-\d{2}$/.test(project.referenceDate))
-          return `${project.referenceDate}-01`;
-        if (/^\d{4}$/.test(project.referenceDate))
-          return `${project.referenceDate}-01-01`;
-        console.warn(
-          `💡 Invalid date format "${project.referenceDate}". Setting to NULL.`
-        );
-        return null;
-      })();
-      const scaleValue = Math.min(project.implementationScaleValue, 2147483647);
       try {
         await connection.execute(
           `INSERT INTO projekty 
-          (nazwa, opis, id_klienta, id_branzy, data_referencji, skala_wdrozenia_wartosc, skala_wdrozenia_opis)
+          (nazwa, opis, id_klienta, id_branzy, data_opis, skala_wdrozenia_opis)
           VALUES (?, ?, 
             (SELECT id FROM klienci WHERE nazwa = ?), 
             (SELECT id FROM branze WHERE nazwa = ?), 
-            ?, ?, ?)`,
+            ?, ?)`,
           [
             project.projectName,
             project.description,
             project.clientName,
             project.industryName,
-            referenceDate,
-            scaleValue,
-            project.implementationScaleDescription,
+            project.dateDescription,
+            project.scaleOfImplementation,
           ]
         );
         console.log(
