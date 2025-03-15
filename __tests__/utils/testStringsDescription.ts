@@ -18,7 +18,10 @@ const JSON_PATH = path.resolve(
   "../data/generated-json/two_newModel_1/2023_API.json"
 );
 
-// const QUESTIONS_PATH = 
+const QUESTIONS_PATH = path.resolve(
+  __dirname,
+  "../data/string-tests/questions.json"
+);
 
 function promptForStringQuestion(
   projectObject: any
@@ -26,7 +29,7 @@ function promptForStringQuestion(
   const messages: ChatCompletionMessageParam[] = [
     {
       role: "system",
-      content: `Jesteś specjalistą w generowaniu pytań i odpowiedzi na nie, dotyczących czasu trwania projektu.`,
+      content: `Jesteś specjalistą w generowaniu pytań i odpowiedzi na nie, dotyczących czasu trwania projektu. Odpowiedź do pytania powinna być zwięzła i odpowiadać na pytanie.`,
     },
     {
       role: "system",
@@ -57,28 +60,38 @@ export async function getStringQuestion(
   return response;
 }
 
-async function testProjectString() {
+async function generateStringPairs() {
   const jsonToTest: FileDataType = fs.readJsonSync(JSON_PATH);
   const customers: ProjectDataType[] = jsonToTest.customers;
   const customer: ProjectDataType = customers[0];
 
-  console.log("start");
-  console.log("oto klucz: ", process.env.OPENAI_API_KEY);
+  const stringPairs: QuestionResSchemaType[] = (
+    await Promise.all(
+      customers.map(async (customer) => {
+        const stringPair = await getStringQuestion(customer);
 
-  const stringPair = await getStringQuestion(customer);
+        return stringPair;
+      })
+    )
+  ).filter((stringPair) => {
+    return stringPair !== null;
+  });
 
-  if (!stringPair) {
-    console.log("Nie udało się wygenerować odpowiedzi.");
-    return;
+  const jsonData: QuestionResSchemaType[] = [];
+
+  if (fs.existsSync(QUESTIONS_PATH)) {
+    const fileContent: QuestionResSchemaType[] =
+      fs.readJsonSync(QUESTIONS_PATH);
+    jsonData.push(...fileContent);
   }
 
-  console.log("Pytanie: ", stringPair.question);
-  console.log("Odpowiedź: ", stringPair.answerRef);
+  jsonData.push(...stringPairs);
+  fs.writeJsonSync(QUESTIONS_PATH, jsonData, { spaces: 2 });
 
-
+  console.log(`Zapisano pytanie do pliku: ${QUESTIONS_PATH}`);
 }
 
 if (process.argv[1] === __filename) {
-  await testProjectString();
+  await generateStringPairs();
   process.exit(0);
 }
