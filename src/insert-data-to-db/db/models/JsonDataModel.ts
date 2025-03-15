@@ -1,6 +1,8 @@
 export interface DataJson {
   fileName: string;
   ocrText: string;
+  fileItemId: string;
+  fileLink: string;
   customers: Customer[];
 }
 

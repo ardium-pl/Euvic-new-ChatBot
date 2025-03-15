@@ -61,6 +61,8 @@ export async function processData() {
         acc.push({
           nazwa: file.fileName,
           zawartosc_ocr: file.ocrText,
+          sharepoint_id: file.fileItemId,
+          link_do_pliku: file.fileLink,
         });
       }
       return acc;

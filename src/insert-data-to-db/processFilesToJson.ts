@@ -84,26 +84,21 @@ async function processAllFiles() {
             item.id
           );
           if (!fileDetails) return;
-  
 
           const { fileName, downloadUrl } = fileDetails;
           const fileLink = item.webUrl;
 
           if (!fileLink) return logger.error("FileLink doesnt exist");
 
-
           const downloadSuccess = await sharePointService.downloadFile(
             downloadUrl,
             fileName
           );
-          if (!downloadSuccess) return logger.error("File wasnt downloaded properly");
-
+          if (!downloadSuccess)
+            return logger.error("File wasnt downloaded properly");
 
           logger.info(`Processing file: ${fileName}`);
           await processFile(fileName, fileItemId, fileLink);
-          logger.info(`Processing file: ${fileName}`);
-          await processFile(fileName, fileItemId, fileLink);
-          await addDataToDB();
         } catch (error) {
           console.error(
             `Error downloading file for item with id: ${item.id}`,
@@ -115,6 +110,7 @@ async function processAllFiles() {
   } catch (error) {
     logger.error("Error processing all files:", error);
   }
+  await addDataToDB();
 }
 
 await processAllFiles();

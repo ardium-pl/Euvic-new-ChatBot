@@ -8,12 +8,17 @@ export async function addFilesToDB(dataFiles: DataFile[]) {
     return;
   }
 
-  const values = dataFiles.map(() => "(?, ?)").join(", ");
-  const params = dataFiles.flatMap((file) => [file.nazwa, file.zawartosc_ocr]);
+  const values = dataFiles.map(() => "(?, ?,?,?)").join(", ");
+  const params = dataFiles.flatMap((file) => [
+    file.nazwa,
+    file.zawartosc_ocr,
+    file.link_do_pliku,
+    file.sharepoint_id,
+  ]);
 
   try {
     const result: any = await db.execute(
-      `INSERT INTO pliki (nazwa, zawartosc_ocr) VALUES ${values}
+      `INSERT INTO pliki (nazwa, zawartosc_ocr,link_do_pliku,sharepoint_id ) VALUES ${values}
        ON DUPLICATE KEY UPDATE nazwa = nazwa`,
       params
     );

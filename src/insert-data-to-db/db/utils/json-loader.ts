@@ -11,7 +11,7 @@ export function loadJSONFiles(directory: string): DataJson[] {
     if (file.endsWith(".json")) {
       const data = fs.readFileSync(filePath, "utf-8");
       try {
-        const parsedData = JSON.parse(data);
+        const parsedData: DataJson = JSON.parse(data);
         if (
           parsedData.fileName &&
           parsedData.ocrText &&
@@ -21,6 +21,8 @@ export function loadJSONFiles(directory: string): DataJson[] {
             fileName: parsedData.fileName,
             ocrText: parsedData.ocrText,
             customers: parsedData.customers,
+            fileItemId: parsedData.fileItemId,
+            fileLink: parsedData.fileLink,
           });
         } else {
           console.error(`Invalid structure in file: ${filePath}`);

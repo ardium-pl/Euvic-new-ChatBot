@@ -3,13 +3,12 @@ import path from "path";
 import libre from "libreoffice-convert";
 import { logger } from "./logger";
 
-
 /**
  * Converts a PPTX file to PDF format.
  * @param filePath - The path to the input PPTX file.
  * @param outputPath - Optional path for the output PDF file.
  * @returns A promise that resolves when the conversion is complete.
-
+ */
 //TODO: najlepiej zrobić tu funckje na nowo bo ta funckja słąbo działa
 export async function convertPptxToPdf(
   filePath: string,

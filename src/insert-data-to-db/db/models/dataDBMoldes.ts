@@ -1,6 +1,8 @@
 export interface DataFile {
   nazwa: string;
   zawartosc_ocr: string;
+  link_do_pliku: string;
+  sharepoint_id: string;
 }
 export interface DataClient {
   name: string;
