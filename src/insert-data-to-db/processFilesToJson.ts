@@ -1,7 +1,9 @@
 import fs from "fs-extra";
 import path from "path";
+import { addDataToDB } from "./db/app.ts";
 import { pdfOcr } from "./ocr/ocr.ts";
 import { SharePointService } from "./sharepoint/sharepointService.ts";
+import { checkIfFileExists } from "./sharepoint/sharepointSql.ts";
 import { convertPptxToPdf } from "./utils/convertPptxToPdf.ts";
 import {
   getDataPrompt,
@@ -12,13 +14,12 @@ import { logger } from "./utils/logger.ts";
 import { jsonFixes } from "./verifcation-json-data/jsonMainFixer.ts";
 import { FileData } from "./zod-json/dataJsonSchema.ts";
 import { parseOcrText } from "./zod-json/dataProcessor.ts";
-import { checkIfFileExists } from "./sharepoint/sharepointSql.ts";
-import { addDataToDB } from "./db/app.ts";
 
 export async function processFile(
   fileName: string,
   fileItemId: string,
-  fileLink: string
+  fileLink: string,
+  jsonData: FileData[]
 ) {
   // TODO: Dorbić logikę z dodawaniem fileItemId oraz fileLink do naszej bazki
   try {
@@ -52,13 +53,7 @@ export async function processFile(
       customers: finalData.customers,
     };
 
-    const jsonFileName = `${path.basename(
-      fileName,
-      path.extname(fileName)
-    )}.json`;
-    const jsonFilePath = path.join(JSON_DATA_FOLDER, jsonFileName);
-    await fs.writeJson(jsonFilePath, fileJsonData, { spaces: 2 });
-    logger.info(`💾 JSON data saved to: ${jsonFilePath}`);
+    jsonData.push(fileJsonData);
   } catch (err: any) {
     logger.error(`Error processing file ${fileName}: ${err.message}`);
   }
@@ -66,6 +61,7 @@ export async function processFile(
 
 async function processAllFiles() {
   const sharePointService = new SharePointService();
+  const jsonData: FileData[] = [];
 
   try {
     const items = await sharePointService.getAllFilesFromList();
@@ -98,7 +94,7 @@ async function processAllFiles() {
             return logger.error("File wasnt downloaded properly");
 
           logger.info(`Processing file: ${fileName}`);
-          await processFile(fileName, fileItemId, fileLink);
+          await processFile(fileName, fileItemId, fileLink, jsonData);
         } catch (error) {
           console.error(
             `Error downloading file for item with id: ${item.id}`,
