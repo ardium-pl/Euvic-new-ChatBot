@@ -106,7 +106,7 @@ async function processAllFiles() {
   } catch (error) {
     logger.error("Error processing all files:", error);
   }
-  await addDataToDB();
+  await addDataToDB(jsonData);
 }
 
 await processAllFiles();

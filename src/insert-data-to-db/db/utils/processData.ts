@@ -1,7 +1,5 @@
-import { fileURLToPath } from "url";
-import path from "path";
-import { addTechnologyProjectsToDB } from "../services/technologyProjects.service";
-import { loadJSONFiles } from "./json-loader";
+import chalk from "chalk";
+import { FileData } from "../../zod-json/dataJsonSchema";
 import {
   BusinessCasesProject,
   DataFile,
@@ -10,24 +8,16 @@ import {
   TechnologyProject,
 } from "../models/dataDBMoldes";
 import { addBusinessCasesToDB } from "../services/businessCases.service";
+import { addBusinessCaseProjectsToDB } from "../services/businessCasesProjects.service";
+import { addClientsToDB } from "../services/clients.service";
+import { addFileProjectsToDB } from "../services/fileProjects.service";
 import { addFilesToDB } from "../services/files.service";
 import { addIndustriesToDB } from "../services/industries.service";
 import { addProjectsToDB } from "../services/projects.service";
 import { addTechnologiesToDB } from "../services/technologies.service";
-import { addClientsToDB } from "../services/clients.service";
-import { addFileProjectsToDB } from "../services/fileProjects.service";
-import chalk from "chalk";
-import { FileData } from "../../zod-json/dataJsonSchema";
-import { addBusinessCaseProjectsToDB } from "../services/businessCasesProjects.service";
+import { addTechnologyProjectsToDB } from "../services/technologyProjects.service";
 
-// Konwersja `import.meta.url` na ścieżkę pliku
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const jsonDataDirectory = path.join(__dirname, "../../utils/json-data");
-
-export async function processData() {
-  const jsonData: FileData[] = loadJSONFiles(jsonDataDirectory);
-
+export async function processData(jsonData: FileData[]) {
   const businessCases = jsonData.reduce((acc: Set<string>, file: FileData) => {
     file.customers.forEach((customer) => {
       if (customer.businessCase) {
