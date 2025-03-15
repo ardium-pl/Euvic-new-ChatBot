@@ -31,7 +31,7 @@ export const questionResSchema = z.object({
   answerRef: z.string(),
 });
 
-export type QuestionRedSchemaType = z.infer<typeof questionResSchema>
+export type QuestionResSchemaType = z.infer<typeof questionResSchema>
 
 
 export async function promptFor10Sql(

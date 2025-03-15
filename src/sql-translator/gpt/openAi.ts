@@ -1,6 +1,6 @@
 import { zodResponseFormat } from "openai/helpers/zod";
 import { ChatCompletionMessageParam } from "openai/resources";
-import { z, ZodType,ZodTypeAny } from "zod";
+import { z, ZodObject, ZodRawShape, ZodType, ZodTypeAny } from "zod";
 
 import { openAiClient } from "../../config";
 import { logger } from "../../insert-data-to-db/utils/logger";
@@ -12,7 +12,6 @@ export const sqlResponse = z.object({
 
 export type SqlResponse = z.infer<typeof sqlResponse>;
 
-
 export const finalResponse = z.object({
   formattedAnswer: z.string(),
 });
@@ -20,7 +19,7 @@ export const finalResponse = z.object({
 export async function generateGPTAnswer(prompt: ChatCompletionMessageParam[], responseFormat: ZodTypeAny, responseName: string) {
   try {
     const completion = await openAiClient.beta.chat.completions.parse({
-      model: 'gpt-4o',
+      model: "gpt-4o",
       messages: prompt,
       response_format: zodResponseFormat(responseFormat, responseName),
     });
@@ -34,11 +33,7 @@ export async function generateGPTAnswer(prompt: ChatCompletionMessageParam[], re
     logger.info("Successfully generated an AI response! ✅");
     return response.parsed;
   } catch (error: any) {
-    if (error.constructor.name == "LengthFinishReasonError") {
-      // Retry with a higher max tokens
-    } else {
-      // Handle other exceptions
-    }
     logger.error(error);
+    throw error
   }
 }
