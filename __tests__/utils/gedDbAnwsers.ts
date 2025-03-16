@@ -40,7 +40,6 @@ type StringResultType = {
 async function getDbAnwser() {
   const questionPairs: QuestionResSchemaType[] =
     fs.readJsonSync(QUESTIONS_PATH);
-  const chatHistory = await ChatHistoryHandler.getRecentQueries(0, "");
 
   const stringResults: StringResultType[] = [];
   for (const pair of questionPairs) {
@@ -48,7 +47,7 @@ async function getDbAnwser() {
     console.log(`Generowanie sql...`);
 
     const sqlQuery: SqlResponse | null = await generateGPTAnswer(
-      promptForSQL(pair.question, chatHistory),
+      promptForSQL(pair.question, null),
       sqlResponse,
       "sql_response"
     );
@@ -97,7 +96,7 @@ async function testDb() {
 }
 
 if (process.argv[1] === __filename) {
-  // await getDbAnwser();
-  await testDb();
+  await getDbAnwser();
+  // await testDb();
   process.exit(0);
 }
