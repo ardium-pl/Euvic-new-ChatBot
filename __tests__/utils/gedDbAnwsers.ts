@@ -89,7 +89,15 @@ async function getDbAnwser() {
   fs.writeJsonSync(RESULTS_PATH, stringResults, { spaces: 2 });
 }
 
+async function testDb() {
+  const sqlStatement = "DESCRIBE projekty;";
+  const rows = await executeSQL<RowDataPacket[]>(sqlStatement);
+  console.log(`Oto rowsy: ${rows}`);
+  return;
+}
+
 if (process.argv[1] === __filename) {
-  await getDbAnwser();
+  // await getDbAnwser();
+  await testDb();
   process.exit(0);
 }
