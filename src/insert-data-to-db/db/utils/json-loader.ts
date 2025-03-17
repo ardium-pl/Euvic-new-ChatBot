@@ -1,17 +1,17 @@
 import fs from "fs";
 import path from "path";
-import { DataJson } from "../models/JsonDataModel";
-
-export function loadJSONFiles(directory: string): DataJson[] {
+import { FileData } from "../../zod-json/dataJsonSchema";
+export function loadJSONFiles(directory: string): FileData[] {
   const files = fs.readdirSync(directory);
-  const jsonData: DataJson[] = [];
+  const jsonData: FileData[] = [];
+
 
   files.forEach((file) => {
     const filePath = path.join(directory, file);
     if (file.endsWith(".json")) {
       const data = fs.readFileSync(filePath, "utf-8");
       try {
-        const parsedData = JSON.parse(data);
+        const parsedData: FileData = JSON.parse(data);
         if (
           parsedData.fileName &&
           parsedData.ocrText &&
@@ -21,6 +21,8 @@ export function loadJSONFiles(directory: string): DataJson[] {
             fileName: parsedData.fileName,
             ocrText: parsedData.ocrText,
             customers: parsedData.customers,
+            fileItemId: parsedData.fileItemId,
+            fileLink: parsedData.fileLink,
           });
         } else {
           console.error(`Invalid structure in file: ${filePath}`);

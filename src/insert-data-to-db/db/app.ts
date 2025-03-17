@@ -1,8 +1,9 @@
+import { FileData } from "../zod-json/dataJsonSchema";
 import { db } from "./config/database";
 import { processData } from "./utils/processData";
 import chalk from "chalk";
 
-async function main() {
+export async function addDataToDB(jsonData: FileData[]) {
   console.log(chalk.blue("🚀 Starting the data processing application..."));
 
   try {
@@ -13,7 +14,7 @@ async function main() {
     }
 
     console.log(chalk.blue("🔄 Starting data processing..."));
-    await processData();
+    await processData(jsonData);
     console.log(chalk.green("✅ Data processing completed successfully."));
   } catch (error) {
     console.error(
@@ -32,7 +33,6 @@ async function main() {
     }
   }
 }
-
 main().catch((err) => {
   console.error(chalk.red("❌ Unexpected error in the application:"), err);
   process.exit(1);

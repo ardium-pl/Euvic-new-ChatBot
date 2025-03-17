@@ -1,7 +1,5 @@
-import mysql, { createPool, Pool } from "mysql2/promise";
+import mysql from "mysql2/promise";
 import OpenAI from "openai";
-
-
 export const openAiClient = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
@@ -44,3 +42,20 @@ export const MONGO_COLLECTION_SCHEMAS = process.env.MONGO_COLLECTION_SCHEMAS as 
 // Prompts
 export const PROMPT_FOR_ANSWER = process.env.PROMPT_FOR_ANSWER;
 export const PROMPT_FOR_SQL = process.env.PROMPT_FOR_SQL;
+
+// Express config
+export const NODE_ENV = process.env.NODE_ENV;
+const config: Record<string, string> = {
+  local: "http://localhost:8080",
+  development: "https://demo-final-development.up.railway.app",
+  production: "https://prod-production-01b0.up.railway.app",
+};
+
+if(!NODE_ENV) throw new Error("NODE_ENV is not defined");
+
+export const apiUrl = config[NODE_ENV];
+
+// Sharepoint credentials
+export const LIST_ID = process.env.LIST_ID;
+export const SITE_ID = process.env.SITE_ID;
+

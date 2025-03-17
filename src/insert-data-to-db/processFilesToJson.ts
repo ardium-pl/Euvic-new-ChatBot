@@ -1,6 +1,9 @@
 import fs from "fs-extra";
 import path from "path";
+import { addDataToDB } from "./db/app.ts";
 import { pdfOcr } from "./ocr/ocr.ts";
+import { SharePointService } from "./sharepoint/sharepointService.ts";
+import { checkIfFileExists } from "./sharepoint/sharepointSql.ts";
 import { convertPptxToPdf } from "./utils/convertPptxToPdf.ts";
 import {
   getDataPrompt,
@@ -8,14 +11,17 @@ import {
   PDF_DATA_FOLDER,
 } from "./utils/credentials.ts";
 import { logger } from "./utils/logger.ts";
-import { FileDataType } from "./zod-json/dataJsonSchema.ts";
-import { parseOcrText } from "./zod-json/dataProcessor.ts";
 import { jsonFixes } from "./verifcation-json-data/jsonMainFixer.ts";
-import { fileURLToPath } from "url";
+import { FileData } from "./zod-json/dataJsonSchema.ts";
+import { parseOcrText } from "./zod-json/dataProcessor.ts";
 
-const __filename = fileURLToPath(import.meta.url);
-
-export async function processFile(fileName: string) {
+export async function processFile(
+  fileName: string,
+  fileItemId: string,
+  fileLink: string,
+  jsonData: FileData[]
+) {
+  // TODO: Dorbić logikę z dodawaniem fileItemId oraz fileLink do naszej bazki
   try {
     logger.info(`🧾 Reading file: ${fileName}`);
     [PDF_DATA_FOLDER, JSON_DATA_FOLDER].map((folder) => fs.ensureDir(folder));
@@ -39,53 +45,68 @@ export async function processFile(fileName: string) {
     // Weryfikacja JSON
     const finalData = await jsonFixes(parsedData, ocrDataText);
 
-    const fileJsonData: FileDataType = {
-      fileName: fileName,
+    const fileJsonData: FileData = {
+      fileName,
       ocrText: ocrDataText,
+      fileItemId,
+      fileLink,
       customers: finalData.customers,
     };
 
-    const jsonFileName = `${path.basename(
-      fileName,
-      path.extname(fileName)
-    )}.json`;
-    const jsonFilePath = path.join(JSON_DATA_FOLDER, jsonFileName);
-    await fs.writeJson(jsonFilePath, fileJsonData, { spaces: 2 });
-    logger.info(`💾 JSON data saved to: ${jsonFilePath}`);
+    jsonData.push(fileJsonData);
   } catch (err: any) {
     logger.error(`Error processing file ${fileName}: ${err.message}`);
   }
 }
 
-async function main() {
-  try {
-    const files = await fs.readdir(PDF_DATA_FOLDER);
+async function processAllFiles() {
+  const sharePointService = new SharePointService();
+  const jsonData: FileData[] = [];
 
-    if (files.length === 0) {
-      logger.info("No files found to process.");
-      return;
-    }
+  try {
+    const items = await sharePointService.getAllFilesFromList();
 
     await Promise.all(
-      files.map((file) => {
-        const fileExtension = path.extname(file).toLowerCase();
-        if (fileExtension === ".pdf" || fileExtension === ".pptx") {
-          //TODO: tutaj dodac elif na pliki które są wordem
-          return processFile(file);
-        } else {
-          logger.info(`Skipping unsupported file format: ${file}`);
-          return Promise.resolve();
+      items.map(async (item) => {
+        if (!item.driveItem || !item.id || !item.driveItem.id) return;
+
+        const fileItemId = item.driveItem.id;
+        const exists = await checkIfFileExists(fileItemId);
+        if (exists) return;
+
+        try {
+          // In your main processing function
+          const fileDetails = await sharePointService.getFileDetailsFromList(
+            item.id
+          );
+          if (!fileDetails) return;
+
+          const { fileName, downloadUrl } = fileDetails;
+          const fileLink = item.webUrl;
+
+          if (!fileLink) return logger.error("FileLink doesnt exist");
+
+          const downloadSuccess = await sharePointService.downloadFile(
+            downloadUrl,
+            fileName
+          );
+          if (!downloadSuccess)
+            return logger.error("File wasnt downloaded properly");
+
+          logger.info(`Processing file: ${fileName}`);
+          await processFile(fileName, fileItemId, fileLink, jsonData);
+        } catch (error) {
+          console.error(
+            `Error downloading file for item with id: ${item.id}`,
+            error
+          );
         }
       })
     );
-
-    logger.info("All files processed successfully.");
-  } catch (err: any) {
-    logger.error(`An error occurred during file processing: ${err.message}`);
+  } catch (error) {
+    logger.error("Error processing all files:", error);
   }
+  await addDataToDB(jsonData);
 }
 
-if (process.argv[1] === __filename) {
-  await main();
-  process.exit(0);
-}
+await processAllFiles();

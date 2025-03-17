@@ -63,6 +63,7 @@ export function promptForAnswer(
   userQuery: string,
   sqlStatement: string,
   rowData: RowDataPacket[] | ResultSetHeader,
+  language: string
 ): ChatCompletionMessageParam[] {
   if (!PROMPT_FOR_ANSWER || typeof PROMPT_FOR_ANSWER !== "string") {
     throw new Error(
@@ -86,6 +87,25 @@ export function promptForAnswer(
       Raw data retrieved from our database:
       ${JSON.stringify(rowData, null, 2)}
       `,
+    },
+    {role: 'system',
+      content: `
+            You have to answer in this language:
+      ${language}
+      `
+    },
+    { role: "user", content: userQuery },
+  ];
+  return messages;
+}
+
+export function promptForLanguageDetection(
+  userQuery: string
+) : ChatCompletionMessageParam[]{
+  const messages: ChatCompletionMessageParam[] = [
+    {
+      role: "system",
+      content: 'You are an expert in detecting the query language. You have to detect the language of the query and return me the queried language',
     },
     { role: "user", content: userQuery },
   ];

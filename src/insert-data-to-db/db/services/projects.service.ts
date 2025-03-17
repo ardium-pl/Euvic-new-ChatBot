@@ -7,7 +7,6 @@ export async function addProjectsToDB(projectsData: Project[]) {
     const connection = await db.getConnection();
     try {
       await connection.beginTransaction();
-
       try {
         await connection.execute(
           `INSERT INTO projekty 
