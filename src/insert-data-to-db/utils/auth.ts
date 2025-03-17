@@ -1,6 +1,7 @@
 import "isomorphic-fetch";
 import { PublicClientApplication, Configuration } from "@azure/msal-node";
 import fs from "fs";
+import path from "path";
 
 const TENANT_ID = process.env.TENANT_ID;
 const CLIENT_ID = process.env.CLIENT_ID;
@@ -13,7 +14,8 @@ if (!TENANT_ID || !CLIENT_ID || !CLIENT_SECRET || !AUTHORITY) {
   );
 }
 
-const cacheFilePath = "./tokenCache.json";
+const BASE_VOLUME_DIR = path.join('/app/tokens');
+const cacheFilePath = path.join(BASE_VOLUME_DIR, './tokenCache.json');
 
 const cachePlugin = {
   beforeCacheAccess: async (cacheContext: any) => {
