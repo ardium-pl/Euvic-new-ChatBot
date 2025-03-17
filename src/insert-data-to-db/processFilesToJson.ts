@@ -104,9 +104,11 @@ export async function processAllFiles() {
     );
 
     if(jsonData.length > 0){
-      await addDataToDB();
+
+      logger.info("WANTED TO ADD DATA TO DB");
+      // await addDataToDB();
     }
-    
+
   } catch (error) {
     logger.error("Error processing all files:", error);
   }
