@@ -1,16 +1,25 @@
-import { db } from "../db/config/database";
-import chalk from "chalk";
+import { createConnection } from "../../sql-translator/database/mySql";
+import { logger } from "../utils/logger";
 
-export async function checkIfFileExists(sharepointId: string): Promise<boolean> {
-    try {
-      const result: any = await db.execute(
-        `SELECT * FROM pliki WHERE sharepoint_id = ?`,
-        [sharepointId]
-      );
-      return result[0].length > 0;
-    } catch (error: any) {
-      console.error(chalk.red(`❌ Error checking file existence:`, error));
-      return false;
-    }
+export async function checkIfFileExists(
+  sharepointId: string
+): Promise<boolean | null> {
+  const connection = await createConnection();
+  if (!connection) {
+    return null;
   }
-  
+  try {
+    const result: any = await connection.execute(
+      `SELECT * FROM pliki WHERE sharepoint_id = ?`,
+      [sharepointId]
+    );
+
+    return result[0].length > 0;
+  } catch (error) {
+    logger.error("➡️ Error checking if user chat ID exists:", error);
+    await connection.end();
+    return null;
+  } finally {
+    await connection.end();
+  }
+}
