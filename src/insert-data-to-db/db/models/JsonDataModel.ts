@@ -1,4 +1,4 @@
-export interface DataJson {
+interface DataJson {
   fileName: string;
   ocrText: string;
   fileItemId: string;

@@ -9,15 +9,14 @@ export async function jsonFixes(
   parsedData: CustomersDataType,
   ocrText: string
 ): Promise<CustomersDataType> {
-  const fieldsToVerify = [
+  const fieldsToVerify: Array<keyof CustomersDataType['customers'][number]> = [
     "technologies",
     "clientName",
     "projectName",
     "description",
     "businessCase",
-    "DateDescription",
+    'dateDescription',
     "scaleOfImplementation",
-    "industry",
   ];
 
   for (const field of fieldsToVerify) {

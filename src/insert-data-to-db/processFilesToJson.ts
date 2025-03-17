@@ -59,7 +59,7 @@ export async function processFile(
   }
 }
 
-async function processAllFiles() {
+export async function processAllFiles() {
   const sharePointService = new SharePointService();
   const jsonData: FileData[] = [];
 
@@ -108,5 +108,3 @@ async function processAllFiles() {
   }
   await addDataToDB();
 }
-
-await processAllFiles();
