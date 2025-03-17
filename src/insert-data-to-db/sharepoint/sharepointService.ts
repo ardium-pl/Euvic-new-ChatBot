@@ -1,11 +1,11 @@
 import "dotenv/config";
 import { Client } from "@microsoft/microsoft-graph-client";
-import { DriveItem, ListItem } from "@microsoft/microsoft-graph-types"; // for type safety
+import { DriveItem, ListItem } from "@microsoft/microsoft-graph-types";
 import fs from "fs-extra";
 import "isomorphic-fetch";
 import path from "path";
 import { LIST_ID, SITE_ID } from "../../config";
-import { getAccessToken } from "../utils/auth"; // Pobieramy token dynamicznie
+import { getAccessTokenInteractive } from "../utils/auth";
 import { PDF_DATA_FOLDER } from "../utils/credentials";
 import { logger } from "../utils/logger";
 
@@ -22,7 +22,11 @@ interface ExtendedDriveItem extends DriveItem {
 export class SharePointService {
 
   private async getClient(): Promise<Client> {
-    const accessToken = await getAccessToken();
+    const accessToken = await getAccessTokenInteractive();
+    if (!accessToken) {
+      throw new Error("Unable to acquire access token");
+    }
+    logger.info("access token ", accessToken);
     return Client.init({
       authProvider: (done) => {
         done(null, accessToken);
@@ -101,6 +105,46 @@ export class SharePointService {
     } catch (error) {
       console.error("Błąd pobierania plików z listy:", error);
       return [];
+    }
+  }
+
+  async getSiteIdByName(siteName: string): Promise<string | null> {
+    try {
+      const client = await this.getClient();
+      
+      if (siteName.startsWith('https://')) {
+        const site = await client
+          .api(`/sites/${siteName}`)
+          .get();
+        return site.id;
+      }
+      
+      const rootSite = await client
+        .api('/sites/root')
+        .get();
+      
+      const hostname = new URL(rootSite.webUrl).hostname;
+      
+      // Try to get the site by name using hostname and siteName
+      try {
+        const site = await client
+          .api(`/sites/${hostname}:/sites/${siteName}`)
+          .get();
+        return site.id;
+      } catch (siteError) {
+        try {
+          const site = await client
+            .api(`/sites/${hostname}:/${siteName}`)
+            .get();
+          return site.id;
+        } catch (finalError) {
+          logger.warn(`Unable to find site with name '${siteName}'`);
+          return null;
+        }
+      }
+    } catch (error) {
+      logger.error(`Error retrieving site ID for '${siteName}':`, error);
+      return null;
     }
   }
 }
