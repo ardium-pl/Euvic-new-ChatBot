@@ -5,7 +5,8 @@ import express from "express";
 import { sqlTranslatorRouter } from "./src/sql-translator/sqlTranslatorRouter";
 import webhookRouter from "./src/meta-handling/whatsapp/webhook";
 import { PORT } from "./src/config";
-
+import cron from "node-cron";
+import { processAllFiles } from "./src/insert-data-to-db/processFilesToJson";
 
 const app = express();
 
@@ -17,7 +18,7 @@ app.use(webhookRouter);
 
 // Startup
 console.log(`Starting server...`);
-app.listen(PORT, async() => {
+app.listen(PORT, async () => {
   console.log(`Running on port ${ansis.greenBright.underline(String(PORT))}!`);
 
   try {
@@ -27,3 +28,11 @@ app.listen(PORT, async() => {
   }
 });
 
+cron.schedule("* * * * *", async () => {
+  console.log("Running processAllFiles cron job");
+  try {
+    await processAllFiles();
+  } catch (error) {
+    console.error("Error running processAllFiles:", error);
+  }
+});

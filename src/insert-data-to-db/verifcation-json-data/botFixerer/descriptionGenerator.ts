@@ -10,7 +10,7 @@ export async function generateVerificationInstructions(
     ["projectName", process.env.PROMPT_PROJECT_NAME],
     ["description", process.env.PROMPT_DESCRIPTION],
     ["businessCase", process.env.PROMPT_BUSINESS_CASE],
-    ["DateDescription", process.env.PROMPT_DATE_DESCRIPTION],
+    ["dateDescription", process.env.PROMPT_DATE_DESCRIPTION],
     ["scaleOfImplementation", process.env.PROMPT_SCALE_OF_IMPLEMENTATION],
     ["industry", process.env.PROMPT_INDUSTRY],
   ]);
