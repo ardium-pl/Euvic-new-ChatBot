@@ -24,7 +24,6 @@ export async function processFile(
   // TODO: Dorbić logikę z dodawaniem fileItemId oraz fileLink do naszej bazki
   try {
     logger.info(`🧾 Reading file: ${fileName}`);
-    [PDF_DATA_FOLDER, JSON_DATA_FOLDER].map((folder) => fs.ensureDir(folder));
     let pdfFilePath = path.join(PDF_DATA_FOLDER, fileName);
 
     // Convert PPTX to PDF if necessary // TODO: wywalić stąd funkcje konwersi z pptx na pdf(konieczne) i zrobić to przed tą funckcją
@@ -62,7 +61,7 @@ export async function processFile(
 export async function processAllFiles() {
   const sharePointService = new SharePointService();
   const jsonData: FileData[] = [];
-
+  [PDF_DATA_FOLDER, JSON_DATA_FOLDER].map((folder) => fs.ensureDir(folder));
   try {
     const items = await sharePointService.getAllFilesFromList();
 
