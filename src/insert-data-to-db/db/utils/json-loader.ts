@@ -1,9 +1,9 @@
 import fs from "fs";
 import path from "path";
-import { FileData } from "../../zod-json/dataJsonSchema";
-export function loadJSONFiles(directory: string): FileData[] {
+import { FileDataType } from "../../zod-json/dataJsonSchema";
+export function loadJSONFiles(directory: string): FileDataType[] {
   const files = fs.readdirSync(directory);
-  const jsonData: FileData[] = [];
+  const jsonData: FileDataType[] = [];
 
 
   files.forEach((file) => {
@@ -11,7 +11,7 @@ export function loadJSONFiles(directory: string): FileData[] {
     if (file.endsWith(".json")) {
       const data = fs.readFileSync(filePath, "utf-8");
       try {
-        const parsedData: FileData = JSON.parse(data);
+        const parsedData: FileDataType = JSON.parse(data);
         if (
           parsedData.fileName &&
           parsedData.ocrText &&

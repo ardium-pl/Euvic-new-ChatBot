@@ -1,7 +1,7 @@
 import "dotenv/config";
 import path from "path";
-import { QuestionResSchemaType } from "./utils";
 import fs from "fs-extra";
+import { QuestionResSchemaType } from "./utils";
 import {
   SqlResponse,
   generateGPTAnswer,

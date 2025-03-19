@@ -4,7 +4,7 @@ import path from "path";
 import { addTechnologyProjectsToDB } from "../services/technologyProjects.service";
 import { loadJSONFiles } from "./json-loader";
 import chalk from "chalk";
-import { FileData } from "../../zod-json/dataJsonSchema";
+import { FileDataType } from "../../zod-json/dataJsonSchema";
 import {
   BusinessCasesProject,
   DataFile,
@@ -20,10 +20,9 @@ import { addFilesToDB } from "../services/files.service";
 import { addIndustriesToDB } from "../services/industries.service";
 import { addProjectsToDB } from "../services/projects.service";
 import { addTechnologiesToDB } from "../services/technologies.service";
-import { addTechnologyProjectsToDB } from "../services/technologyProjects.service";
 
-export async function processData(jsonData: FileData[]) {
-  const businessCases = jsonData.reduce((acc: Set<string>, file: FileData) => {
+export async function processData(jsonData: FileDataType[]) {
+  const businessCases = jsonData.reduce((acc: Set<string>, file: FileDataType) => {
     file.customers.forEach((customer) => {
       if (customer.businessCase) {
         customer.businessCase.name.forEach((biz) => acc.add(biz));
@@ -32,7 +31,7 @@ export async function processData(jsonData: FileData[]) {
     return acc;
   }, new Set<string>());
 
-  const technologies = jsonData.reduce((acc: Set<string>, file: FileData) => {
+  const technologies = jsonData.reduce((acc: Set<string>, file: FileDataType) => {
 
     file.customers.forEach((customer) => {
       if (customer.technologies) {
@@ -41,7 +40,7 @@ export async function processData(jsonData: FileData[]) {
     });
     return acc;
   }, new Set<string>());
-  const industries = jsonData.reduce((acc: Set<string>, file: FileData) => {
+  const industries = jsonData.reduce((acc: Set<string>, file: FileDataType) => {
     file.customers.forEach((customer) => {
       if (customer.industry) {
         acc.add(customer.industry);
@@ -51,7 +50,7 @@ export async function processData(jsonData: FileData[]) {
   }, new Set<string>());
 
   const files: DataFile[] = jsonData.reduce(
-    (acc: DataFile[], file: FileData) => {
+    (acc: DataFile[], file: FileDataType) => {
       if (file.fileName && file.ocrText) {
         acc.push({
           nazwa: file.fileName,
@@ -66,7 +65,7 @@ export async function processData(jsonData: FileData[]) {
   );
 
   const uniqueClientNames = jsonData.reduce(
-    (acc: Set<string>, file: FileData) => {
+    (acc: Set<string>, file: FileDataType) => {
       file.customers.forEach((customer) => {
         if (customer.clientName) {
           acc.add(customer.clientName);
@@ -78,7 +77,7 @@ export async function processData(jsonData: FileData[]) {
   );
 
   const projectsData: Project[] = jsonData.reduce(
-    (acc: Project[], file: FileData) => {
+    (acc: Project[], file: FileDataType) => {
       file.customers.forEach((customer) => {
         acc.push({
           projectName: customer.projectName,
@@ -95,7 +94,7 @@ export async function processData(jsonData: FileData[]) {
   );
 
   const technologyProjects: TechnologyProject[] = jsonData.reduce(
-    (acc: TechnologyProject[], file: FileData) => {
+    (acc: TechnologyProject[], file: FileDataType) => {
       file.customers.forEach((customer) => {
         if (customer.projectName && customer.technologies?.name) {
           acc.push({
@@ -110,7 +109,7 @@ export async function processData(jsonData: FileData[]) {
   );
 
   const businessCaseProjects: BusinessCasesProject[] = jsonData.reduce(
-    (acc: BusinessCasesProject[], file: FileData) => {
+    (acc: BusinessCasesProject[], file: FileDataType) => {
       file.customers.forEach((customer) => {
         if (customer.projectName && customer.businessCase?.name) {
           acc.push({
@@ -125,7 +124,7 @@ export async function processData(jsonData: FileData[]) {
   );
 
   const fileProjects: DataFileProject[] = jsonData.reduce(
-    (acc: DataFileProject[], file: FileData) => {
+    (acc: DataFileProject[], file: FileDataType) => {
       file.customers.forEach((customer) => {
         if (customer.projectName) {
           acc.push({

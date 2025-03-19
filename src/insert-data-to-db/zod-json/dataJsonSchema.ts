@@ -22,7 +22,7 @@ export const CustomersData = z.object({
   customers: z.array(ProjectData),
 });
 
-export type FileData = {
+export type FileDataType = {
   fileName: string;
   ocrText: string;
   fileItemId: string;
