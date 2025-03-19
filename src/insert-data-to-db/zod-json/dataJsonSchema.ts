@@ -30,5 +30,5 @@ export type FileDataType = {
   customers: ProjectDataType[];
 };
 export type CustomersDataType = z.infer<typeof CustomersData>;
-type ProjectDataType = z.infer<typeof ProjectData>;
+export type ProjectDataType = z.infer<typeof ProjectData>;
 

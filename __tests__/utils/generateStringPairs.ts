@@ -1,21 +1,19 @@
 import "dotenv/config";
+import path from "path";
+import { fileURLToPath } from "url";
+import fs from "fs-extra";
+
 import { ChatCompletionMessageParam } from "openai/resources";
 import { generateGPTAnswer } from "../../src/sql-translator/gpt/openAi";
-import { questionResSchema, QuestionResSchemaType } from "./utils";
-import { fileURLToPath } from "url";
-import path from "path";
-import {
-  FileDataType,
-  ProjectDataType,
-} from "../../src/insert-data-to-db/zod-json/dataJsonSchema";
-import fs from "fs-extra";
+import { TestQuestion, TestQuestionType } from "./utils";
+import { DbData, DbRowType } from "./types";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const JSON_PATH = path.resolve(
+const DB_DATA_PATH = path.resolve(
   __dirname,
-  "../data/generated-json/two_newModel_1/2023_API.json"
+  "../data/string-tests/dbData.json"
 );
 
 const QUESTIONS_PATH = path.resolve(
@@ -23,8 +21,9 @@ const QUESTIONS_PATH = path.resolve(
   "../data/string-tests/questions.json"
 );
 
+// zwraca zformatowany prompt do GPT pytający o generowanie pytań do projektów
 function promptForStringQuestion(
-  projectObject: any
+  projectObject: DbRowType
 ): ChatCompletionMessageParam[] {
   const messages: ChatCompletionMessageParam[] = [
     {
@@ -46,30 +45,43 @@ function promptForStringQuestion(
   return messages;
 }
 
-export async function getStringQuestion(
-  projectObject: ProjectDataType
-): Promise<QuestionResSchemaType | null> {
-  console.info("Generowanie zapytania o datę na podstawie danych projektu...");
-
-  const response: QuestionResSchemaType | null = await generateGPTAnswer(
-    promptForStringQuestion(projectObject),
-    questionResSchema,
+// zwraca wygenerowane referencyjne pytanie z odpowiedzią
+export async function getStringPair(
+  dbRow: DbRowType
+): Promise<TestQuestionType | null> {
+  const response: TestQuestionType | null = await generateGPTAnswer(
+    promptForStringQuestion(dbRow),
+    TestQuestion,
     "response"
   );
 
   return response;
 }
 
-async function generateStringPairs() {
-  const jsonToTest: FileDataType = fs.readJsonSync(JSON_PATH);
-  const customers: ProjectDataType[] = jsonToTest.customers;
-  const customer: ProjectDataType = customers[0];
+async function createStringPairs() {
+  const dbData: DbRowType[] = fs.readJsonSync(DB_DATA_PATH);
 
-  const stringPairs: QuestionResSchemaType[] = (
+  const dbBaseSample: DbRowType[] = dbData.slice(0, 10);
+  try {
+    DbData.parse(dbBaseSample);
+    console.log("Data is valid.");
+  } catch (error) {
+    console.log(`Data is not valid: ${error}`);
+    return;
+  }
+
+  const stringPairs: TestQuestionType[] = (
     await Promise.all(
-      customers.map(async (customer) => {
-        const stringPair = await getStringQuestion(customer);
-
+      dbBaseSample.map(async (row) => {
+        console.log(`Generowanie zapytania o datę dla projektu: ${row.projekty_nazwa}`)
+        const stringPair = await getStringPair(row);
+        try {
+          TestQuestion.parse(stringPair);
+        } catch (error) {
+          console.log(`Wystąpił błąd podczas generowania: ${error}`)
+          return null;
+        }
+        console.log(`Wygenerowano zapytanie: ${stringPair?.question}`)
         return stringPair;
       })
     )
@@ -77,21 +89,14 @@ async function generateStringPairs() {
     return stringPair !== null;
   });
 
-  const jsonData: QuestionResSchemaType[] = [];
+  const questionObjects: TestQuestionType[] = [];
+  questionObjects.push(...stringPairs);
+  fs.writeJsonSync(QUESTIONS_PATH, questionObjects, { spaces: 2 });
 
-  if (fs.existsSync(QUESTIONS_PATH)) {
-    const fileContent: QuestionResSchemaType[] =
-      fs.readJsonSync(QUESTIONS_PATH);
-    jsonData.push(...fileContent);
-  }
-
-  jsonData.push(...stringPairs);
-  fs.writeJsonSync(QUESTIONS_PATH, jsonData, { spaces: 2 });
-
-  console.log(`Zapisano pytanie do pliku: ${QUESTIONS_PATH}`);
+  console.log(`Zapisano pytania do pliku: ${QUESTIONS_PATH}`);
 }
 
 if (process.argv[1] === __filename) {
-  await generateStringPairs();
+  await createStringPairs();
   process.exit(0);
 }

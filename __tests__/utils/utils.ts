@@ -26,12 +26,12 @@ export type ComparedQueriesType = ProcessedQueriesType & {
   isSame: boolean;
 };
 
-export const questionResSchema = z.object({
+export const TestQuestion = z.object({
   question: z.string(),
   answerRef: z.string(),
 });
 
-export type QuestionResSchemaType = z.infer<typeof questionResSchema>
+export type TestQuestionType = z.infer<typeof TestQuestion>
 
 
 export async function promptFor10Sql(

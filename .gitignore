@@ -153,3 +153,4 @@ src/automatic-tests/logs
 src/automatic-tests/*.json
 __tests__/data
 __tests__/config
+__tests__/ignore/

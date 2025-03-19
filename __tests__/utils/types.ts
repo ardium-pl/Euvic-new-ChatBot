@@ -1,21 +1,25 @@
-import {
-  ReferenceProjectDataType,
-  ProjectDataType,
-} from "../../src/insert-data-to-db/zod-json/dataJsonSchema";
+import { string, z } from "zod";
 
-export type TestFile = { pdf: string; json: string; test: boolean };
+const DbRow = z.object({
+  projekty_id: z.number(),
+  projekty_nazwa: z.string(),
+  projekty_opis: z.string(),
+  projekty_data_opis: z.string(),
+  projekty_skala_wdrozenia_opis: z.string(),
+  klienci_id: z.number(),
+  klienci_nazwa: z.string(),
+  branze_id: z.number(),
+  branze_nazwa: z.string(),
+  biznes_casy_id: z.number(),
+  biznes_casy_opis: z.string(),
+  pliki_id: z.number(),
+  pliki_nazwa: z.string(),
+  pliki_zawartosc_ocr: z.string(),
+  pliki_link_do_pliku: z.string(),
+  technologie_id: z.number(),
+  technologie_nazwa: z.string(),
+});
 
-export function mapCustomers(
-  customersArray: ReferenceProjectDataType[]
-): ProjectDataType[] {
-  return customersArray.map((customer) => ({
-    clientName: customer.clientName,
-    projectName: "",
-    description: customer.description,
-    technologies: customer.technologies,
-    businessCase: customer.businessCase ? customer.businessCase : undefined,
-    dateDescription: customer.referenceDate,
-    scaleOfImplementation: customer.scaleOfImplementationDescription,
-    industry: customer.industry,
-  }));
-}
+export const DbData = z.array(DbRow)
+
+export type DbRowType = z.infer<typeof DbRow>;
