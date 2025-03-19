@@ -12,7 +12,6 @@ import {
   promptForSQL,
   promptForAnswer,
 } from "../../src/sql-translator/gpt/prompts";
-import { ChatHistoryHandler } from "../../src/meta-handling/whatsapp/chat_history/getChatHistory";
 import { executeSQL } from "../../src/sql-translator/database/mySql";
 import { RowDataPacket } from "mysql2";
 import { fileURLToPath } from "url";
@@ -37,6 +36,7 @@ type StringResultType = {
   formattedAnswer: string;
 };
 
+// generuje i zapisuje odpowiedzi aplikacji na zapytania naturalne wyciągnięte z pliku referencyjnego
 async function getDbAnwser() {
   const questionPairs: QuestionResSchemaType[] =
     fs.readJsonSync(QUESTIONS_PATH);
@@ -69,23 +69,27 @@ async function getDbAnwser() {
     console.log(`Otrzymano odpowiedź od bazy danych!`);
     console.log(`Formatowanie odpowiedzi...`);
 
-    const formattedAnswer = await generateGPTAnswer(
-      promptForAnswer(pair.question, sqlQuery.sqlStatement, rows),
+    const answer = await generateGPTAnswer(
+      promptForAnswer(pair.question, sqlQuery.sqlStatement, rows, "polish"),
       finalResponse,
       "final_response"
     );
-    console.log(`Otrzymano odpowiedź: ${formattedAnswer}`);
+    console.log(`Otrzymano odpowiedź: ${answer?.formattedAnswer}`);
+    if (!answer) {
+      continue;
+    }
 
     const result: StringResultType = {
       question: pair.question,
       answerRef: pair.answerRef,
       sqlQuery: sqlQuery.sqlStatement,
-      formattedAnswer: formattedAnswer,
+      formattedAnswer: answer?.formattedAnswer,
     };
 
     stringResults.push(result);
   }
   fs.writeJsonSync(RESULTS_PATH, stringResults, { spaces: 2 });
+  console.log(`Zapisano wyniki do: ${RESULTS_PATH}`);
 }
 
 async function testDb() {
@@ -97,6 +101,5 @@ async function testDb() {
 
 if (process.argv[1] === __filename) {
   await getDbAnwser();
-  // await testDb();
   process.exit(0);
 }

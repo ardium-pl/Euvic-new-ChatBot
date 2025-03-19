@@ -1,4 +1,8 @@
-import { executeSQL } from "../../src/sql-translator/database/mySql"; // Import funkcji executeSQL
+// Skrypt służący do porównywania odpowiedzi bazy danych na dwa pytania SQL znajdujące się w pliku o formacie
+// ProcessedQueriesType
+// informacje konfiguacyjne znajdują się w utilsach
+
+import { executeSQL } from "../../src/sql-translator/database/mySql";
 import { RowDataPacket } from "mysql2";
 import {
   saveToFile,
