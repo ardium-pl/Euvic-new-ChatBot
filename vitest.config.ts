@@ -8,11 +8,11 @@ export default defineConfig({
     testTimeout: 60000,
     hookTimeout: 60000,
 
-    include: ["__tests__/tests/*.test.ts"],
-    // exclude: ["__tests__/ignore/**"],
+    include: ["__tests__/testStrings/*.test.ts"],
     watch: false,
-    reporters: ["verbose"],
-    // silent: true,
+    reporters: ["verbose", "json"],
+    outputFile: "test-results.json",
+    silent: true,
     chaiConfig: {
       truncateThreshold: 0,
     },

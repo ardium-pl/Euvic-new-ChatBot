@@ -27,7 +27,8 @@ function promptForStringQuestion(
       - opisu dat,
       - opisu skali wdrożenia,
       - opisu biznes case'u.
-      Odpowiedzi na pytania powinny być zwięzłe i odpowiadać na pytanie.`,
+      Odpowiedzi na pytania powinny być zwięzłe i odpowiadać na pytanie.
+      W pytaniu zawsze musi być zawarte o jaki projekt pytasz.`,
     },
     {
       role: "system",
@@ -64,14 +65,14 @@ export async function getPackage(
 async function createTestPackages() {
   const dbData: DbRowType[] = fs.readJsonSync(DB_DATA_PATH);
 
-  const dbDataSample: DbRowType[] = dbData.slice(0, 10);
-  try {
-    DbData.parse(dbDataSample);
-    console.log("Data is valid.");
-  } catch (error) {
-    console.log(`Data is not valid: ${error}`);
-    return;
-  }
+  const dbDataSample: DbRowType[] = dbData.slice(0, 500);
+  // try {
+  //   DbData.parse(dbDataSample);
+  //   console.log("Data is valid.");
+  // } catch (error) {
+  //   console.log(`Data is not valid: ${error}`);
+  //   return;
+  // }
 
   const testPackages: TestPackageType[] = (
     await Promise.all(

@@ -147,3 +147,4 @@ dist
 __tests__/data
 __tests__/config
 __tests__/ignore
+/test-results.json

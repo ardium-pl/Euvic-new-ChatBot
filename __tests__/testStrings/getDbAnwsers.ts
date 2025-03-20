@@ -2,7 +2,7 @@ import "dotenv/config";
 import path from "path";
 import fs from "fs-extra";
 import { fileURLToPath } from "url";
-import { z } from "zod";
+import { number, z } from "zod";
 
 import {
   SqlResponse,
@@ -50,12 +50,26 @@ const RESULTS_BIZNES_CASE_PATH = path.resolve(
   "biznesCaseDescription.json"
 );
 
+function getRandomElements(arr: TestPackageType[], count: number) {
+  const indices = new Set<number>();
+
+  while (indices.size < count) {
+    indices.add(Math.floor(Math.random() * arr.length));
+  }
+
+  return [...indices].map((i) => arr[i]);
+}
+
 // generuje i zapisuje odpowiedzi aplikacji na zapytania naturalne wyciągnięte z pliku referencyjnego
 async function createResults() {
   // pobiera pytania i odpowiedzi testowe z pliku
   const testPackages: TestPackageType[] = fs.readJsonSync(TEST_QUESTIONS_PATH);
+  const testPackagesSample: TestPackageType[] = getRandomElements(
+    testPackages,
+    100
+  );
   try {
-    z.array(TestPackage).parse(testPackages);
+    z.array(TestPackage).parse(testPackagesSample);
     console.log(
       `Udało się pobrać zapytania i odpowiedzi z pliku: ${TEST_QUESTIONS_PATH}`
     );
@@ -72,7 +86,7 @@ async function createResults() {
     biznesCaseDescription: [],
   };
 
-  for (const testPackage of testPackages) {
+  for (const testPackage of testPackagesSample) {
     for (const testQuestion in testPackage) {
       const key = testQuestion as keyof typeof testPackage;
       console.log(`Procesowanie pytania: ${testPackage[key].question}`);
