@@ -7,8 +7,8 @@ import { RowDataPacket } from "mysql2";
 import {
   saveToFile,
   readFromFile,
-  PROCESSED_QUERIES_PATH,
-  COMPARED_QUERIES_PATH,
+  PROCESSED_QUERIES_FILENAME,
+  COMPARED_QUERIES_FILENAME,
   ProcessedQueriesType,
   ComparedQueriesType,
 } from "../utils/utils";
@@ -31,7 +31,7 @@ function compareDbResults(
 export async function processQueryResults(): Promise<void> {
   try {
     // Odczyt SQL z pliku
-    const queries = readFromFile<ProcessedQueriesType>(PROCESSED_QUERIES_PATH);
+    const queries = readFromFile<ProcessedQueriesType>(PROCESSED_QUERIES_FILENAME);
 
     if (!queries || queries.length === 0) {
       console.error("Brak zapytań do przetworzenia.");
@@ -65,7 +65,7 @@ export async function processQueryResults(): Promise<void> {
     }
 
     // Zapisanie wyników do pliku
-    saveToFile(finalResults, COMPARED_QUERIES_PATH);
+    saveToFile(finalResults, COMPARED_QUERIES_FILENAME);
     console.info("Przetwarzanie zakończone, wyniki zapisano do pliku.");
   } catch (error) {
     console.error("Wystąpił błąd podczas przetwarzania zapytań:", error);

@@ -3,8 +3,8 @@ import { generateGPTAnswer } from "../../src/sql-translator/gpt/openAi";
 import { ChatCompletionMessageParam } from "openai/resources";
 import { naturalLanguageResponseSchema } from "../utils/utils";
 import { DbSchema } from "../../src/types";
-import { GENERATED_SQL_PATH } from "../utils/utils";
-import { GENERATED_NATURAL_PATH } from "../utils/utils";
+import { GENERATED_SQL_FILENAME } from "../utils/utils";
+import { GENERATED_NATURAL_FILENAME } from "../utils/utils";
 import { loadDbInformation } from "../../src/sql-translator/database/mongoDb";
 
 // Zwraca zapytanie naturalne wygenerowane na podstawie SQL
@@ -42,11 +42,11 @@ export async function translateSqlQueries() {
   try {
     // Wczytanie zapytań SQL z pliku JSON
     const sqlQueries: string[] = JSON.parse(
-      fs.readFileSync(GENERATED_SQL_PATH, "utf-8")
+      fs.readFileSync(GENERATED_SQL_FILENAME, "utf-8")
     );
     if (sqlQueries.length === 0) {
       console.error(
-        `Nie udało się odczytać zapytań SQL z pliku: ${GENERATED_SQL_PATH}`
+        `Nie udało się odczytać zapytań SQL z pliku: ${GENERATED_SQL_FILENAME}`
       );
       return;
     }
@@ -76,11 +76,11 @@ export async function translateSqlQueries() {
 
     // Zapisanie wyników do pliku
     fs.writeFileSync(
-      GENERATED_NATURAL_PATH,
+      GENERATED_NATURAL_FILENAME,
       JSON.stringify(translations, null, 2)
     );
     console.info(
-      `Przetłumaczone zapytania zapisano w pliku: ${GENERATED_NATURAL_PATH}`
+      `Przetłumaczone zapytania zapisano w pliku: ${GENERATED_NATURAL_FILENAME}`
     );
   } catch (error) {
     console.error(

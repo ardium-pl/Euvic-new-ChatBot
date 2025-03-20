@@ -8,10 +8,16 @@ export const naturalLanguageResponseSchema = z.object({
   statement: z.string(),
 });
 
-export const GENERATED_SQL_PATH = "generatedSql.json";
-export const GENERATED_NATURAL_PATH = "generatedNatural.json";
-export const PROCESSED_QUERIES_PATH = "processedQueries.json";
-export const COMPARED_QUERIES_PATH = "comparedQueries.json";
+export const GENERATED_SQL_FILENAME = "generatedSql.json";
+export const GENERATED_NATURAL_FILENAME = "generatedNatural.json";
+export const PROCESSED_QUERIES_FILENAME = "processedQueries.json";
+export const COMPARED_QUERIES_FILENAME = "comparedQueries.json";
+
+export const DB_DATA_FILENAME = "../data/string-tests/dbData.json";
+export const QUESTIONS_FILENAME = "../data/string-tests/questions.json";
+export const RESULTS_FILENAME = "../data/string-tests/results.json"
+
+export const SQL_FOR_DATA = "SELECT * FROM railway.full_data_view;";
 
 export type SqlNaturalType = {
   sql: string;

@@ -1,7 +1,9 @@
 import "dotenv/config";
 import path from "path";
 import fs from "fs-extra";
-import { TestQuestion, TestQuestionType, ResultType } from "../utils/utils";
+import { fileURLToPath } from "url";
+import { z } from "zod";
+
 import {
   SqlResponse,
   generateGPTAnswer,
@@ -14,21 +16,14 @@ import {
 } from "../../src/sql-translator/gpt/prompts";
 import { executeSQL } from "../../src/sql-translator/database/mySql";
 import { RowDataPacket } from "mysql2";
-import { fileURLToPath } from "url";
-import { z } from "zod";
+
+import { TestQuestion, TestQuestionType, ResultType } from "../utils/utils";
+import { QUESTIONS_FILENAME, RESULTS_FILENAME } from "../utils/utils";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-const TEST_QUESTIONS_PATH = path.resolve(
-  __dirname,
-  "../data/string-tests/questions.json"
-);
-
-const RESULTS_PATH = path.resolve(
-  __dirname,
-  "../data/string-tests/results.json"
-);
+const TEST_QUESTIONS_PATH = path.resolve(__dirname, QUESTIONS_FILENAME);
+const RESULTS_PATH = path.resolve(__dirname, RESULTS_FILENAME);
 
 // generuje i zapisuje odpowiedzi aplikacji na zapytania naturalne wyciągnięte z pliku referencyjnego
 async function getDbAnwser() {

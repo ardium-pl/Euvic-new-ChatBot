@@ -10,8 +10,8 @@ import {
   readFromFile,
   SqlNaturalType,
   ProcessedQueriesType,
-  GENERATED_NATURAL_PATH,
-  PROCESSED_QUERIES_PATH,
+  GENERATED_NATURAL_FILENAME,
+  PROCESSED_QUERIES_FILENAME,
 } from "../utils/utils";
 
 const chatHistory = await ChatHistoryHandler.getRecentQueries(0, "");
@@ -20,7 +20,7 @@ const chatHistory = await ChatHistoryHandler.getRecentQueries(0, "");
 export async function processNaturalQueries(): Promise<void> {
   try {
     // Odczyt zapytań naturalnych
-    const queries = readFromFile<SqlNaturalType>(GENERATED_NATURAL_PATH);
+    const queries = readFromFile<SqlNaturalType>(GENERATED_NATURAL_FILENAME);
 
     if (!queries || queries.length === 0) {
       console.error("Brak zapytań do przetworzenia.");
@@ -56,7 +56,7 @@ export async function processNaturalQueries(): Promise<void> {
     }
 
     // Zapisanie wyników do pliku
-    saveToFile(results, PROCESSED_QUERIES_PATH);
+    saveToFile(results, PROCESSED_QUERIES_FILENAME);
 
     console.info("Przetwarzanie zakończone, wyniki zapisano do pliku.");
   } catch (error) {

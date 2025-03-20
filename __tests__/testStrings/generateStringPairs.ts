@@ -6,20 +6,13 @@ import fs from "fs-extra";
 import { ChatCompletionMessageParam } from "openai/resources";
 import { generateGPTAnswer } from "../../src/sql-translator/gpt/openAi";
 import { TestQuestion, TestQuestionType } from "../utils/utils";
+import { DB_DATA_FILENAME, QUESTIONS_FILENAME } from "../utils/utils";
 import { DbData, DbRowType } from "../utils/types";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-const DB_DATA_PATH = path.resolve(
-  __dirname,
-  "../data/string-tests/dbData.json"
-);
-
-const QUESTIONS_PATH = path.resolve(
-  __dirname,
-  "../data/string-tests/questions.json"
-);
+const DB_DATA_PATH = path.resolve(__dirname, DB_DATA_FILENAME);
+const QUESTIONS_PATH = path.resolve(__dirname, QUESTIONS_FILENAME);
 
 // zwraca zformatowany prompt do GPT pytający o generowanie pytań do projektów
 function promptForStringQuestion(
@@ -73,15 +66,17 @@ async function createStringPairs() {
   const stringPairs: TestQuestionType[] = (
     await Promise.all(
       dbBaseSample.map(async (row) => {
-        console.log(`Generowanie zapytania o datę dla projektu: ${row.projekty_nazwa}`)
+        console.log(
+          `Generowanie zapytania o datę dla projektu: ${row.projekty_nazwa}`
+        );
         const stringPair = await getStringPair(row);
         try {
           TestQuestion.parse(stringPair);
         } catch (error) {
-          console.log(`Wystąpił błąd podczas generowania: ${error}`)
+          console.log(`Wystąpił błąd podczas generowania: ${error}`);
           return null;
         }
-        console.log(`Wygenerowano zapytanie: ${stringPair?.question}`)
+        console.log(`Wygenerowano zapytanie: ${stringPair?.question}`);
         return stringPair;
       })
     )

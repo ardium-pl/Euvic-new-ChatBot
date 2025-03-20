@@ -3,6 +3,9 @@ import path from "path";
 import fs from "fs-extra";
 import { fileURLToPath } from "url";
 import { describe, it, expect, assert } from "vitest";
+import { z, ZodBoolean, ZodType } from "zod";
+import { generateGPTAnswer } from "../../src/sql-translator/gpt/openAi";
+import { ChatCompletionMessageParam } from "openai/resources";
 
 import { DbData, DbRowType } from "../utils/types";
 import {
@@ -11,18 +14,11 @@ import {
   TestQuestion,
   TestQuestionType,
 } from "../utils/utils";
-import { ChatCompletionMessageParam } from "openai/resources";
-import { generateGPTAnswer } from "../../src/sql-translator/gpt/openAi";
-import { z, ZodBoolean, ZodType } from "zod";
-import { result } from "lodash";
+import { RESULTS_FILENAME } from "../utils/utils";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-const RESULTS_PATH = path.resolve(
-  __dirname,
-  "../data/string-tests/results.json"
-);
+const RESULTS_PATH = path.resolve(__dirname, RESULTS_FILENAME);
 
 function promptForAnalyzeResults(
   result: ResultType

@@ -3,7 +3,7 @@ import { ChatCompletionMessageParam } from "openai/resources";
 import * as fs from "fs";
 import { generateGPTAnswer } from "../../src/sql-translator/gpt/openAi";
 import { DbSchema } from "../../src/types";
-import { GENERATED_SQL_PATH, promptFor10Sql } from "../utils/utils";
+import { GENERATED_SQL_FILENAME, promptFor10Sql } from "../utils/utils";
 import { saveToFile } from "../utils/utils";
 import { loadDbInformation } from "../../src/sql-translator/database/mongoDb";
 
@@ -45,10 +45,10 @@ export async function generateSqlQueries(): Promise<void> {
       console.info("Zapytania SQL wygenerowane pomyślnie!");
     }
     // Zapisywanie wygenerowanych zapytań SQL do JSON
-    saveToFile<string[]>(sqlQueries, GENERATED_SQL_PATH);
-    if (!fs.existsSync(GENERATED_SQL_PATH)) {
+    saveToFile<string[]>(sqlQueries, GENERATED_SQL_FILENAME);
+    if (!fs.existsSync(GENERATED_SQL_FILENAME)) {
       console.error(
-        `Nie udał się zapisać danych do ścieżki: ${GENERATED_SQL_PATH}.`
+        `Nie udał się zapisać danych do ścieżki: ${GENERATED_SQL_FILENAME}.`
       );
       return;
     }

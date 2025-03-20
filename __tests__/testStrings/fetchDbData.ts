@@ -4,15 +4,12 @@ import { fileURLToPath } from "url";
 import { executeSQL } from "../../src/sql-translator/database/mySql";
 import { RowDataPacket } from "mysql2";
 import fs from "fs-extra";
+import { DB_DATA_FILENAME, SQL_FOR_DATA } from "../utils/utils";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const SQL_FOR_DATA = "SELECT * FROM railway.full_data_view;";
-const DB_DATA_PATH = path.resolve(
-  __dirname,
-  "../data/string-tests/dbData.json"
-);
+const DB_DATA_PATH = path.resolve(__dirname, DB_DATA_FILENAME);
 
 async function fetchDbData() {
   console.log("Proszenie bazy danych o dane...");
