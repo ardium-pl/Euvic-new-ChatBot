@@ -8,7 +8,7 @@ export const sqlResponse = z.object({
   isSelect: z.boolean(),
   sqlStatement: z.string(),
 });
-
+export type SqlResponse = z.infer<typeof sqlResponse>;
 export const finalResponse = z.object({
   formattedAnswer: z.string(),
 });

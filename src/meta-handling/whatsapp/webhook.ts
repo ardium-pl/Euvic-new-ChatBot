@@ -6,8 +6,8 @@ import { logger } from "../../insert-data-to-db/utils/logger";
 import { LanguageToSQLResponse } from "../../types";
 import { insertDataMySQL } from "./chat_history/getChatHistory";
 import { WhatsAppClient } from "./whatsapp-client";
-
 const webhookRouter: Router = express.Router();
+
 
 webhookRouter.post("/webhook", async (req: Request, res: Response) => {
   try {
@@ -36,6 +36,7 @@ webhookRouter.post("/webhook", async (req: Request, res: Response) => {
         );
         try {
           const response = await axios.post(
+
             `${apiUrl}/language-to-sql`,
             { query: userQuery, whatsappNumberId: senderPhoneNumber }
           );

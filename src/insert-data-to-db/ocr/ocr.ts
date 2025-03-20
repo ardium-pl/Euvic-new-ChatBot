@@ -5,7 +5,10 @@ import path from "path";
 import { convertPdfToImages } from "../utils/convertPdfToImages";
 import { deleteFile } from "../utils/deleteFile";
 import { logger } from "../utils/logger";
+import { fileURLToPath } from "url";
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const VISION_AUTH = {
   credentials: {
     client_email: process.env.GOOGLE_CLIENT_EMAIL as string,
@@ -63,9 +66,7 @@ export async function pdfOcr(pdfFilePath: string): Promise<string> {
       logger.warn(`Deleting temporary image: ${imageFilePath}`);
       deleteFile(imageFilePath);
     }
-
     deleteFile(pdfFilePath);
-
     return concatenatedResults;
   } catch (err: any) {
     logger.error(`Error processing ${pdfFilePath}:`, err);

@@ -12,14 +12,14 @@ import {
 } from "./utils/credentials.ts";
 import { logger } from "./utils/logger.ts";
 import { jsonFixes } from "./verifcation-json-data/jsonMainFixer.ts";
-import { FileData } from "./zod-json/dataJsonSchema.ts";
+import { FileDataType } from "./zod-json/dataJsonSchema.ts";
 import { parseOcrText } from "./zod-json/dataProcessor.ts";
 
 export async function processFile(
   fileName: string,
   fileItemId: string,
   fileLink: string,
-  jsonData: FileData[]
+  jsonData: FileDataType[]
 ) {
   // TODO: Dorbić logikę z dodawaniem fileItemId oraz fileLink do naszej bazki
   try {
@@ -44,7 +44,7 @@ export async function processFile(
     // Weryfikacja JSON
     const finalData = await jsonFixes(parsedData, ocrDataText);
 
-    const fileJsonData: FileData = {
+    const fileJsonData: FileDataType = {
       fileName,
       ocrText: ocrDataText,
       fileItemId,
@@ -60,7 +60,7 @@ export async function processFile(
 
 export async function processAllFiles() {
   const sharePointService = new SharePointService();
-  const jsonData: FileData[] = [];
+  const jsonData: FileDataType[] = [];
   [PDF_DATA_FOLDER, JSON_DATA_FOLDER].map((folder) => fs.ensureDir(folder));
   try {
     const items = await sharePointService.getAllFilesFromList();

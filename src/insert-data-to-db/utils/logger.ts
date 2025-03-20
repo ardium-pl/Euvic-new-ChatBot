@@ -175,6 +175,7 @@ const consoleTransport = new winston.transports.Console({
 });
 
 const loggerCreate = winston.createLogger({
+
     level: process.env.LOG_LEVEL || DEFAULT_LOG_LEVEL,
     format: logFormat,
     transports: [

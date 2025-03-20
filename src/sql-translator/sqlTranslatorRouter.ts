@@ -5,8 +5,8 @@ import { executeSQL } from "./database/mySql.js";
 import { finalResponse, generateGPTAnswer, languageResponse, sqlResponse } from "./gpt/openAi.js";
 import { promptForAnswer, promptForLanguageDetection, promptForSQL } from "./gpt/prompts.js";
 
-
 export const sqlTranslatorRouter: Router = express.Router();
+
 
 
 sqlTranslatorRouter.post("/language-to-sql", async (req, res) => {
@@ -88,7 +88,6 @@ sqlTranslatorRouter.post("/language-to-sql", async (req, res) => {
       });
       return;
     }
-
     const language = await generateGPTAnswer(
       promptForLanguageDetection(userQuery),
       languageResponse,

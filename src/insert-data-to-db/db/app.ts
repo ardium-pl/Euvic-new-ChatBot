@@ -1,9 +1,9 @@
-import { FileData } from "../zod-json/dataJsonSchema";
+import { FileDataType } from "../zod-json/dataJsonSchema";
 import { db } from "./config/database";
 import { processData } from "./utils/processData";
 import chalk from "chalk";
 
-export async function addDataToDB(jsonData: FileData[]) {
+export async function addDataToDB(jsonData: FileDataType[]) {
   console.log(chalk.blue("🚀 Starting the data processing application..."));
 
   try {
