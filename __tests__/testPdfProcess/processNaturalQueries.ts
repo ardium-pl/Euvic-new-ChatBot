@@ -12,7 +12,7 @@ import {
   ProcessedQueriesType,
   GENERATED_NATURAL_PATH,
   PROCESSED_QUERIES_PATH,
-} from "./utils";
+} from "../utils/utils";
 
 const chatHistory = await ChatHistoryHandler.getRecentQueries(0, "");
 

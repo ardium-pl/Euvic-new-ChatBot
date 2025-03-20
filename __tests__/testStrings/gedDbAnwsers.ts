@@ -1,7 +1,7 @@
 import "dotenv/config";
 import path from "path";
 import fs from "fs-extra";
-import { TestQuestion, TestQuestionType } from "./utils";
+import { TestQuestion, TestQuestionType, ResultType } from "../utils/utils";
 import {
   SqlResponse,
   generateGPTAnswer,
@@ -29,13 +29,6 @@ const RESULTS_PATH = path.resolve(
   __dirname,
   "../data/string-tests/results.json"
 );
-
-type ResultType = {
-  question: string;
-  answerRef: string;
-  sqlQuery: string;
-  formattedAnswer: string;
-};
 
 // generuje i zapisuje odpowiedzi aplikacji na zapytania naturalne wyciągnięte z pliku referencyjnego
 async function getDbAnwser() {

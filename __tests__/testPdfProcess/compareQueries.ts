@@ -11,7 +11,7 @@ import {
   COMPARED_QUERIES_PATH,
   ProcessedQueriesType,
   ComparedQueriesType,
-} from "./utils";
+} from "../utils/utils";
 
 // Funkcja porównująca wyniki dwóch zapytań SQL
 function compareDbResults(

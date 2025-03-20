@@ -1,10 +1,10 @@
 import * as fs from "fs";
 import { generateGPTAnswer } from "../../src/sql-translator/gpt/openAi";
 import { ChatCompletionMessageParam } from "openai/resources";
-import { naturalLanguageResponseSchema } from "./utils";
+import { naturalLanguageResponseSchema } from "../utils/utils";
 import { DbSchema } from "../../src/types";
-import { GENERATED_SQL_PATH } from "./utils";
-import { GENERATED_NATURAL_PATH } from "./utils";
+import { GENERATED_SQL_PATH } from "../utils/utils";
+import { GENERATED_NATURAL_PATH } from "../utils/utils";
 import { loadDbInformation } from "../../src/sql-translator/database/mongoDb";
 
 // Zwraca zapytanie naturalne wygenerowane na podstawie SQL
@@ -28,7 +28,7 @@ async function translateSqlToNaturalLanguage(
   console.info(
     "Wysyłanie zapytania do GPT w celu konwersji na język naturalny..."
   );
-  const response = await generateGPTAnswer<{ statement: string }>(
+  const response = await generateGPTAnswer(
     prompt,
     naturalLanguageResponseSchema,
     "response"

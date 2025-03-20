@@ -5,8 +5,8 @@ import fs from "fs-extra";
 
 import { ChatCompletionMessageParam } from "openai/resources";
 import { generateGPTAnswer } from "../../src/sql-translator/gpt/openAi";
-import { TestQuestion, TestQuestionType } from "./utils";
-import { DbData, DbRowType } from "./types";
+import { TestQuestion, TestQuestionType } from "../utils/utils";
+import { DbData, DbRowType } from "../utils/types";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

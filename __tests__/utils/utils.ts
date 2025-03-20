@@ -31,8 +31,16 @@ export const TestQuestion = z.object({
   answerRef: z.string(),
 });
 
-export type TestQuestionType = z.infer<typeof TestQuestion>
+export type TestQuestionType = z.infer<typeof TestQuestion>;
 
+export const Result = z.object({
+  question: z.string(),
+  answerRef: z.string(),
+  sqlQuery: z.string(),
+  formattedAnswer: z.string(),
+});
+
+export type ResultType = z.infer<typeof Result>;
 
 export async function promptFor10Sql(
   dbSchema: DbSchema

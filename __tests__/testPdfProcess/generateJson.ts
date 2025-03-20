@@ -3,7 +3,7 @@ import {
   JSON_DATA_FOLDER as JSON_DEST,
   PDF_DATA_FOLDER as PDF_DEST,
 } from "../../src/insert-data-to-db/utils/credentials";
-import { TestFile } from "./types";
+// import { TestFile } from "./types";
 import path from "path";
 import { fileURLToPath } from "url";
 import { processFile } from "../../src/insert-data-to-db/processFilesToJson";
@@ -25,7 +25,7 @@ const JSON_SERIE = "two_newModel_3";
 const testFilesInfo = JSON.parse(
   fs.readFileSync(TEST_FILES_INFO_PATH, "utf-8")
 );
-const testFiles: TestFile[] = testFilesInfo.files.filter(
+const testFiles: any = testFilesInfo.files.filter(
   ({ test }: { test: boolean }) => test
 );
 
@@ -48,9 +48,9 @@ async function generateJson() {
 
   // procesowanie plików testowych
   await Promise.all(
-    testFiles.map(async (testFile) => {
+    testFiles.map(async (testFile: any) => {
       console.log(`🔄 Procesowanie: ${testFile.pdf}`);
-      await processFile(testFile.pdf);
+      // await processFile(testFile.pdf);
     })
   );
 
