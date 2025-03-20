@@ -144,13 +144,6 @@ dist
 .pnp.*
 
 # test folders
-reference-json/
-test-pdfs/
-generated-json/
-__tests__/keysToTest.json
-__tests__/testFilesInfo.json
-src/automatic-tests/logs
-src/automatic-tests/*.json
 __tests__/data
 __tests__/config
-__tests__/ignore/
+__tests__/ignore

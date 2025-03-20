@@ -5,14 +5,14 @@ import fs from "fs-extra";
 
 import { ChatCompletionMessageParam } from "openai/resources";
 import { generateGPTAnswer } from "../../src/sql-translator/gpt/openAi";
-import { TestQuestion, TestQuestionType } from "../utils/utils";
-import { DB_DATA_FILENAME, QUESTIONS_FILENAME } from "../utils/utils";
+import { TestPackage, TestPackageType } from "../utils/utils";
+import { DB_DATA_FILENAME, TEST_PACKAGES_FILENAME } from "../utils/utils";
 import { DbData, DbRowType } from "../utils/types";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const DB_DATA_PATH = path.resolve(__dirname, DB_DATA_FILENAME);
-const QUESTIONS_PATH = path.resolve(__dirname, QUESTIONS_FILENAME);
+const TEST_PACKAGES_PATH = path.resolve(__dirname, TEST_PACKAGES_FILENAME);
 
 // zwraca zformatowany prompt do GPT pytający o generowanie pytań do projektów
 function promptForStringQuestion(
@@ -21,7 +21,13 @@ function promptForStringQuestion(
   const messages: ChatCompletionMessageParam[] = [
     {
       role: "system",
-      content: `Jesteś specjalistą w generowaniu pytań i odpowiedzi na nie, dotyczących czasu trwania projektu. Odpowiedź do pytania powinna być zwięzła i odpowiadać na pytanie.`,
+      content: `Jesteś specjalistą w generowaniu pytań i odpowiedzi na nie.
+      Twoim zadaniem jest wygenerowanie 4 pytań i 4 odpowiedzi dotyczących odpowiednio:
+      - opisu projektu,
+      - opisu dat,
+      - opisu skali wdrożenia,
+      - opisu biznes case'u.
+      Odpowiedzi na pytania powinny być zwięzłe i odpowiadać na pytanie.`,
     },
     {
       role: "system",
@@ -32,66 +38,68 @@ function promptForStringQuestion(
     {
       role: "user",
       content:
-        "Wygeneruj pytanie oraz poprawną odpowiedź dotyczące czasu trwania projektu.",
+        "Wygeneruj 4 pytania oraz poprawne odpowiedzi dotyczące opisu projektu, opisu dat, opisu skali wdrożenia i opisu biznes case'u.",
     },
   ];
   return messages;
 }
 
 // zwraca wygenerowane referencyjne pytanie z odpowiedzią
-export async function getStringPair(
+export async function getPackage(
   dbRow: DbRowType
-): Promise<TestQuestionType | null> {
-  const response: TestQuestionType | null = await generateGPTAnswer(
-    promptForStringQuestion(dbRow),
-    TestQuestion,
-    "response"
-  );
-
-  return response;
+): Promise<TestPackageType | null> {
+  try {
+    const response: TestPackageType | null = await generateGPTAnswer(
+      promptForStringQuestion(dbRow),
+      TestPackage,
+      "response"
+    );
+    return response;
+  } catch {
+    console.log("Błąd podczas generowania zapytań i odpowiedzi.");
+    return null;
+  }
 }
 
-async function createStringPairs() {
+async function createTestPackages() {
   const dbData: DbRowType[] = fs.readJsonSync(DB_DATA_PATH);
 
-  const dbBaseSample: DbRowType[] = dbData.slice(0, 10);
+  const dbDataSample: DbRowType[] = dbData.slice(0, 10);
   try {
-    DbData.parse(dbBaseSample);
+    DbData.parse(dbDataSample);
     console.log("Data is valid.");
   } catch (error) {
     console.log(`Data is not valid: ${error}`);
     return;
   }
 
-  const stringPairs: TestQuestionType[] = (
+  const testPackages: TestPackageType[] = (
     await Promise.all(
-      dbBaseSample.map(async (row) => {
+      dbDataSample.map(async (row) => {
         console.log(
-          `Generowanie zapytania o datę dla projektu: ${row.projekty_nazwa}`
+          `Generowanie zapytań i odpowiedzi dla projektu: ${row.projekty_nazwa}`
         );
-        const stringPair = await getStringPair(row);
+        const testPackage: TestPackageType | null = await getPackage(row);
         try {
-          TestQuestion.parse(stringPair);
+          TestPackage.parse(testPackage);
         } catch (error) {
           console.log(`Wystąpił błąd podczas generowania: ${error}`);
           return null;
         }
-        console.log(`Wygenerowano zapytanie: ${stringPair?.question}`);
-        return stringPair;
+        console.log(`Wygenerowano zapytania i odpowiedzi.`);
+        return testPackage;
       })
     )
-  ).filter((stringPair) => {
-    return stringPair !== null;
+  ).filter((testPackage) => {
+    return testPackage !== null;
   });
 
-  const questionObjects: TestQuestionType[] = [];
-  questionObjects.push(...stringPairs);
-  fs.writeJsonSync(QUESTIONS_PATH, questionObjects, { spaces: 2 });
+  fs.writeJsonSync(TEST_PACKAGES_PATH, testPackages, { spaces: 2 });
 
-  console.log(`Zapisano pytania do pliku: ${QUESTIONS_PATH}`);
+  console.log(`Zapisano pytania do pliku: ${TEST_PACKAGES_PATH}`);
 }
 
 if (process.argv[1] === __filename) {
-  await createStringPairs();
+  await createTestPackages();
   process.exit(0);
 }

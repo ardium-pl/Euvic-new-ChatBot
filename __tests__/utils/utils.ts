@@ -14,8 +14,9 @@ export const PROCESSED_QUERIES_FILENAME = "processedQueries.json";
 export const COMPARED_QUERIES_FILENAME = "comparedQueries.json";
 
 export const DB_DATA_FILENAME = "../data/string-tests/dbData.json";
-export const QUESTIONS_FILENAME = "../data/string-tests/questions.json";
-export const RESULTS_FILENAME = "../data/string-tests/results.json"
+export const TEST_PACKAGES_FILENAME = "../data/string-tests/questions.json";
+
+export const RESULTS_FOLDER = "../data/string-tests/results/";
 
 export const SQL_FOR_DATA = "SELECT * FROM railway.full_data_view;";
 
@@ -32,12 +33,19 @@ export type ComparedQueriesType = ProcessedQueriesType & {
   isSame: boolean;
 };
 
-export const TestQuestion = z.object({
+const TestQuestion = z.object({
   question: z.string(),
   answerRef: z.string(),
 });
 
-export type TestQuestionType = z.infer<typeof TestQuestion>;
+export const TestPackage = z.object({
+  projectDescription: TestQuestion,
+  dateDescription: TestQuestion,
+  scaleDescription: TestQuestion,
+  biznesCaseDescription: TestQuestion,
+});
+
+export type TestPackageType = z.infer<typeof TestPackage>;
 
 export const Result = z.object({
   question: z.string(),
@@ -46,7 +54,15 @@ export const Result = z.object({
   formattedAnswer: z.string(),
 });
 
+export const Results = z.object({
+  projectDescription: z.array(Result),
+  dateDescription: z.array(Result),
+  scaleDescription: z.array(Result),
+  biznesCaseDescription: z.array(Result),
+});
+
 export type ResultType = z.infer<typeof Result>;
+export type ResultsType = z.infer<typeof Results>;
 
 export async function promptFor10Sql(
   dbSchema: DbSchema
