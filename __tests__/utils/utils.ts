@@ -13,6 +13,14 @@ export const naturalLanguageResponseSchema = z.object({
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+export const TEST_FILES_INFO_PATH = path.resolve(
+  __dirname,
+  "../config/testFilesInfo.json"
+);
+export const PDF_SOURCE = path.resolve(__dirname, "../data/test-pdfs");
+export const JSON_STORAGE = path.resolve(__dirname, "../data/generated-json");
+export const OUTPUT_TEXT = path.resolve(__dirname, "../../output-text");
+export const JSON_SERIE = "two_newModel_3";
 
 export const GENERATED_SQL_FILENAME = "generatedSql.json";
 export const GENERATED_NATURAL_FILENAME = "generatedNatural.json";

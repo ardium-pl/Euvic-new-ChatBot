@@ -5,7 +5,7 @@ import fs from "fs-extra";
 
 import { ChatCompletionMessageParam } from "openai/resources";
 import { generateGPTAnswer } from "../../src/sql-translator/gpt/openAi";
-import { TestPackage, TestPackageType } from "../utils/utils";
+import { TestPackage, TestPackageType } from "../utils/types";
 import { DB_DATA_PATH, TEST_PACKAGES_PATH } from "../utils/utils";
 import { DbData, DbRowType } from "../utils/types";
 

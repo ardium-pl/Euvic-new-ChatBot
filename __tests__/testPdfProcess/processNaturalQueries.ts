@@ -7,11 +7,10 @@ import { ChatHistoryHandler } from "../../src/meta-handling/whatsapp/chat_histor
 import {
   saveToFile,
   readFromFile,
-  SqlNaturalType,
-  ProcessedQueriesType,
   GENERATED_NATURAL_FILENAME,
   PROCESSED_QUERIES_FILENAME,
 } from "../utils/utils";
+import { SqlNaturalType, ProcessedQueriesType } from "../utils/types";
 
 const chatHistory = await ChatHistoryHandler.getRecentQueries(0, "");
 

@@ -1,24 +1,18 @@
 import "dotenv/config";
 import path from "path";
-import { fileURLToPath } from "url";
 import fs from "fs-extra";
 import {
   JSON_DATA_FOLDER as JSON_DEST,
   PDF_DATA_FOLDER as PDF_DEST,
 } from "../../src/insert-data-to-db/utils/credentials";
-// import { TestFile } from "./types";
 
-// ścieżki
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const TEST_FILES_INFO_PATH = path.resolve(
-  __dirname,
-  "../config/testFilesInfo.json"
-);
-const PDF_SOURCE = path.resolve(__dirname, "../data/test-pdfs");
-const JSON_STORAGE = path.resolve(__dirname, "../data/generated-json");
-const OUTPUT_TEXT = path.resolve(__dirname, "../../output-text");
-const JSON_SERIE = "two_newModel_3";
+import {
+  TEST_FILES_INFO_PATH,
+  PDF_SOURCE,
+  JSON_STORAGE,
+  OUTPUT_TEXT,
+  JSON_SERIE,
+} from "../utils/utils";
 
 // wczytanie info które PDFy testować
 const testFilesInfo = JSON.parse(

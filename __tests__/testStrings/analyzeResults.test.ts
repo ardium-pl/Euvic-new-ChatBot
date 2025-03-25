@@ -13,32 +13,13 @@ import {
   ResultType,
   TestPackage,
   TestPackageType,
+} from "../utils/types";
+import {
+  RESULTS_PROJECT_PATH,
+  RESULTS_DATE_PATH,
+  RESULTS_SCALE_PATH,
+  RESULTS_BIZNES_CASE_PATH,
 } from "../utils/utils";
-import { RESULTS_FOLDER } from "../utils/utils";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const RESULTS_PROJECT_PATH = path.resolve(
-  __dirname,
-  RESULTS_FOLDER,
-  "projectDescription.json"
-);
-const RESULTS_DATE_PATH = path.resolve(
-  __dirname,
-  RESULTS_FOLDER,
-  "dateDescription.json"
-);
-const RESULTS_SCALE_PATH = path.resolve(
-  __dirname,
-  RESULTS_FOLDER,
-  "scaleDescription.json"
-);
-const RESULTS_BIZNES_CASE_PATH = path.resolve(
-  __dirname,
-  RESULTS_FOLDER,
-  "biznesCaseDescription.json"
-);
 
 function promptForAnalyzeResults(
   result: ResultType
@@ -63,9 +44,7 @@ function promptForAnalyzeResults(
   return messages;
 }
 
-function promptForNoData(
-  result: ResultType
-): ChatCompletionMessageParam[] {
+function promptForNoData(result: ResultType): ChatCompletionMessageParam[] {
   const messages: ChatCompletionMessageParam[] = [
     {
       role: "system",
