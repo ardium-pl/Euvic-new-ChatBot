@@ -1,14 +1,11 @@
 import vision from "@google-cloud/vision";
-import "dotenv/config";
 import fs from "fs-extra";
 import path from "path";
 import { convertPdfToImages } from "../utils/convertPdfToImages";
 import { deleteFile } from "../utils/deleteFile";
 import { logger } from "../utils/logger";
-import { fileURLToPath } from "url";
+import { IMAGES_FOLDER, OUTPUT_TEXT_FOLDER } from "../utils/credentials";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 const VISION_AUTH = {
   credentials: {
     client_email: process.env.GOOGLE_CLIENT_EMAIL as string,
@@ -21,16 +18,14 @@ const VISION_AUTH = {
 };
 
 export async function pdfOcr(pdfFilePath: string): Promise<string> {
-  const imagesFolder = "./images";
-  const outputTextFolder = "./output-text";
   const fileNameWithoutExt = path.basename(pdfFilePath, ".pdf");
 
-  await Promise.all([imagesFolder, outputTextFolder].map(fs.ensureDir));
+  await Promise.all([IMAGES_FOLDER, OUTPUT_TEXT_FOLDER].map(fs.ensureDir));
 
   try {
     const imageFilePaths: string[] = await convertPdfToImages(
       pdfFilePath,
-      imagesFolder
+      IMAGES_FOLDER
     );
 
     if (imageFilePaths.length === 0) {
@@ -53,7 +48,7 @@ export async function pdfOcr(pdfFilePath: string): Promise<string> {
     const concatenatedResults = ocrResults.join("");
 
     await _saveDataToTxt(
-      outputTextFolder,
+      OUTPUT_TEXT_FOLDER,
       fileNameWithoutExt,
       concatenatedResults
     );
