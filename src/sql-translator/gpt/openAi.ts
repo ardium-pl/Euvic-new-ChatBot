@@ -8,19 +8,22 @@ export const sqlResponse = z.object({
   isSelect: z.boolean(),
   sqlStatement: z.string(),
 });
-export type SqlResponse = z.infer<typeof sqlResponse>;
 export const finalResponse = z.object({
   formattedAnswer: z.string(),
 });
 
 export const languageResponse = z.object({
-  language: z.string()
-})
+  language: z.string(),
+});
 
-export async function generateGPTAnswer<T extends ZodTypeAny>(prompt: ChatCompletionMessageParam[], responseFormat: T, responseName: string): Promise<z.infer<T> | null> {
+export async function generateGPTAnswer<T extends ZodTypeAny>(
+  prompt: ChatCompletionMessageParam[],
+  responseFormat: T,
+  responseName: string
+): Promise<z.infer<T> | null> {
   try {
     const completion = await openAiClient.beta.chat.completions.parse({
-      model: 'gpt-4o',
+      model: "gpt-4o",
       messages: prompt,
       response_format: zodResponseFormat(responseFormat, responseName),
     });
@@ -30,10 +33,10 @@ export async function generateGPTAnswer<T extends ZodTypeAny>(prompt: ChatComple
       // Custom feedback after disturbing user input
       return null;
     }
-    logger.info("Successfully generated an AI response! ✅" );
+    logger.info("Successfully generated an AI response! ✅");
     return response.parsed;
   } catch (error: any) {
     logger.error(error);
-    return null
+    return null;
   }
 }

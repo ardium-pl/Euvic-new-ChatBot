@@ -8,7 +8,6 @@ import { insertDataMySQL } from "./chat_history/getChatHistory";
 import { WhatsAppClient } from "./whatsapp-client";
 const webhookRouter: Router = express.Router();
 
-
 webhookRouter.post("/webhook", async (req: Request, res: Response) => {
   try {
     res.status(200).send("✅ Acknowledged");
@@ -35,11 +34,10 @@ webhookRouter.post("/webhook", async (req: Request, res: Response) => {
           `✅ Received message: ${userQuery} from ${senderPhoneNumber}`
         );
         try {
-          const response = await axios.post(
-
-            `${apiUrl}/language-to-sql`,
-            { query: userQuery, whatsappNumberId: senderPhoneNumber }
-          );
+          const response = await axios.post(`${apiUrl}/language-to-sql`, {
+            query: userQuery,
+            whatsappNumberId: senderPhoneNumber,
+          });
 
           const aiResponse: LanguageToSQLResponse = response.data;
 
@@ -86,7 +84,6 @@ webhookRouter.post("/webhook", async (req: Request, res: Response) => {
         );
       }
     }
-
   } catch (error: any) {
     logger.error(`❌ Error processing HTTP request: ${error.message}`);
     res.status(400).send("❌");

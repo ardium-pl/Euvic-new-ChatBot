@@ -5,7 +5,6 @@ import { fileURLToPath } from "url";
 import { number, z } from "zod";
 
 import {
-  SqlResponse,
   generateGPTAnswer,
   sqlResponse,
   finalResponse,
@@ -92,7 +91,7 @@ async function createResults() {
       console.log(`Procesowanie pytania: ${testPackage[key].question}`);
 
       console.log(`Generowanie sql...`);
-      const sqlQuery: SqlResponse | null = await generateGPTAnswer(
+      const sqlQuery = await generateGPTAnswer(
         promptForSQL(testPackage[key].question, null),
         sqlResponse,
         "sql_response"

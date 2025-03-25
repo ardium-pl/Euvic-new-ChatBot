@@ -1,7 +1,6 @@
 import {
   generateGPTAnswer,
   sqlResponse,
-  SqlResponse,
 } from "../../src/sql-translator/gpt/openAi";
 import { promptForSQL } from "../../src/sql-translator/gpt/prompts";
 import { ChatHistoryHandler } from "../../src/meta-handling/whatsapp/chat_history/getChatHistory";
@@ -34,7 +33,7 @@ export async function processNaturalQueries(): Promise<void> {
       console.info(`Przetwarzanie zapytania: ${naturalQuery}`);
 
       // Generowanie SQL na podstawie języka naturalnego
-      const sqlQuery: SqlResponse | null = await generateGPTAnswer(
+      const sqlQuery = await generateGPTAnswer(
         promptForSQL(naturalQuery, chatHistory),
         sqlResponse,
         "sql_response"
