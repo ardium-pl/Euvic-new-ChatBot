@@ -6,13 +6,8 @@ import fs from "fs-extra";
 import { ChatCompletionMessageParam } from "openai/resources";
 import { generateGPTAnswer } from "../../src/sql-translator/gpt/openAi";
 import { TestPackage, TestPackageType } from "../utils/utils";
-import { DB_DATA_FILENAME, TEST_PACKAGES_FILENAME } from "../utils/utils";
+import { DB_DATA_PATH, TEST_PACKAGES_PATH } from "../utils/utils";
 import { DbData, DbRowType } from "../utils/types";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const DB_DATA_PATH = path.resolve(__dirname, DB_DATA_FILENAME);
-const TEST_PACKAGES_PATH = path.resolve(__dirname, TEST_PACKAGES_FILENAME);
 
 // zwraca zformatowany prompt do GPT pytający o generowanie pytań do projektów
 function promptForStringQuestion(
@@ -50,7 +45,7 @@ export async function getPackage(
   dbRow: DbRowType
 ): Promise<TestPackageType | null> {
   try {
-    const response: TestPackageType | null = await generateGPTAnswer(
+    const response = await generateGPTAnswer(
       promptForStringQuestion(dbRow),
       TestPackage,
       "response"

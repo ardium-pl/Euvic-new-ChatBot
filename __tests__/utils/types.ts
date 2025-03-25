@@ -1,4 +1,48 @@
-import { string, z } from "zod";
+import { z } from "zod";
+
+export type SqlNaturalType = {
+  sql: string;
+  natural: string;
+};
+
+export type ProcessedQueriesType = SqlNaturalType & {
+  response: string;
+};
+
+export type ComparedQueriesType = ProcessedQueriesType & {
+  isSame: boolean;
+};
+
+const TestQuestion = z.object({
+  question: z.string(),
+  answerRef: z.string(),
+});
+
+export const TestPackage = z.object({
+  projectDescription: TestQuestion,
+  dateDescription: TestQuestion,
+  scaleDescription: TestQuestion,
+  biznesCaseDescription: TestQuestion,
+});
+
+export type TestPackageType = z.infer<typeof TestPackage>;
+
+export const Result = z.object({
+  question: z.string(),
+  answerRef: z.string(),
+  sqlQuery: z.string(),
+  formattedAnswer: z.string(),
+});
+
+export const Results = z.object({
+  projectDescription: z.array(Result),
+  dateDescription: z.array(Result),
+  scaleDescription: z.array(Result),
+  biznesCaseDescription: z.array(Result),
+});
+
+export type ResultType = z.infer<typeof Result>;
+export type ResultsType = z.infer<typeof Results>;
 
 const DbRow = z.object({
   projekty_id: z.number() || null,

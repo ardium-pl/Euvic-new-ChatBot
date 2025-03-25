@@ -1,3 +1,6 @@
+import path from "path";
+import { fileURLToPath } from "url";
+
 import { z } from "zod";
 import { DbSchema } from "../../src/types.ts";
 import * as fs from "fs";
@@ -8,61 +11,49 @@ export const naturalLanguageResponseSchema = z.object({
   statement: z.string(),
 });
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 export const GENERATED_SQL_FILENAME = "generatedSql.json";
 export const GENERATED_NATURAL_FILENAME = "generatedNatural.json";
 export const PROCESSED_QUERIES_FILENAME = "processedQueries.json";
 export const COMPARED_QUERIES_FILENAME = "comparedQueries.json";
 
-export const DB_DATA_FILENAME = "../data/string-tests/dbData.json";
-export const TEST_PACKAGES_FILENAME = "../data/string-tests/questions.json";
+export const DB_DATA_PATH = path.resolve(
+  __dirname,
+  "../data/string-tests/dbData.json"
+);
+export const TEST_PACKAGES_PATH = path.resolve(
+  __dirname,
+  "../data/string-tests/questions.json"
+);
 
-export const RESULTS_FOLDER = "../data/string-tests/results/";
+const RESULTS_FOLDER = "../data/string-tests/results/";
+
+export const RESULTS_PROJECT_PATH = path.resolve(
+  __dirname,
+  RESULTS_FOLDER,
+  "projectDescription.json"
+);
+export const RESULTS_DATE_PATH = path.resolve(
+  __dirname,
+  RESULTS_FOLDER,
+  "dateDescription.json"
+);
+export const RESULTS_SCALE_PATH = path.resolve(
+  __dirname,
+  RESULTS_FOLDER,
+  "scaleDescription.json"
+);
+export const RESULTS_BIZNES_CASE_PATH = path.resolve(
+  __dirname,
+  RESULTS_FOLDER,
+  "biznesCaseDescription.json"
+);
+
+
 
 export const SQL_FOR_DATA = "SELECT * FROM railway.full_data_view;";
-
-export type SqlNaturalType = {
-  sql: string;
-  natural: string;
-};
-
-export type ProcessedQueriesType = SqlNaturalType & {
-  response: string;
-};
-
-export type ComparedQueriesType = ProcessedQueriesType & {
-  isSame: boolean;
-};
-
-const TestQuestion = z.object({
-  question: z.string(),
-  answerRef: z.string(),
-});
-
-export const TestPackage = z.object({
-  projectDescription: TestQuestion,
-  dateDescription: TestQuestion,
-  scaleDescription: TestQuestion,
-  biznesCaseDescription: TestQuestion,
-});
-
-export type TestPackageType = z.infer<typeof TestPackage>;
-
-export const Result = z.object({
-  question: z.string(),
-  answerRef: z.string(),
-  sqlQuery: z.string(),
-  formattedAnswer: z.string(),
-});
-
-export const Results = z.object({
-  projectDescription: z.array(Result),
-  dateDescription: z.array(Result),
-  scaleDescription: z.array(Result),
-  biznesCaseDescription: z.array(Result),
-});
-
-export type ResultType = z.infer<typeof Result>;
-export type ResultsType = z.infer<typeof Results>;
 
 export async function promptFor10Sql(
   dbSchema: DbSchema

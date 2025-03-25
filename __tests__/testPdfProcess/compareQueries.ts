@@ -9,9 +9,8 @@ import {
   readFromFile,
   PROCESSED_QUERIES_FILENAME,
   COMPARED_QUERIES_FILENAME,
-  ProcessedQueriesType,
-  ComparedQueriesType,
 } from "../utils/utils";
+import { ProcessedQueriesType, ComparedQueriesType } from "../utils/types";
 
 // Funkcja porównująca wyniki dwóch zapytań SQL
 function compareDbResults(
@@ -19,8 +18,7 @@ function compareDbResults(
   result2: RowDataPacket[]
 ): boolean {
   try {
-    const areResultsSame = JSON.stringify(result1) === JSON.stringify(result2);
-    return areResultsSame;
+    return JSON.stringify(result1) === JSON.stringify(result2);
   } catch (error) {
     console.error("Błąd podczas porównywania wyników:", error);
     return false;
@@ -31,7 +29,9 @@ function compareDbResults(
 export async function processQueryResults(): Promise<void> {
   try {
     // Odczyt SQL z pliku
-    const queries = readFromFile<ProcessedQueriesType>(PROCESSED_QUERIES_FILENAME);
+    const queries = readFromFile<ProcessedQueriesType>(
+      PROCESSED_QUERIES_FILENAME
+    );
 
     if (!queries || queries.length === 0) {
       console.error("Brak zapytań do przetworzenia.");

@@ -1,15 +1,8 @@
 import "dotenv/config";
-import path from "path";
-import { fileURLToPath } from "url";
 import { executeSQL } from "../../src/sql-translator/database/mySql";
 import { RowDataPacket } from "mysql2";
 import fs from "fs-extra";
-import { DB_DATA_FILENAME, SQL_FOR_DATA } from "../utils/utils";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const DB_DATA_PATH = path.resolve(__dirname, DB_DATA_FILENAME);
+import { DB_DATA_PATH, SQL_FOR_DATA } from "../utils/utils";
 
 async function fetchDbData() {
   console.log("Proszenie bazy danych o dane...");

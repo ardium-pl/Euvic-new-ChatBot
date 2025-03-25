@@ -21,33 +21,14 @@ import {
   TestPackageType,
   ResultType,
   ResultsType,
+} from "../utils/types";
+import {
+  TEST_PACKAGES_PATH,
+  RESULTS_PROJECT_PATH,
+  RESULTS_DATE_PATH,
+  RESULTS_SCALE_PATH,
+  RESULTS_BIZNES_CASE_PATH,
 } from "../utils/utils";
-import { TEST_PACKAGES_FILENAME, RESULTS_FOLDER } from "../utils/utils";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const TEST_QUESTIONS_PATH = path.resolve(__dirname, TEST_PACKAGES_FILENAME);
-
-const RESULTS_PROJECT_PATH = path.resolve(
-  __dirname,
-  RESULTS_FOLDER,
-  "projectDescription.json"
-);
-const RESULTS_DATE_PATH = path.resolve(
-  __dirname,
-  RESULTS_FOLDER,
-  "dateDescription.json"
-);
-const RESULTS_SCALE_PATH = path.resolve(
-  __dirname,
-  RESULTS_FOLDER,
-  "scaleDescription.json"
-);
-const RESULTS_BIZNES_CASE_PATH = path.resolve(
-  __dirname,
-  RESULTS_FOLDER,
-  "biznesCaseDescription.json"
-);
 
 function getRandomElements(arr: TestPackageType[], count: number) {
   const indices = new Set<number>();
@@ -62,7 +43,7 @@ function getRandomElements(arr: TestPackageType[], count: number) {
 // generuje i zapisuje odpowiedzi aplikacji na zapytania naturalne wyciągnięte z pliku referencyjnego
 async function createResults() {
   // pobiera pytania i odpowiedzi testowe z pliku
-  const testPackages: TestPackageType[] = fs.readJsonSync(TEST_QUESTIONS_PATH);
+  const testPackages: TestPackageType[] = fs.readJsonSync(TEST_PACKAGES_PATH);
   const testPackagesSample: TestPackageType[] = getRandomElements(
     testPackages,
     100
@@ -70,11 +51,11 @@ async function createResults() {
   try {
     z.array(TestPackage).parse(testPackagesSample);
     console.log(
-      `Udało się pobrać zapytania i odpowiedzi z pliku: ${TEST_QUESTIONS_PATH}`
+      `Udało się pobrać zapytania i odpowiedzi z pliku: ${TEST_PACKAGES_PATH}`
     );
   } catch {
     console.log(
-      `Nie udało się pobrać zapytań i odpowiedzi z pliku: ${TEST_QUESTIONS_PATH}`
+      `Nie udało się pobrać zapytań i odpowiedzi z pliku: ${TEST_PACKAGES_PATH}`
     );
   }
 

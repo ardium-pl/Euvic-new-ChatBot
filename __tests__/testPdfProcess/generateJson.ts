@@ -1,13 +1,12 @@
+import "dotenv/config";
+import path from "path";
+import { fileURLToPath } from "url";
 import fs from "fs-extra";
 import {
   JSON_DATA_FOLDER as JSON_DEST,
   PDF_DATA_FOLDER as PDF_DEST,
 } from "../../src/insert-data-to-db/utils/credentials";
 // import { TestFile } from "./types";
-import path from "path";
-import { fileURLToPath } from "url";
-import { processFile } from "../../src/insert-data-to-db/processFilesToJson";
-import "dotenv/config";
 
 // ścieżki
 const __filename = fileURLToPath(import.meta.url);

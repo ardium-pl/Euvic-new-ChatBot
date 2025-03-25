@@ -17,6 +17,8 @@ const chatHistory = await ChatHistoryHandler.getRecentQueries(0, "");
 
 // Przeprocesowuje listę zapytań naturalnych na listę SQL
 export async function processNaturalQueries(): Promise<void> {
+  const results: ProcessedQueriesType[] = [];
+
   try {
     // Odczyt zapytań naturalnych
     const queries = readFromFile<SqlNaturalType>(GENERATED_NATURAL_FILENAME);
@@ -25,8 +27,6 @@ export async function processNaturalQueries(): Promise<void> {
       console.error("Brak zapytań do przetworzenia.");
       return;
     }
-
-    const results: ProcessedQueriesType[] = [];
 
     for (const query of queries) {
       const naturalQuery: string = query.natural;
