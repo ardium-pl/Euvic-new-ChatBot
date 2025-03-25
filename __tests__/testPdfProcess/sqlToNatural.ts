@@ -15,18 +15,18 @@ async function translateSqlToNaturalLanguage(
   const prompt: ChatCompletionMessageParam[] = [
     {
       role: "system",
-      content: `Jesteś asystentem AI specjalizującym się w tłumaczeniu zapytań SQL na język naturalny. Na podstawie dostarczonego schematu bazy danych oraz zapytania SQL, przetłumacz zapytanie SQL na język naturalny. Pytanie naturalne powinno odzwierciedlać sens zapytania sql. Powinno wyglądać tak jakby to pytanie zadała osoba do bazy danych. Schemat bazy danych znajduje się poniżej:
+      content: `You are an AI assistant specializing in translating SQL queries into natural language. Based on the provided database schema and SQL query, translate the SQL query into natural language. The natural language question should reflect the meaning of the SQL query. It should sound like a person asking a question to the database. The database schema is provided below:
       ${JSON.stringify(dbSchema, null, 2)}`,
     },
     {
       role: "user",
-      content: `Przetłumacz następujące zapytanie SQL na język polski:
+      content: `Translate the following SQL query into Polish:
       ${sqlQuery}`,
     },
   ];
 
   console.info(
-    "Wysyłanie zapytania do GPT w celu konwersji na język naturalny..."
+    "Sending a query to GPT for conversion to natural language..."
   );
   const response = await generateGPTAnswer(
     prompt,

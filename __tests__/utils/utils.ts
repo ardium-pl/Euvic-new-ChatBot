@@ -98,6 +98,11 @@ export function saveToFile<T>(data: T, filename: string): void {
       `Wystąpił błąd podczas zapisywania do pliku ${filename}: ${error}`
     );
   }
+  if (!fs.existsSync(filename)) {
+    console.error(
+      `Nie udał się zapisać danych do ścieżki: ${GENERATED_SQL_FILENAME}.`
+    );
+  }
 }
 
 // Funkcja do odczytu zapytań naturalnych z pliku

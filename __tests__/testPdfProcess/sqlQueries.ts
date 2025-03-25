@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { ChatCompletionMessageParam } from "openai/resources";
 import * as fs from "fs";
 import { generateGPTAnswer } from "../../src/sql-translator/gpt/openAi";
 import { DbSchema } from "../../src/types";
@@ -7,12 +6,11 @@ import { GENERATED_SQL_FILENAME, promptFor10Sql } from "../utils/utils";
 import { saveToFile } from "../utils/utils";
 import { loadDbInformation } from "../../src/sql-translator/database/mongoDb";
 
+const sqlQueryResponseSchema = z.object({
+  statements: z.array(z.string()),
+});
 // Na podstawie struktury bazy danych generuje przykładowe zapytania SQL
 async function get10SqlQueries(dbSchema: DbSchema): Promise<string[] | null> {
-  const sqlQueryResponseSchema = z.object({
-    statements: z.array(z.string()),
-  });
-
   console.info(
     "Generowanie przykładowych zapytań SQL na podstawie struktury ..."
   );
@@ -41,17 +39,10 @@ export async function generateSqlQueries(): Promise<void> {
     if (!sqlQueries || sqlQueries.length === 0) {
       console.error("Nie wygenerowano żadnych zapytań SQL.");
       return;
-    } else {
-      console.info("Zapytania SQL wygenerowane pomyślnie!");
     }
+    console.info("Zapytania SQL wygenerowane pomyślnie!");
     // Zapisywanie wygenerowanych zapytań SQL do JSON
     saveToFile<string[]>(sqlQueries, GENERATED_SQL_FILENAME);
-    if (!fs.existsSync(GENERATED_SQL_FILENAME)) {
-      console.error(
-        `Nie udał się zapisać danych do ścieżki: ${GENERATED_SQL_FILENAME}.`
-      );
-      return;
-    }
   } catch (error) {
     console.error("Wystąpił błąd podczas generowania zapytań SQL: ", error);
   }
