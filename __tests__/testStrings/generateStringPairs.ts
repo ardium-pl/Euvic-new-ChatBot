@@ -61,13 +61,13 @@ async function createTestPackages() {
   const dbData: DbRowType[] = fs.readJsonSync(DB_DATA_PATH);
 
   const dbDataSample: DbRowType[] = dbData.slice(0, 500);
-  // try {
-  //   DbData.parse(dbDataSample);
-  //   console.log("Data is valid.");
-  // } catch (error) {
-  //   console.log(`Data is not valid: ${error}`);
-  //   return;
-  // }
+  try {
+    DbData.parse(dbDataSample);
+    console.log("Data is valid.");
+  } catch (error) {
+    console.log(`Data is not valid: ${error}`);
+    return;
+  }
 
   const testPackages: TestPackageType[] = (
     await Promise.all(

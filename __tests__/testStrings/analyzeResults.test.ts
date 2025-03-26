@@ -97,38 +97,38 @@ try {
   console.log(`Nie udało się pobrać rezultatów z plików.`);
 }
 
-// describe("compare project description results", () => {
-//   it.each(resultsProject)("", async (result) => {
-//     console.log(`Odpowiedź referencyjna: ${result.answerRef}`);
-//     const areTheSame = await isAnswersSame(result);
-//     assert.isTrue(
-//       areTheSame?.areTheSame,
-//       `❌ Test failed for:\nPytanie:\n${result.question}\n\nOdpowiedź referencyjna:\n${result.answerRef}\n\nOdpowiedź wygenerowana:\n${result.formattedAnswer}`
-//     );
-//   });
-// });
+describe("compare project description results", () => {
+  it.each(resultsProject)("", async (result) => {
+    console.log(`Odpowiedź referencyjna: ${result.answerRef}`);
+    const areTheSame = await isAnswersSame(result);
+    assert.isTrue(
+      areTheSame?.areTheSame,
+      `❌ Test failed for:\nPytanie:\n${result.question}\n\nOdpowiedź referencyjna:\n${result.answerRef}\n\nOdpowiedź wygenerowana:\n${result.formattedAnswer}`
+    );
+  });
+});
 
-// describe("compare date description results", () => {
-//   it.each(resultsDate)("", async (result) => {
-//     console.log(`Odpowiedź referencyjna: ${result.answerRef}`);
-//     const areTheSame = await isAnswersSame(result);
-//     assert.isTrue(
-//       areTheSame?.areTheSame,
-//       `❌ Test failed for:\nPytanie:\n${result.question}\n\nOdpowiedź referencyjna:\n${result.answerRef}\n\nOdpowiedź wygenerowana:\n${result.formattedAnswer}`
-//     );
-//   });
-// });
+describe("compare date description results", () => {
+  it.each(resultsDate)("", async (result) => {
+    console.log(`Odpowiedź referencyjna: ${result.answerRef}`);
+    const areTheSame = await isAnswersSame(result);
+    assert.isTrue(
+      areTheSame?.areTheSame,
+      `❌ Test failed for:\nPytanie:\n${result.question}\n\nOdpowiedź referencyjna:\n${result.answerRef}\n\nOdpowiedź wygenerowana:\n${result.formattedAnswer}`
+    );
+  });
+});
 
-// describe("compare scale description results", () => {
-//   it.each(resultsScale)("", async (result) => {
-//     console.log(`Odpowiedź referencyjna: ${result.answerRef}`);
-//     const areTheSame = await isAnswersSame(result);
-//     assert.isTrue(
-//       areTheSame?.areTheSame,
-//       `❌ Test failed for:\nPytanie:\n${result.question}\n\nOdpowiedź referencyjna:\n${result.answerRef}\n\nOdpowiedź wygenerowana:\n${result.formattedAnswer}`
-//     );
-//   });
-// });
+describe("compare scale description results", () => {
+  it.each(resultsScale)("", async (result) => {
+    console.log(`Odpowiedź referencyjna: ${result.answerRef}`);
+    const areTheSame = await isAnswersSame(result);
+    assert.isTrue(
+      areTheSame?.areTheSame,
+      `❌ Test failed for:\nPytanie:\n${result.question}\n\nOdpowiedź referencyjna:\n${result.answerRef}\n\nOdpowiedź wygenerowana:\n${result.formattedAnswer}`
+    );
+  });
+});
 
 describe("compare business case description results", () => {
   it.each(resultsBiznesCase)("", async (result) => {

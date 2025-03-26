@@ -27,8 +27,7 @@ console.log(testFiles);
 // generuje json na podstawie określonych pdfów
 async function generateJson() {
   // upewnienie się że katalogi istnieją
-  await fs.ensureDir(JSON_DEST);
-  await fs.ensureDir(PDF_DEST);
+  await Promise.all([JSON_DEST, PDF_DEST].map(fs.ensureDir));
 
   // kopiowanie testowych pdf do katalogu
   for (const testFile of testFiles) {
@@ -59,11 +58,7 @@ async function generateJson() {
   );
 
   // opróżnianie katalogów
-  await Promise.all([
-    fs.emptyDir(JSON_DEST),
-    fs.emptyDir(PDF_DEST),
-    fs.emptyDir(OUTPUT_TEXT),
-  ]);
+  await Promise.all([JSON_DEST, PDF_DEST, OUTPUT_TEXT].map(fs.emptyDir));
 }
 
 if (process.argv[1] === __filename) {

@@ -17,12 +17,7 @@ function compareDbResults(
   result1: RowDataPacket[],
   result2: RowDataPacket[]
 ): boolean {
-  try {
-    return JSON.stringify(result1) === JSON.stringify(result2);
-  } catch (error) {
-    console.error("Błąd podczas porównywania wyników:", error);
-    return false;
-  }
+  return JSON.stringify(result1) === JSON.stringify(result2);
 }
 
 // Porównuje zapytania SQL z pliku i zapisuje rezultaty

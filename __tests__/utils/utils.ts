@@ -59,9 +59,7 @@ export const RESULTS_BIZNES_CASE_PATH = path.resolve(
   "biznesCaseDescription.json"
 );
 
-
-
-export const SQL_FOR_DATA = "SELECT * FROM railway.full_data_view;";
+export const SQL_FOR_DATA = "SELECT * FROM railway.projekty;";
 
 export async function promptFor10Sql(
   dbSchema: DbSchema
@@ -89,14 +87,9 @@ export async function promptFor10Sql(
 }
 
 export function saveToFile<T>(data: T, filename: string): void {
-  try {
-    fs.writeFileSync(filename, JSON.stringify(data, null, 2));
-    console.info(`Dane zapisano do pliku: ${filename}`);
-  } catch (error) {
-    console.error(
-      `Wystąpił błąd podczas zapisywania do pliku ${filename}: ${error}`
-    );
-  }
+  fs.writeFileSync(filename, JSON.stringify(data, null, 2));
+  console.info(`Dane zapisano do pliku: ${filename}`);
+
   if (!fs.existsSync(filename)) {
     console.error(
       `Nie udał się zapisać danych do ścieżki: ${GENERATED_SQL_FILENAME}.`
