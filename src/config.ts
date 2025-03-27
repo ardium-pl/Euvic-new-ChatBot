@@ -1,6 +1,5 @@
 import mysql from "mysql2/promise";
 import OpenAI from "openai";
-
 export const openAiClient = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
@@ -43,7 +42,6 @@ export const MONGO_COLLECTION_SCHEMAS = process.env.MONGO_COLLECTION_SCHEMAS as 
 // Prompts
 export const PROMPT_FOR_ANSWER = process.env.PROMPT_FOR_ANSWER;
 export const PROMPT_FOR_SQL = process.env.PROMPT_FOR_SQL;
-
 
 // Express config
 export const NODE_ENV = process.env.NODE_ENV;

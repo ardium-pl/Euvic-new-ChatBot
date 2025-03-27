@@ -1,10 +1,10 @@
 import vision from "@google-cloud/vision";
-import "dotenv/config";
 import fs from "fs-extra";
 import path from "path";
 import { convertPdfToImages } from "../utils/convertPdfToImages";
 import { deleteFile } from "../utils/deleteFile";
 import { logger } from "../utils/logger";
+import { IMAGES_FOLDER, OUTPUT_TEXT_FOLDER } from "../utils/credentials";
 
 const VISION_AUTH = {
   credentials: {
@@ -18,16 +18,14 @@ const VISION_AUTH = {
 };
 
 export async function pdfOcr(pdfFilePath: string): Promise<string> {
-  const imagesFolder = "./images";
-  const outputTextFolder = "./output-text";
   const fileNameWithoutExt = path.basename(pdfFilePath, ".pdf");
 
-  await Promise.all([imagesFolder, outputTextFolder].map(fs.ensureDir));
+  await Promise.all([IMAGES_FOLDER, OUTPUT_TEXT_FOLDER].map(fs.ensureDir));
 
   try {
     const imageFilePaths: string[] = await convertPdfToImages(
       pdfFilePath,
-      imagesFolder
+      IMAGES_FOLDER
     );
 
     if (imageFilePaths.length === 0) {
@@ -50,7 +48,7 @@ export async function pdfOcr(pdfFilePath: string): Promise<string> {
     const concatenatedResults = ocrResults.join("");
 
     await _saveDataToTxt(
-      outputTextFolder,
+      OUTPUT_TEXT_FOLDER,
       fileNameWithoutExt,
       concatenatedResults
     );
@@ -63,9 +61,7 @@ export async function pdfOcr(pdfFilePath: string): Promise<string> {
       logger.warn(`Deleting temporary image: ${imageFilePath}`);
       deleteFile(imageFilePath);
     }
-
     deleteFile(pdfFilePath);
-
     return concatenatedResults;
   } catch (err: any) {
     logger.error(`Error processing ${pdfFilePath}:`, err);

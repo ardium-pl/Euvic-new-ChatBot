@@ -142,3 +142,9 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# test folders
+__tests__/data
+__tests__/config
+__tests__/ignore
+/test-results.json
