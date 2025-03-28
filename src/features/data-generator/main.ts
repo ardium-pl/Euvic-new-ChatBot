@@ -1,9 +1,6 @@
 import fs from "fs-extra";
 import path from "path";
-import { addDataToDB } from "./db/app.ts";
 import { pdfOcr } from "./services/ocr.ts";
-import { SharePointService } from "./sharepoint/sharepointService.ts";
-import { checkIfFileExists } from "./sharepoint/sharepointSql.ts";
 import { convertPptxToPdf } from "./services/convertPptxToPdf.ts";
 import {
   getDataPrompt,
@@ -11,9 +8,12 @@ import {
   PDF_DATA_FOLDER,
 } from "../../core/credentials.ts";
 import { logger } from "../../core/logs/logger.ts";
-import { jsonFixes } from "./verifcation-json-data/jsonMainFixer.ts";
-import { FileDataType } from "./zod-json/dataJsonSchema.ts";
-import { parseOcrText } from "./zod-json/dataProcessor.ts";
+import { parseOcrText } from "./services/ocrAiParser.ts";
+import { FileDataType } from "../../core/models/dataTypes.ts";
+import { jsonFixes } from "../verifcation-json-data/main.ts";
+import { checkIfFileExists } from "../sharepoint/services/sharepointSql.ts";
+import { SharePointService } from "../sharepoint/services/sharepointService.ts";
+import { addDataToDB } from "../insert-data-to-db/main.ts";
 
 export async function processFile(
   fileName: string,
@@ -36,7 +36,6 @@ export async function processFile(
     }
 
     const ocrDataText = await pdfOcr(pdfFilePath);
-    logger.info(`📄 OCR Data Text: ${ocrDataText}`);
     if (!getDataPrompt) return null;
     const parsedData = await parseOcrText(ocrDataText, getDataPrompt);
     logger.info("JSON was made !");
