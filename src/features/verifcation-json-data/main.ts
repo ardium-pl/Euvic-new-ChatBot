@@ -1,9 +1,9 @@
-import { logger } from "../utils/logger.ts";
 import { verifyJson } from "./services/jsonVerifier.ts";
 import { generateVerificationInstructions } from "./services/descriptionGenerator.ts";
-import { CustomersDataType } from "../zod-json/dataJsonSchema.ts";
 import { correctTechnologies } from "./services/technologiesRepairer.ts";
 import { correctBusinessCases } from "./services/BusinessCasesRepairer.ts";
+import { logger } from "../../core/logs/logger.ts";
+import { CustomersDataType } from "../../core/models/dataTypes.ts";
 
 export async function jsonFixes(
   parsedData: CustomersDataType,

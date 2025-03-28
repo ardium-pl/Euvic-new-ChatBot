@@ -1,7 +1,6 @@
-import { db } from "../config/database";
 import chalk from "chalk";
 import { BusinessCasesProject } from "../models/dataDBMoldes";
-import { queryDb } from "../../../sql-translator/database/mySql";
+import { queryDb } from "../../../core/database/mySql/mysqlQueries";
 
 export async function addBusinessCaseProjectsToDB(
   businessCaseProjects: BusinessCasesProject[]

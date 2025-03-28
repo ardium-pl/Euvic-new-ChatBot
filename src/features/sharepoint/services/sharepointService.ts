@@ -4,10 +4,10 @@ import { DriveItem, ListItem } from "@microsoft/microsoft-graph-types";
 import fs from "fs-extra";
 import "isomorphic-fetch";
 import path from "path";
-import { LIST_ID, SITE_ID } from "../../config";
-import { getAccessTokenInteractive } from "../utils/auth";
-import { PDF_DATA_FOLDER } from "../utils/credentials";
-import { logger } from "../utils/logger";
+import { LIST_ID, SITE_ID } from "../../../core/config";
+import { getAccessTokenInteractive } from "./auth";
+import { logger } from "../../../core/logs/logger";
+import { PDF_DATA_FOLDER } from "../../../core/credentials";
 
 export const FILE_EXSTENSIONS = ["pdf", "pptx"] as const;
 

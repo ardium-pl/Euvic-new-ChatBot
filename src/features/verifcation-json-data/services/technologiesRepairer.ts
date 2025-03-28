@@ -1,16 +1,13 @@
-import { CustomersDataType } from "../../zod-json/dataJsonSchema";
-import { db } from "../../db/config/database";
 import { RowDataPacket } from "mysql2";
-// @ts-ignore
 import FuzzySet from "fuzzyset.js";
+import { queryDb } from "../../../core/database/mySql/mysqlQueries";
+import { CustomersDataType } from "../../../core/models/dataTypes";
 
 export async function correctTechnologies(
   parsedData: CustomersDataType
 ): Promise<CustomersDataType> {
-  const [rows] = await db.query<RowDataPacket[]>(
-    "SELECT nazwa FROM technologie"
-  );
-  const dbTechnologies: string[] = rows.map((row) => row.nazwa);
+  const rows = await queryDb<RowDataPacket[]>("SELECT nazwa FROM technologie");
+  const dbTechnologies: string[] = rows.result.map((row) => row.nazwa);
 
   const fuzzySet = FuzzySet(dbTechnologies);
 

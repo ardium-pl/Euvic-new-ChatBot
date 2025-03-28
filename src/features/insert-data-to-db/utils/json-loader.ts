@@ -1,10 +1,10 @@
 import fs from "fs";
 import path from "path";
-import { FileDataType } from "../../zod-json/dataJsonSchema";
+import { FileDataType } from "../../../core/models/dataTypes";
+
 export function loadJSONFiles(directory: string): FileDataType[] {
   const files = fs.readdirSync(directory);
   const jsonData: FileDataType[] = [];
-
 
   files.forEach((file) => {
     const filePath = path.join(directory, file);

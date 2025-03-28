@@ -3,8 +3,8 @@ import {
   createConnection as mysqlCreateConnection,
 } from "mysql2/promise";
 import { chatHistoryDbConfig } from "../../../core/config";
-import { logger } from "../insert-data-to-db/utils/logger";
-import { ChatHistory } from "../../../core/types";
+import { ChatHistory } from "../../../core/models/db.types";
+import { logger } from "../../../core/logs/logger";
 
 // Utility to create a connection
 async function createConnection(): Promise<Connection> {

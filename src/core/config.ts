@@ -29,15 +29,16 @@ export const chatHistoryDbConfig: mysql.ConnectionOptions = {
   user: process.env.CHAT_MYSQL_USER,
   password: process.env.CHAT_MYSQL_PASSWORD,
   database: process.env.CHAT_MYSQL_DATABASE,
-}
-
-
+};
 
 // MongoDb config
-export const MONGO_CONNECTION_STRING = process.env.MONGO_CONNECTION_STRING as string;
+export const MONGO_CONNECTION_STRING = process.env
+  .MONGO_CONNECTION_STRING as string;
 export const MONGO_DATABASE = process.env.MONGO_DATABASE as string;
-export const MONGO_COLLECTION_EXAMPLES = process.env.MONGO_COLLECTION_EXAMPLES as string;
-export const MONGO_COLLECTION_SCHEMAS = process.env.MONGO_COLLECTION_SCHEMAS as string;
+export const MONGO_COLLECTION_EXAMPLES = process.env
+  .MONGO_COLLECTION_EXAMPLES as string;
+export const MONGO_COLLECTION_SCHEMAS = process.env
+  .MONGO_COLLECTION_SCHEMAS as string;
 
 // Prompts
 export const PROMPT_FOR_ANSWER = process.env.PROMPT_FOR_ANSWER;
@@ -51,11 +52,10 @@ const config: Record<string, string> = {
   production: "https://prod-production-01b0.up.railway.app",
 };
 
-if(!NODE_ENV) throw new Error("NODE_ENV is not defined");
+if (!NODE_ENV) throw new Error("NODE_ENV is not defined");
 
 export const apiUrl = config[NODE_ENV];
 
 // Sharepoint credentials
 export const LIST_ID = process.env.LIST_ID;
 export const SITE_ID = process.env.SITE_ID;
-

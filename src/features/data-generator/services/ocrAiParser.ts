@@ -1,7 +1,8 @@
 import "dotenv/config";
 import { zodResponseFormat } from "openai/helpers/zod";
-import { openAiClient } from "../config";
-import { CustomersData, CustomersDataType } from "./dataJsonSchema";
+import { openAiClient } from "../../../core/config";
+import { CustomersDataType } from "../../../core/models/dataTypes";
+import { CustomersData } from "../../../core/models/customersData";
 
 export async function parseOcrText(
   ocrText: string,

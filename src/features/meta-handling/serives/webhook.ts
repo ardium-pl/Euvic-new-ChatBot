@@ -1,11 +1,10 @@
 import express, { Request, Response, Router } from "express";
-import { apiUrl, WEBHOOK_VERIFY_TOKEN } from "../../config";
-// import { insertDataMySQL } from "../database";
 import axios from "axios";
-import { logger } from "../../insert-data-to-db/utils/logger";
-import { LanguageToSQLResponse } from "../../types";
 import { insertDataMySQL } from "./getChatHistory";
 import { WhatsAppClient } from "./whatsapp-client";
+import { logger } from "../../../core/logs/logger";
+import { LanguageToSQLResponse } from "../../../core/models/languageToSql.types";
+import { apiUrl, WEBHOOK_VERIFY_TOKEN } from "../../../core/config";
 const webhookRouter: Router = express.Router();
 
 webhookRouter.post("/webhook", async (req: Request, res: Response) => {

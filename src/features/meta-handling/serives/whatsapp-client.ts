@@ -1,8 +1,12 @@
 import axios from "axios";
-import { logger } from "../../insert-data-to-db/utils/logger";
-import { META_ENDPOINT, PHONE_NUMBER_ID, ACCESS_TOKEN } from "../../config";
-import { LanguageToSQLResponse } from "../../types";
-import { getUserFriendlyMessage } from "../../types.ts";
+import { logger } from "../../../core/logs/logger.ts";
+import {
+  ACCESS_TOKEN,
+  META_ENDPOINT,
+  PHONE_NUMBER_ID,
+} from "../../../core/config.ts";
+import { LanguageToSQLResponse } from "../../../core/models/languageToSql.types.ts";
+import { getUserFriendlyMessage } from "../utils/errorMessages.ts";
 
 export class WhatsAppClient {
   /**

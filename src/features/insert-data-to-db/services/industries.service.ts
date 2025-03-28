@@ -1,6 +1,5 @@
-import { queryDb } from "../../../sql-translator/database/mySql";
-import { db } from "../config/database";
 import chalk from "chalk";
+import { queryDb } from "../../../core/database/mySql/mysqlQueries";
 
 export async function addIndustriesToDB(industries: Set<string>) {
   for (const industry of industries) {

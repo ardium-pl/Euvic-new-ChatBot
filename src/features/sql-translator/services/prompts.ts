@@ -1,21 +1,24 @@
 import { RowDataPacket, ResultSetHeader } from "mysql2";
-import { loadDbInformation } from "../database/mongoDb.ts";
 import { ChatCompletionMessageParam } from "openai/resources";
-import { PROMPT_FOR_ANSWER, PROMPT_FOR_SQL } from "../../config.ts";
-import { ChatHistory } from "../../types.ts";
-import { logger } from "../../insert-data-to-db/utils/logger.ts";
+import { logger } from "../../../core/logs/logger.ts";
+import { ChatHistory } from "../../../core/models/db.types.ts";
+import { PROMPT_FOR_ANSWER, PROMPT_FOR_SQL } from "../../../core/config.ts";
+import { loadDbInformation } from "../../../core/database/mongoDB/mongoDataLoader.ts";
 
 // OpenAI prompt for natural language to SQL translation
 const { dbSchema, examplesForSQL } = await loadDbInformation();
 
-export function promptForSQL(userQuery: string, chatHistory: ChatHistory[] | null): ChatCompletionMessageParam[] {
+export function promptForSQL(
+  userQuery: string,
+  chatHistory: ChatHistory[] | null
+): ChatCompletionMessageParam[] {
   if (!PROMPT_FOR_SQL || typeof PROMPT_FOR_SQL !== "string") {
     throw new Error(
       "PROMPT_FOR_SQL is not defined or is not a string in the configuration."
     );
   }
 
-  const messages: ChatCompletionMessageParam[] =  [
+  const messages: ChatCompletionMessageParam[] = [
     {
       role: "system",
       content: PROMPT_FOR_SQL,
@@ -32,7 +35,6 @@ export function promptForSQL(userQuery: string, chatHistory: ChatHistory[] | nul
         You should answer in a similar fashion.`,
     },
     { role: "user", content: userQuery },
-    
   ];
   if (chatHistory) {
     messages.push({
@@ -56,7 +58,7 @@ export function promptForSQL(userQuery: string, chatHistory: ChatHistory[] | nul
       content: "End of chat history. Now answer the following question:",
     });
   }
-  return messages
+  return messages;
 }
 
 export function promptForAnswer(
@@ -88,11 +90,12 @@ export function promptForAnswer(
       ${JSON.stringify(rowData, null, 2)}
       `,
     },
-    {role: 'system',
+    {
+      role: "system",
       content: `
             You have to answer in this language:
       ${language}
-      `
+      `,
     },
     { role: "user", content: userQuery },
   ];
@@ -101,11 +104,12 @@ export function promptForAnswer(
 
 export function promptForLanguageDetection(
   userQuery: string
-) : ChatCompletionMessageParam[]{
+): ChatCompletionMessageParam[] {
   const messages: ChatCompletionMessageParam[] = [
     {
       role: "system",
-      content: 'You are an expert in detecting the query language. You have to detect the language of the query and return me the queried language',
+      content:
+        "You are an expert in detecting the query language. You have to detect the language of the query and return me the queried language",
     },
     { role: "user", content: userQuery },
   ];

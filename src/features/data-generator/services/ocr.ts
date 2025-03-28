@@ -3,7 +3,7 @@ import fs from "fs-extra";
 import { convertPdfToImages } from "./convertPdfToImages";
 import { deleteFile } from "../utils/deleteFile";
 import { logger } from "../../../core/logs/logger";
-import { IMAGES_FOLDER, OUTPUT_TEXT_FOLDER } from "../utils/credentials";
+import { IMAGES_FOLDER, OUTPUT_TEXT_FOLDER } from "../../../core/credentials";
 
 const VISION_AUTH = {
   credentials: {

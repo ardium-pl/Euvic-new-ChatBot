@@ -1,10 +1,8 @@
 import { zodResponseFormat } from "openai/helpers/zod";
+import { logger } from "../../../core/logs/logger";
 import { openAiClient } from "../../../core/config";
-import {
-  CustomersData,
-  CustomersDataType,
-} from "../../zod-json/dataJsonSchema";
-import { logger } from "../../utils/logger";
+import { CustomersDataType } from "../../../core/models/dataTypes";
+import { CustomersData } from "../../../core/models/customersData";
 
 export async function verifyJson(
   ocrText: string,

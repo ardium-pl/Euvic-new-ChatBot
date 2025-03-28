@@ -1,4 +1,4 @@
-import { FileDataType } from "../zod-json/dataJsonSchema";
+import { FileDataType } from "../../core/models/dataTypes";
 import { processData } from "./utils/processData";
 import chalk from "chalk";
 

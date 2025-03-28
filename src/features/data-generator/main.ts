@@ -9,7 +9,7 @@ import {
   getDataPrompt,
   JSON_DATA_FOLDER,
   PDF_DATA_FOLDER,
-} from "./utils/credentials.ts";
+} from "../../core/credentials.ts";
 import { logger } from "../../core/logs/logger.ts";
 import { jsonFixes } from "./verifcation-json-data/jsonMainFixer.ts";
 import { FileDataType } from "./zod-json/dataJsonSchema.ts";

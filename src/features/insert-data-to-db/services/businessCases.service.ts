@@ -1,5 +1,5 @@
-import { queryDb } from "../../../sql-translator/database/mySql";
 import chalk from "chalk";
+import { queryDb } from "../../../core/database/mySql/mysqlQueries";
 
 export async function addBusinessCasesToDB(businessCases: Set<string>) {
   for (const businessCase of businessCases) {

@@ -1,6 +1,6 @@
 import { RowDataPacket } from "mysql2";
-import { createConnection, queryDb } from "../../sql-translator/database/mySql";
-import { logger } from "../utils/logger";
+import { logger } from "../../../core/logs/logger";
+import { queryDb } from "../../../core/database/mySql/mysqlQueries";
 
 export async function checkIfFileExists(
   sharepointId: string

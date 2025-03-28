@@ -1,7 +1,5 @@
 import express, { Router } from "express";
-import { logger } from "../insert-data-to-db/utils/logger.js";
 import { ChatHistoryHandler } from "../meta-handling/serives/getChatHistory.js";
-import { queryDb } from "./database/mySql.js";
 import {
   finalResponse,
   generateGPTAnswer,
@@ -14,6 +12,8 @@ import {
   promptForSQL,
 } from "./services/prompts.js";
 import { RowDataPacket } from "mysql2";
+import { queryDb } from "../../core/database/mySql/mysqlQueries.js";
+import { logger } from "../../core/logs/logger.js";
 
 export const sqlTranslatorRouter: Router = express.Router();
 

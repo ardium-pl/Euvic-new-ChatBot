@@ -4,7 +4,6 @@ import path from "path";
 import { addTechnologyProjectsToDB } from "../services/technologyProjects.service";
 import { loadJSONFiles } from "./json-loader";
 import chalk from "chalk";
-import { FileDataType } from "../../zod-json/dataJsonSchema";
 import {
   BusinessCasesProject,
   DataFile,
@@ -20,26 +19,32 @@ import { addFilesToDB } from "../services/files.service";
 import { addIndustriesToDB } from "../services/industries.service";
 import { addProjectsToDB } from "../services/projects.service";
 import { addTechnologiesToDB } from "../services/technologies.service";
+import { FileDataType } from "../../../core/models/dataTypes";
 
 export async function processData(jsonData: FileDataType[]) {
-  const businessCases = jsonData.reduce((acc: Set<string>, file: FileDataType) => {
-    file.customers.forEach((customer) => {
-      if (customer.businessCase) {
-        customer.businessCase.name.forEach((biz) => acc.add(biz));
-      }
-    });
-    return acc;
-  }, new Set<string>());
+  const businessCases = jsonData.reduce(
+    (acc: Set<string>, file: FileDataType) => {
+      file.customers.forEach((customer) => {
+        if (customer.businessCase) {
+          customer.businessCase.name.forEach((biz) => acc.add(biz));
+        }
+      });
+      return acc;
+    },
+    new Set<string>()
+  );
 
-  const technologies = jsonData.reduce((acc: Set<string>, file: FileDataType) => {
-
-    file.customers.forEach((customer) => {
-      if (customer.technologies) {
-        customer.technologies.name.forEach((tech) => acc.add(tech));
-      }
-    });
-    return acc;
-  }, new Set<string>());
+  const technologies = jsonData.reduce(
+    (acc: Set<string>, file: FileDataType) => {
+      file.customers.forEach((customer) => {
+        if (customer.technologies) {
+          customer.technologies.name.forEach((tech) => acc.add(tech));
+        }
+      });
+      return acc;
+    },
+    new Set<string>()
+  );
   const industries = jsonData.reduce((acc: Set<string>, file: FileDataType) => {
     file.customers.forEach((customer) => {
       if (customer.industry) {

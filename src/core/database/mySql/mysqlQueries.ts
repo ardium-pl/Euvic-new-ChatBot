@@ -1,17 +1,5 @@
-import mysql, { FieldPacket, QueryError, QueryResult } from "mysql2";
-import { logger } from "../../insert-data-to-db/utils/logger";
-import { dbConfig } from "../config";
-
-export const createConnection = () => {
-  try {
-    const connection = mysql.createConnection(dbConfig);
-    return connection;
-  } catch (error) {
-    logger.error("❌ Error creating a connection.");
-    logger.error(error);
-    throw new Error("can't create conection");
-  }
-};
+import { FieldPacket, QueryError, QueryResult } from "mysql2";
+import { createConnection } from "./mysqlConnection";
 
 export const queryDb = async <T extends QueryResult = QueryResult>(
   queryString: string,

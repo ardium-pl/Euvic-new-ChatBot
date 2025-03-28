@@ -1,12 +1,12 @@
 import { Collection, Db, MongoClient } from "mongodb";
-import { logger } from "../../insert-data-to-db/utils/logger";
 import {
   MONGO_CONNECTION_STRING,
   MONGO_DATABASE,
   MONGO_COLLECTION_SCHEMAS,
   MONGO_COLLECTION_EXAMPLES,
-} from "../config";
-import { DbSchema, Example } from "../types";
+} from "../../config";
+import { DbSchema, Example } from "../../models/db.types";
+import { logger } from "../../logs/logger";
 
 async function mongoRetrieveOne(
   database: string,
