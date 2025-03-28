@@ -1,5 +1,5 @@
 import { CustomersDataType } from "../../zod-json/dataJsonSchema";
-import { db } from "../../db/config/database";
+import { queryDb } from "../../../sql-translator/database/mySql";
 import { RowDataPacket } from "mysql2";
 // @ts-ignore
 import FuzzySet from "fuzzyset.js";
@@ -7,10 +7,10 @@ import FuzzySet from "fuzzyset.js";
 export async function correctBusinessCases(
   parsedData: CustomersDataType
 ): Promise<CustomersDataType> {
-  const [rows] = await db.query<RowDataPacket[]>(
+  const rows = await queryDb<RowDataPacket[]>(
     "SELECT opis FROM biznes_casy"
   );
-  const dbBusinessCases: string[] = rows.map((row) => row.opis);
+  const dbBusinessCases: string[] = rows.result.map((row) => row.opis);
 
   const fuzzySet = FuzzySet(dbBusinessCases);
 
