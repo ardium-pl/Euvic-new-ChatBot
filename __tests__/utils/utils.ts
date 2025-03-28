@@ -2,7 +2,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 import { z } from "zod";
-import { DbSchema } from "../../src/types.ts";
+import { DbSchema } from "../../src/core/models/db.types.ts";
 import * as fs from "fs";
 import { ChatCompletionMessageParam } from "openai/resources/index";
 

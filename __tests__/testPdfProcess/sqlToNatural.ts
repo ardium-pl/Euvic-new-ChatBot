@@ -2,7 +2,7 @@ import * as fs from "fs";
 import { generateGPTAnswer } from "../../src/sql-translator/gpt/openAi";
 import { ChatCompletionMessageParam } from "openai/resources";
 import { naturalLanguageResponseSchema } from "../utils/utils";
-import { DbSchema } from "../../src/types";
+import { DbSchema } from "../../src/core/models/db.types";
 import { GENERATED_SQL_FILENAME } from "../utils/utils";
 import { GENERATED_NATURAL_FILENAME } from "../utils/utils";
 import { loadDbInformation } from "../../src/sql-translator/database/mongoDb";
@@ -25,9 +25,7 @@ async function translateSqlToNaturalLanguage(
     },
   ];
 
-  console.info(
-    "Sending a query to GPT for conversion to natural language..."
-  );
+  console.info("Sending a query to GPT for conversion to natural language...");
   const response = await generateGPTAnswer(
     prompt,
     naturalLanguageResponseSchema,

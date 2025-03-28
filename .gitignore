@@ -148,3 +148,11 @@ __tests__/data
 __tests__/config
 __tests__/ignore
 /test-results.json
+
+#insert-number-whatsapp
+../.env
+.venv
+venv
+.idea
+__pycache__
+scratchpad.py

@@ -1,7 +1,7 @@
 import { z } from "zod";
 import * as fs from "fs";
 import { generateGPTAnswer } from "../../src/sql-translator/gpt/openAi";
-import { DbSchema } from "../../src/types";
+import { DbSchema } from "../../src/core/models/db.types";
 import { GENERATED_SQL_FILENAME, promptFor10Sql } from "../utils/utils";
 import { saveToFile } from "../utils/utils";
 import { loadDbInformation } from "../../src/sql-translator/database/mongoDb";
