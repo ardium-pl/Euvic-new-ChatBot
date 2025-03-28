@@ -4,7 +4,7 @@ import cors from "cors";
 import express from "express";
 import { sqlTranslatorRouter } from "./src/sql-translator/sqlTranslatorRouter";
 import webhookRouter from "./src/meta-handling/whatsapp/webhook";
-import { PORT } from "./src/config";
+import { PORT } from "./src/core/config";
 import cron from "node-cron";
 import { processAllFiles } from "./src/insert-data-to-db/processFilesToJson";
 
