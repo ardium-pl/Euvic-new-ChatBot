@@ -1,3 +1,4 @@
+import { queryDb } from "../../../sql-translator/database/mySql";
 import { db } from "../config/database";
 import { DataFile } from "../models/dataDBMoldes";
 import chalk from "chalk";
@@ -17,7 +18,7 @@ export async function addFilesToDB(dataFiles: DataFile[]) {
   ]);
 
   try {
-    const result: any = await db.execute(
+    const result: any = await queryDb(
       `INSERT INTO pliki (nazwa, zawartosc_ocr,link_do_pliku,sharepoint_id ) VALUES ${values}
        ON DUPLICATE KEY UPDATE nazwa = nazwa`,
       params

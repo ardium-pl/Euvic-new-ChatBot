@@ -1,12 +1,11 @@
+import { queryDb } from "../../../sql-translator/database/mySql";
 import { db } from "../config/database";
 import chalk from "chalk";
 
 export async function addTechnologiesToDB(technologies: Set<string>) {
   for (const technology of technologies) {
     try {
-      await db.execute("INSERT INTO technologie (nazwa) VALUES (?)", [
-        technology,
-      ]);
+      await queryDb("INSERT INTO technologie (nazwa) VALUES (?)", [technology]);
       console.log(
         chalk.green(`✅ Technology "${technology}" added to the database.`)
       );

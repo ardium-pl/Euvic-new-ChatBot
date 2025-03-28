@@ -1,3 +1,4 @@
+import { queryDb } from "../../../sql-translator/database/mySql";
 import { db } from "../config/database";
 import { TechnologyProject } from "../models/dataDBMoldes";
 import chalk from "chalk";
@@ -9,7 +10,7 @@ export async function addTechnologyProjectsToDB(
     try {
       for (const technologyName of techProject.technologies) {
         try {
-          await db.execute(
+          await queryDb(
             `INSERT INTO technologie_projekty (id_tech, id_proj)
             VALUES (
               (SELECT id FROM technologie WHERE nazwa = ?),

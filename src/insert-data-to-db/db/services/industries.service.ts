@@ -1,10 +1,11 @@
+import { queryDb } from "../../../sql-translator/database/mySql";
 import { db } from "../config/database";
 import chalk from "chalk";
 
 export async function addIndustriesToDB(industries: Set<string>) {
   for (const industry of industries) {
     try {
-      await db.execute("INSERT INTO branze (nazwa) VALUES (?)", [industry]);
+      await queryDb("INSERT INTO branze (nazwa) VALUES (?)", [industry]);
       console.log(
         chalk.green(`✅ Industry "${industry}" added to the database.`)
       );

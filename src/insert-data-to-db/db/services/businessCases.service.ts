@@ -1,12 +1,13 @@
-import { db } from "../config/database";
+import { queryDb } from "../../../sql-translator/database/mySql";
 import chalk from "chalk";
 
 export async function addBusinessCasesToDB(businessCases: Set<string>) {
   for (const businessCase of businessCases) {
     try {
-      await db.execute("INSERT INTO biznes_casy (opis) VALUES (?)", [
+      await queryDb("INSERT INTO biznes_casy (opis) VALUES (?)", [
         businessCase,
       ]);
+
       console.log(
         chalk.green(
           `✅ Business case "${chalk.bold(
