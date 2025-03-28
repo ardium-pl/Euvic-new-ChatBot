@@ -1,13 +1,10 @@
 import { queryDb } from "../../../sql-translator/database/mySql";
-import { db } from "../config/database";
 import { Project } from "../models/dataDBMoldes";
 import chalk from "chalk";
 
 export async function addProjectsToDB(projectsData: Project[]) {
   for (const project of projectsData) {
-    const connection = await db.getConnection();
     try {
-      await connection.beginTransaction();
       try {
         await queryDb(
           `INSERT INTO projekty 
@@ -47,15 +44,10 @@ export async function addProjectsToDB(projectsData: Project[]) {
           throw insertError;
         }
       }
-
-      await connection.commit();
     } catch (error) {
       console.error(
         chalk.red(`❌ Error adding project "${project.projectName}":`, error)
       );
-      await connection.rollback();
-    } finally {
-      connection.release();
     }
   }
 }

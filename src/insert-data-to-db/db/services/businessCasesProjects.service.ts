@@ -1,4 +1,3 @@
-import { db } from "../config/database";
 import chalk from "chalk";
 import { BusinessCasesProject } from "../models/dataDBMoldes";
 import { queryDb } from "../../../sql-translator/database/mySql";

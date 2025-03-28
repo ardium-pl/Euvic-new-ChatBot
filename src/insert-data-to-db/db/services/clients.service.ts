@@ -1,5 +1,4 @@
 import { queryDb } from "../../../sql-translator/database/mySql";
-import { db } from "../config/database";
 import chalk from "chalk";
 
 export async function addClientsToDB(clientNames: Set<string>) {

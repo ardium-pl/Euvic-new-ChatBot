@@ -1,7 +1,6 @@
 import { CustomersDataType } from "../../zod-json/dataJsonSchema";
 import { RowDataPacket } from "mysql2";
 import { queryDb } from "../../../sql-translator/database/mySql";
-// @ts-ignore
 import FuzzySet from "fuzzyset.js";
 
 export async function correctTechnologies(
