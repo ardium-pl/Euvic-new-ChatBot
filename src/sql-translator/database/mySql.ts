@@ -1,55 +1,44 @@
-import mysql, { Connection, ResultSetHeader, RowDataPacket } from "mysql2/promise";
+import mysql, {
+  Connection,
+  ResultSetHeader,
+  RowDataPacket,
+  FieldPacket,
+  QueryError,
+  QueryResult,
+} from "mysql2";
 import { logger } from "../../insert-data-to-db/utils/logger";
 import { dbConfig } from "../../config";
 
-
-export async function createConnection(): Promise<Connection | null> {
-  let connection: Connection | null = null;
+export const createConnection = () => {
   try {
-    connection = await mysql.createConnection(dbConfig);
+    const connection = mysql.createConnection(dbConfig);
     return connection;
   } catch (error) {
     logger.error("❌ Error creating a connection.");
     logger.error(error);
-    if (connection) {
-      await connection.end();
-    }
-    return null;
+    throw new Error("can't create conection");
   }
-}
+};
 
-export async function createTestConnection(): Promise<void> {
-  const connection = await createConnection();
-  if (connection) {
-    await connection.end();
-    logger.info("Successfully established a database connection! ✅");
-  }
-}
-
-export async function executeSQL<T extends RowDataPacket[] | ResultSetHeader>(
-    query: string
-  ): Promise<T | null> {
-    const connection = await createConnection();
-    if (connection) {
-      try {
-        const [rows] = await connection.execute<T>(query);
-        logger.info("Successfully fetched the raw data! ✅");
-        logger.info(`💾 Number of rows fetched: ${(Array.isArray(rows) ? rows.length : 0)}`);
-        return rows;
-      } catch (error) {
-        logger.error("❌ Error executing the query.");
-        logger.error(error);
-        return null;
-      } finally {
-        await connection.end();
+export const queryDb = async <T extends QueryResult = QueryResult>(
+  queryString: string,
+  args?: any[]
+): Promise<{ err: QueryError | null; result: T; fields: FieldPacket[] }> => {
+  return new Promise((resolve) => {
+    const connection = createConnection();
+    if (!connection) throw new Error("don't have connection db");
+    try {
+      if (args) {
+        connection.query<T>(queryString, args, (err, result, fields) => {
+          resolve({ err, result, fields });
+        });
+        return;
       }
+      connection.query<T>(queryString, (err, result, fields) => {
+        resolve({ err, result, fields });
+      });
+    } finally {
+      connection.end();
     }
-    return null;
-  }
-
-
-// Test the connection
-createTestConnection().catch((error) => {
-  logger.error("❌ Failed to test the connection.");
-  logger.error(error);
-});
+  });
+};

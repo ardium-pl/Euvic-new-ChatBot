@@ -1,3 +1,4 @@
+import { queryDb } from "../../../sql-translator/database/mySql";
 import { db } from "../config/database";
 import { DataFileProject } from "../models/dataDBMoldes";
 import chalk from "chalk";
@@ -5,7 +6,7 @@ import chalk from "chalk";
 export async function addFileProjectsToDB(fileProjects: DataFileProject[]) {
   for (const fileProject of fileProjects) {
     try {
-      await db.execute(
+      await queryDb(
         `INSERT INTO pliki_projekty (id_pliku, id_proj)
          VALUES (
            (SELECT id FROM pliki WHERE nazwa = ?),

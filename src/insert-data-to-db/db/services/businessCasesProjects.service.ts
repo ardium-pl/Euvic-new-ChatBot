@@ -1,6 +1,7 @@
 import { db } from "../config/database";
 import chalk from "chalk";
 import { BusinessCasesProject } from "../models/dataDBMoldes";
+import { queryDb } from "../../../sql-translator/database/mySql";
 
 export async function addBusinessCaseProjectsToDB(
   businessCaseProjects: BusinessCasesProject[]
@@ -9,7 +10,7 @@ export async function addBusinessCaseProjectsToDB(
     try {
       for (const businessCaseName of businessCaseProject.businessCases) {
         try {
-          await db.execute(
+          await queryDb(
             `INSERT INTO biznes_casy_projekty (id_proj, id_biznes_case)
              VALUES (
                (SELECT id FROM projekty WHERE nazwa = ?),

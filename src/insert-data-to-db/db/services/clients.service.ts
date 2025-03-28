@@ -1,10 +1,11 @@
+import { queryDb } from "../../../sql-translator/database/mySql";
 import { db } from "../config/database";
 import chalk from "chalk";
 
 export async function addClientsToDB(clientNames: Set<string>) {
   for (const clientName of clientNames) {
     try {
-      await db.execute("INSERT INTO klienci (nazwa) VALUES (?)", [clientName]);
+      await queryDb("INSERT INTO klienci (nazwa) VALUES (?)", [clientName]);
       console.log(
         chalk.green(`✅ Client "${clientName}" added to the database.`)
       );

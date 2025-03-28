@@ -1,3 +1,4 @@
+import { queryDb } from "../../../sql-translator/database/mySql";
 import { db } from "../config/database";
 import { Project } from "../models/dataDBMoldes";
 import chalk from "chalk";
@@ -8,7 +9,7 @@ export async function addProjectsToDB(projectsData: Project[]) {
     try {
       await connection.beginTransaction();
       try {
-        await connection.execute(
+        await queryDb(
           `INSERT INTO projekty 
           (nazwa, opis, id_klienta, id_branzy, data_opis, skala_wdrozenia_opis)
           VALUES (?, ?, 

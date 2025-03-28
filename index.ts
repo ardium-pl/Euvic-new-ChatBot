@@ -20,7 +20,6 @@ app.use(webhookRouter);
 console.log(`Starting server...`);
 app.listen(PORT, async () => {
   console.log(`Running on port ${ansis.greenBright.underline(String(PORT))}!`);
-
   try {
     console.log(`Connected to database!`);
   } catch (err) {
@@ -28,7 +27,7 @@ app.listen(PORT, async () => {
   }
 });
 
-cron.schedule("* * * * *", async () => {
+cron.schedule("0 */2 * * *", async () => {
   console.log("Running processAllFiles cron job");
   try {
     await processAllFiles();

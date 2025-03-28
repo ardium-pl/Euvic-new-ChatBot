@@ -1,13 +1,21 @@
 import express, { Router } from "express";
 import { logger } from "../insert-data-to-db/utils/logger.js";
 import { ChatHistoryHandler } from "../meta-handling/whatsapp/chat_history/getChatHistory.js";
-import { executeSQL } from "./database/mySql.js";
-import { finalResponse, generateGPTAnswer, languageResponse, sqlResponse } from "./gpt/openAi.js";
-import { promptForAnswer, promptForLanguageDetection, promptForSQL } from "./gpt/prompts.js";
+import { queryDb } from "./database/mySql.js";
+import {
+  finalResponse,
+  generateGPTAnswer,
+  languageResponse,
+  sqlResponse,
+} from "./gpt/openAi.js";
+import {
+  promptForAnswer,
+  promptForLanguageDetection,
+  promptForSQL,
+} from "./gpt/prompts.js";
+import { RowDataPacket } from "mysql2";
 
 export const sqlTranslatorRouter: Router = express.Router();
-
-
 
 sqlTranslatorRouter.post("/language-to-sql", async (req, res) => {
   logger.info("📩 Received a new POST request.");
@@ -24,21 +32,21 @@ sqlTranslatorRouter.post("/language-to-sql", async (req, res) => {
     return;
   }
 
-  
   const chatHistory = await ChatHistoryHandler.getRecentQueries(
-    senderPhoneNumber, userQuery
+    senderPhoneNumber,
+    userQuery
   );
   logger.info("Chat history: " + JSON.stringify(chatHistory));
-  
+
   try {
-    if(userQuery == "-"){
+    if (userQuery == "-") {
       res.status(200).json({
         status: "success",
         question: userQuery,
         sqlStatement: "-",
         formattedAnswer: "Rozpoczęto nowy wątek/A new thread has been started",
         rawData: [],
-      })
+      });
       return;
     }
     // Log before calling OpenAI
@@ -75,7 +83,7 @@ sqlTranslatorRouter.post("/language-to-sql", async (req, res) => {
 
     // Log before executing SQL
     logger.info(`📊 Executing SQL: ${sqlAnswer.sqlStatement}`);
-    const rows = await executeSQL(sqlAnswer.sqlStatement);
+    const rows = await queryDb<RowDataPacket[]>(sqlAnswer.sqlStatement);
 
     // Log database response
     logger.debug(`📊 SQL Execution Result: ${JSON.stringify(rows)}`);
@@ -94,12 +102,16 @@ sqlTranslatorRouter.post("/language-to-sql", async (req, res) => {
       "language"
     );
 
-
     logger.info("Language ", language?.language);
     // Log before formatting the result
     logger.info("🤖 Sending data to OpenAI for formatting...");
     const formattedAnswer = await generateGPTAnswer(
-      promptForAnswer(userQuery, sqlAnswer.sqlStatement, rows, language!.language),
+      promptForAnswer(
+        userQuery,
+        sqlAnswer.sqlStatement,
+        rows.result,
+        language!.language
+      ),
       finalResponse,
       "final_response"
     );
